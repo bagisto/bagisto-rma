@@ -20,7 +20,7 @@ Bagisto RMA will help customers to request for return / cancel / exchange produc
 
 - **Bagisto**: v1.3.3
 
-## Installation with composer:
+## Installation :
 - Run the following command
 ```
 composer require bagisto/bagisto-rma
@@ -54,50 +54,6 @@ php artisan db:seed --class="Webkul\RMA\Database\Seeders\DatabaseSeeder"
 php artisan vendor:publish
 ```
 -> Press 0 and then press enter to publish all assets and configurations.
-
-## Installation without composer:
-
-- Unzip the respective extension zip and then merge "packages" folder into project root directory.
-- Goto config/app.php file and add following line under 'providers'
-
-```
-Webkul\RMA\Providers\RMAServiceProvider::class
-```
-
-- Goto composer.json file and add following line under 'psr-4'
-
-```
-"Webkul\\RMA\\": "packages/Webkul/RMA/src"
-```
-
-- Run these commands below to complete the setup
-
-```
-composer dump-autoload
-```
-```
-php artisan optimize
-```
-```
-php artisan migrate
-```
-```
-php artisan route:clear
-```
-
-```
-php artisan db:seed --class=Webkul\\RMA\\Database\\Seeders\\DatabaseSeeder
-
-If your are windows user then run the below command-
-
-php artisan db:seed --class="Webkul\RMA\Database\Seeders\DatabaseSeeder"
-```
-
-```
-php artisan vendor:publish
-
--> Press 0 and then press enter to publish all assets and configurations.
-```
 
 ## Configuartion:
 - Enable the Guest user RMA from the Admin Panel:
