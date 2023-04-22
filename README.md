@@ -25,11 +25,11 @@ Bagisto RMA will help customers to request for return / cancel / exchange produc
 - Supported product types are Bundle product, Grouped product, Configurable product, Simple product.
 
 
-# Requirements:
+# Requirements
 
 - **Bagisto**: v1.3.3
 
-# Installation :
+# Installation
 - Run the following command
 ```
 composer require bagisto/bagisto-rma
@@ -45,7 +45,7 @@ composer require bagisto/bagisto-rma
 php artisan rma:install
 ```
 
-## Configuration:
+## Configuration
 - Enable the Guest user RMA from the Admin Panel:
 
     - For Default theme place this url in 
