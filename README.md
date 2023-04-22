@@ -31,29 +31,10 @@ composer require bagisto/bagisto-rma
 \Webkul\RMA\Providers\RepositoryServiceProvider::class
 ```
 
-- Run these commands below to complete the setup
+- Run the following command to complete the setup
 ```
-composer dump-autoload
+php artisan rma:install
 ```
-
-```
-php artisan migrate
-php artisan route:cache
-php artisan config:cache
-```
-
-```
-php artisan db:seed --class=Webkul\\RMA\\Database\\Seeders\\DatabaseSeeder
-
-If your are windows user then run the below command-
-
-php artisan db:seed --class="Webkul\RMA\Database\Seeders\DatabaseSeeder"
-```
-
-```
-php artisan vendor:publish
-```
--> Press 0 and then press enter to publish all assets and configurations.
 
 ## Configuartion:
 - Enable the Guest user RMA from the Admin Panel:
