@@ -1,3 +1,12 @@
+<p align="center">
+    <img src="https://bagisto.com/wp-content/themes/bagisto/images/logo.png" />
+    <h2 align="center">Bagisto RMA</h2>
+</p>
+
+<p align="center">
+    <img alt="Packagist Downloads" src="https://img.shields.io/packagist/dt/bagisto/bagisto-rma"> <img alt="GitHub" src="https://img.shields.io/github/license/bagisto/bagisto-rma">
+</p>
+
 # Introduction
 
 Bagisto RMA will help customers to request for return / cancel / exchange products during the stipulated time-period. If admin is satisfied with the RMA reason of the customer then admin could proceed the request of cancel, return or exchange.
