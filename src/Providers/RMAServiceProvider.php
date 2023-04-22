@@ -7,7 +7,9 @@ use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
+
 use Webkul\RMA\Http\Middleware\Rma;
+use Webkul\RMA\Console\Commands\Install;
 
 class RMAServiceProvider extends ServiceProvider
 {
@@ -55,6 +57,12 @@ class RMAServiceProvider extends ServiceProvider
         $this->app->register(RepositoryServiceProvider::class);
 
         $router->aliasMiddleware('rma', Rma::class);
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                Install::class
+            ]);
+        }
     }
 
     /**
