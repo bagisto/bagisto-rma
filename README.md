@@ -7,7 +7,7 @@
     <img alt="Packagist Downloads" src="https://img.shields.io/packagist/dt/bagisto/bagisto-rma"> <img alt="GitHub" src="https://img.shields.io/github/license/bagisto/bagisto-rma">
 </p>
 
-# Introduction
+## Introduction
 
 Bagisto RMA will help customers to request for return / cancel / exchange products during the stipulated time-period. If admin is satisfied with the RMA reason of the customer then admin could proceed the request of cancel, return or exchange.
 
@@ -25,11 +25,11 @@ Bagisto RMA will help customers to request for return / cancel / exchange produc
 - Supported product types are Bundle product, Grouped product, Configurable product, Simple product.
 
 
-# Requirements
+## Requirements
 
 - **Bagisto**: v1.3.3
 
-# Installation
+## Installation
 - Run the following command
 ```
 composer require bagisto/bagisto-rma
