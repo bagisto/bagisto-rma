@@ -13,6 +13,7 @@ use Webkul\RMA\Repositories\RMAImagesRepository;
 use Webkul\RMA\Repositories\RMAReasonsRepository;
 use Webkul\RMA\Repositories\RMAMessagesRepository;
 use Webkul\Sales\Repositories\OrderItemRepository;
+use Webkul\RMA\DataGrids\RMAList;
 
 class CustomerController extends Controller
 {
@@ -107,6 +108,9 @@ class CustomerController extends Controller
      */
     public function index()
     {
+        if (request()->ajax()) {
+            return app(RMAList::class)->toJson();
+        }
         return view($this->_config['view']);
     }
 

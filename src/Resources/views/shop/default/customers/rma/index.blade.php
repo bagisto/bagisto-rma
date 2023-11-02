@@ -1,22 +1,22 @@
-@extends('shop::layouts.master')
+<x-shop::layouts.account>
 
-@section('page_title')
-    {{ __('rma::app.shop.customer.title') }}
-@endsection
+{{-- Title of the page --}}
+<x-slot:title>
+    @lang('rma::app.shop.customer.title')
+</x-slot>
 
 @section('content-wrapper')
     <div class="account-content">
         @if (auth()->guard('customer')->user())
-            @include('shop::customers.account.partials.sidemenu')
+            <!-- @include('shop::customers.account.partials.sidemenu') -->
         @endif
 
-        <div class="account-layout" @if(!auth()->guard('customer')->user())  style="width: 100%;" @endif>
-
-            <div class="account-head mb-20">
-                <span class="account-heading">
-                    {{ __('rma::app.shop.customer-rma-index.heading') }}
-                </span>
-
+        <div class="account-layout" @if(!auth()->guard('customer')->user())@endif>
+            
+            <div class="flex justify-between items-center">
+                <h2 class="text-[26px] font-medium">
+                    @lang('rma::app.shop.customer-rma-index.heading')
+                </h2>
                 <div class="account-action">
                     <a
                         @if(!auth()->guard('customer')->user())
@@ -24,25 +24,20 @@
                         @else
                             href="{{ route('rma.customers.create') }}"
                         @endif
-                        class="btn btn-primary btn-md">
-                        {{ __('rma::app.shop.customer-rma-index.create') }}
+                        class="secondary-button py-[12px] px-[20px] border-[#E9E9E9] font-normal"
+                        >
+                        @lang('rma::app.shop.customer-rma-index.create')
                     </a>
                 </div>
-
-                <div class="horizontal-rule" style="margin-top:25px;"></div>
             </div>
 
-            {!! view_render_event('customer.account.rma.list.before') !!}
+            {!! view_render_event('bagisto.rma.customers.allrma.list.before') !!}
 
-            <div class="account-items-list">
+            <x-shop::datagrid src="{{ route('rma.customers.allrma') }}"></x-shop::datagrid>
 
-                {!! app('Webkul\RMA\DataGrids\RMAList')->render() !!}
-
-            </div>
-
-            {!! view_render_event('customer.account.rma.list.after') !!}
+            {!! view_render_event('bagisto.rma.customers.allrma.list.after') !!}
 
         </div>
     </div>
 
-@endsection
+</x-shop::layouts.account>

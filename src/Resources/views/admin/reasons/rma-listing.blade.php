@@ -1,28 +1,27 @@
-@extends('rma::admin.layouts.content')
+<x-admin::layouts>
+    <x-slot name="title">
+        @lang('rma::app.admin.title.reason')
+    </x-slot>
 
-@section('page_title')
-{{ __('rma::app.admin.title.reason-title') }}
-@stop
+    <div class="flex gap-16 justify-between items-center max-sm:flex-wrap">
+        <h1 class="text-20 text-gray-800 dark:text-white font-bold">
+            @lang('rma::app.admin.reasons.heading')
+        </h1>
 
-@section('content')
-
-<div class="content">
-    <div class="page-header">
-        <div class="page-title">
-            <h1>{{ __('rma::app.admin.reasons.heading') }}</h1>
-        </div>
-        <div class="page-action">
-            <a href="{{ route('admin.rma.reason.create') }}" class="btn btn-lg btn-primary">
-                {{ __('rma::app.admin.reasons.create-btn') }}
-            </a>
+        <div class="flex gap-x-10 items-center">
+            @if (bouncer()->hasPermission('admin.rma.reason.create'))
+                <a href="{{ route('admin.rma.reason.create') }}">
+                    <div class="primary-button">
+                        @lang('rma::app.admin.reasons.create-btn')
+                    </div>
+                </a>
+            @endif
         </div>
     </div>
-
-    <div class="page-content">
-
-        {!! app('Webkul\RMA\DataGrids\Admin\Reasons')->render() !!}
-
-    </div>
-</div>
-
-@stop
+    
+    {!! view_render_event('bagisto.admin.rma.reason.list.before') !!}
+    
+    <x-admin::datagrid src="{{ route('admin.rma.reason.index') }}"></x-admin::datagrid>
+    
+    {!! view_render_event('bagisto.admin.rma.reason.list.after') !!}
+</x-admin::layouts>

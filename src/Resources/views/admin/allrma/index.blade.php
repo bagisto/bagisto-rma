@@ -1,24 +1,19 @@
-@extends('rma::admin.layouts.content')
+<x-admin::layouts>
+    <x-slot name="title">
+        @lang('rma::app.admin.title.index')
+    </x-slot>
 
-@section('page_title')
-{{ __('rma::app.admin.title.index') }}
-@stop
-
-@section('content')
-    <div class="content">
-        <div class="page-header">
-            <div class="page-title">
-                <h1>{{ __('rma::app.admin.rma-tab.heading') }}</h1>
+    <div class="flex gap-16 justify-between items-center max-sm:flex-wrap">
+        <h1 class="text-20 text-gray-800 dark:text-white font-bold">
+            @lang('rma::app.admin.rma-tab.heading')
+        </h1>  
             </div>
 
-            <div class="page-action">
-            </div>
-        </div>
+            {!! view_render_event('bagisto.admin.rma.list.before') !!}
 
-        <div class="page-content">
+            <x-admin::datagrid src="{{ route('admin.rma.index') }}"></x-admin::datagrid>
 
-            {!! app('Webkul\RMA\DataGrids\RMAList')->render() !!}
-
+            {!! view_render_event('bagisto.admin.rma.list.after') !!}
         </div>
     </div>
-@stop
+</x-admin::layouts>

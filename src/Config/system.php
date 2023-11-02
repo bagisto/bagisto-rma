@@ -2,15 +2,18 @@
 
 return [
     [
-        'key'       => 'rma',
+        'key'       => 'sales.rma',
         'name'      => 'rma::app.admin.admin-name.rma',
-        'sort'      => 2
+        'info'      => 'E-commerce merchant to permit the return of a product.',
+        'icon'      => 'settings/order.svg',
+        'sort'      =>  6
     ],  [
-        'key'       => 'rma.settings',
+        'key'       => 'sales.rma.settings',
         'name'      => 'rma::app.admin.setting.settings',
+        'info'      => 'E-commerce merchant to permit the return of a product.',
         'sort'      => 1,
     ],  [
-        'key'       => 'rma.settings.general',
+        'key'       => 'sales.rma.settings.general',
         'name'      => 'rma::app.admin.setting.general',
         'sort'      => 1,
         'fields'    => [

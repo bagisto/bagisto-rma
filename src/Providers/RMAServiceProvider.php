@@ -51,18 +51,12 @@ class RMAServiceProvider extends ServiceProvider
         ]);
 
         Event::listen('bagisto.shop.layout.head', function ($viewRenderEventManager) {
-            $viewRenderEventManager->addTemplate('rma::shop.layouts.style');
+            // $viewRenderEventManager->addTemplate('rma::shop.layouts.style');
         });
 
         $this->app->register(RepositoryServiceProvider::class);
 
         $router->aliasMiddleware('rma', Rma::class);
-
-        if ($this->app->runningInConsole()) {
-            $this->commands([
-                Install::class
-            ]);
-        }
     }
 
     /**
@@ -73,6 +67,9 @@ class RMAServiceProvider extends ServiceProvider
     public function register()
     {
         $this->registerConfig();
+        $this->commands([
+            Install::class
+        ]);
     }
 
     /**
