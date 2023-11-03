@@ -1,25 +1,30 @@
-@extends('shop::layouts.master')
+<x-shop::layouts.account>
 
-@section('page_title')
-    {{ __('rma::app.shop.customer.title') }}
-@endsection
+{{-- Title of the page --}}
+<x-slot:title>
+    @lang('rma::app.shop.customer.title')
+</x-slot>
 
 @section('content-wrapper')
-    <div class="account-content">
+    <x-slot:content>
         @if (auth()->guard('customer')->user())
             @include('shop::customers.account.partials.sidemenu')
         @endif
 
         <div class="account-layout" @if(!auth()->guard('customer')->user()) style="width: 100%;" @endif>
             <form method="POST" action="{{ route('rma.customers.store') }}" @submit.prevent="onSubmit" enctype="multipart/form-data">
-                <div class="account-head mb-30">
-                    <span class="account-heading">
-                        {{ __('rma::app.shop.customer-rma-create.heading') }}
+                <div class="flex justify-between items-center">
+                    <h2 class="text-[26px] font-medium">
+                        @lang('rma::app.shop.customer-rma-create.heading')
                     </span>
 
                     <div class="account-action">
-                        <button type="submit" class="btn btn-md btn-primary" onClick="formValidation()">
-                            {{ __('rma::app.general.create') }}
+                        <button
+                            type="submit"
+                            onClick="formValidation()"
+                            class="secondary-button py-[12px] px-[20px] border-[#E9E9E9] font-normal"
+                            >
+                                @lang('rma::app.general.create')
                         </button>
                     </div>
                 </div>
@@ -32,12 +37,12 @@
                         <div class="sale-section">
                             <div class="sale-title">
                                 <div class="secton-title">
-                                    {{ __('rma::app.shop.customer-rma-create.images') }}
+                                    @lang('rma::app.shop.customer-rma-create.images')
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="control-group">
-                                    <image-wrapper :button-label="'{{ __('admin::app.catalog.products.add-image-btn-title') }}'"
+                                    <image-wrapper :button-label="'@lang('admin::app.catalog.products.add-image-btn-title')'"
                                         input-name="images" :multiple="true">
                                     </image-wrapper>
                                 </div>
@@ -50,7 +55,7 @@
                         <div class="sale-section">
                             <div class="sale-title">
                                 <div class="secton-title">
-                                    {{ __('rma::app.shop.customer-rma-create.information') }}
+                                    @lang('rma::app.shop.customer-rma-create.information')
                                 </div>
                             </div>
                             <div class="row">
@@ -64,7 +69,8 @@
             </form>
         </div>
     </div>
-@stop
+</x-slot:content>
+</x-shop::layouts.account>
 
 @push('scripts')
     <script type="text/x-template" id="options-template">

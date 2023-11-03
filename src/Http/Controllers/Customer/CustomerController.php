@@ -232,11 +232,12 @@ class CustomerController extends Controller
      *
      */
     public function create()
-    {
+    { 
+       
         extract($this->getOrdersForRMA(1, 5, ''));
 
         $reasons = $this->rmaReasonRepository->findWhere(['status'=> '1']);
-
+        
         $orderItems = $orders;
 
         return view(
@@ -994,23 +995,24 @@ class CustomerController extends Controller
 
     private function getOrdersForRMA(...$params)
     {
+        
         list($page, $perPage, $search) = $params;
 
         $guestOrderId = session()->get('guestOrderId');
         $guestEmailId = session()->get('guestEmailId');
-
+      
         if (isset($guestEmailId) && isset($guestOrderId) || $this->isGuest == 1) {
             $allOrderItems = $this->orderRepository->orderBy('id', 'desc')->with('items')->findWhere([
                 'customer_email' => $guestEmailId,
                 ['status', '<>', 'canceled'],
                 ['status', '<>', 'closed']
             ]);
-            
+           
             $orderData = $this->orderRepository->findOneWhere(
                 ['id' => $guestOrderId ,
                 ['status', '<>', 'canceled']]
             );
-
+            
             if( ! $orderData){
                 return redirect()->route('customer.session.index');
             }

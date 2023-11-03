@@ -1,12 +1,12 @@
 <x-admin::layouts>
-    <x-slot name="title">
+    <x-slot:title>
         @lang('rma::app.admin.title.index')
     </x-slot>
 
     <div class="flex gap-16 justify-between items-center max-sm:flex-wrap">
-        <h1 class="text-20 text-gray-800 dark:text-white font-bold">
+        <p class="text-20 text-gray-800 dark:text-white font-bold">
             @lang('rma::app.admin.rma-tab.heading')
-        </h1>  
+        </p>  
             </div>
 
             {!! view_render_event('bagisto.admin.rma.list.before') !!}

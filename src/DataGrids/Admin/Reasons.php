@@ -125,9 +125,7 @@ class Reasons extends DataGrid
             'icon' => 'icon-delete',
             'title' => trans('rma::app.shop.customer-rma-index.delete'),
             'type' => 'Delete',
-            'method' => 'DELETE',
-            'route' => 'admin.rma.reason.delete',
-            'confirm_text' => trans('ui::app.datagrid.massaction.delete', ['resource' => 'reasons']),
+            'method' => 'GET',
             'url'    => function ($row) {
                 return route('admin.rma.reason.delete', $row->id);
             },

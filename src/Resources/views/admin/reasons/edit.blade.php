@@ -1,78 +1,90 @@
-@extends('admin::layouts.content')
+<x-admin::layouts>
 
-@section('page_title')
-{{ __('rma::app.admin.title.edit') }}
-@stop
+    {{-- Title of the page --}}
+    <x-slot:title>
+        @lang('rma::app.admin.title.edit')
+    </x-slot>
 
-@section('content')
-<div class="content">
-    <form method="POST" action="{{ route('admin.rma.reason.update') }}" @submit.prevent="onSubmit">
-        <input type="hidden" name="id" value="{{ $data['id'] }}">
-        <div class="page-header">
-            <div class="page-title">
-                <h1>
-                    <i class="icon angle-left-icon back-link"
-                        onclick="history.length > 1 ? history.go(-1) : window.location = '{{ url('/rma/reasons') }}';">
-                    </i>
-                    {{ __('rma::app.admin.create-reasons.edit-heading') }}
+    {{-- Reason Edit Form --}}
+    <x-admin::form 
+        method="POST"
+        :action="route('admin.rma.reason.update', $data->id)"
+        enctype="multipart/form-data"
+    >
+        @csrf
+        <x-admin::form.control-group.control
+            type="hidden"
+            name="_method"
+            value="POST"
+        >
+
+        </x-admin::form.control-group.control>
+
+        <div class="flex gap-[16px] justify-between items-center max-sm:flex-wrap">
+            <div class="flex gap-x-[10px] items-center">
+                <h1 class="text-[20px] text-gray-800 dark:text-white font-bold">
+
+                <i class="icon angle-left-icon back-link" onclick="history.length > 1 ? history.go(-1) : window.location = '{{ url('/rma/reasons') }}';"></i>
+                @lang('rma::app.admin.create-reasons.edit-heading')
                 </h1>
             </div>
 
-            <div class="page-action">
-                <button type="submit" class="btn btn-lg btn-primary">
-                    {{ __('rma::app.admin.create-reasons.save-btn') }}
+            <div class="flex gap-x-[10px] items-center">
+               
+                <!-- Update Button -->
+                <button type="submit" class="primary-button">
+                    @lang('rma::app.admin.create-reasons.save-btn')
                 </button>
             </div>
         </div>
-
-        <div class="page-content">
             @csrf()
 
-            <accordian :title="'{{ __('admin::app.catalog.products.general') }}'" :active="true">
-                <div slot="body">
+        <div class="flex gap-[16px] max-sm:flex-wrap">
+            <x-admin::form.control-group class="w-full mb-[10px]">
+                <x-admin::form.control-group.label class="required">
+                    @lang('rma::app.admin.create-reasons.reason')
+                </x-admin::form.control-group.label>
 
-                    {!! view_render_event('bagisto.admin.catalog.product.create_form_accordian.general.controls.before')
-                    !!}
+                <x-admin::form.control-group.control
+                    type="text"
+                    name="title"
+                    :value="old('title') ?: $data->title"
+                    rules="required"
+                    :label="trans('rma::app.admin.create-reasons.reason')"
+                    :placeholder="trans('rma::app.admin.create-reasons.reason')"
+                >
+                </x-admin::form.control-group.control>
 
-                    <div class="control-group" :class="[errors.has('reasons') ? 'has-error' : '']">
-                        <label for="title"
-                            class="required">{{ __('rma::app.admin.create-reasons.reason') }}</label>
-                        <input type="text" v-validate="'required'" class="control" id="title" name="title"
-                            value="{{ $data['title'] }}"
-                            data-vv-as="&quot;{{ __('rma::app.admin.create-reasons.reason') }}&quot;" />
-                        <span class="control-error" v-if="errors.has('title')">@{{ errors.first('title') }}</span>
-                    </div>
-
-
-                    <div class="control-group" :class="[errors.has('status') ? 'has-error' : '']">
-                        <label for="status"
-                            class="required">{{ __('rma::app.admin.create-reasons.status') }}</label>
-
-                        <select class="control" v-validate="'required'" id="status" name="status"
-                            data-vv-as="&quot;{{ __('rma::app.admin.create-reasons.status') }}&quot;">
-                            @php($status = ['0','1'])
-                            @foreach($status as $status_val)
-                            @if($status_val == 0)
-                            @php($options = 'Disabled')
-                            @else
-                            @php($options = 'Enabled')
-                            @endif
-                            <option value="{{ $status_val }}" @if($status_val==$data['status']) selected @endif>
-                                {{ $options }}
-                            </option>
-                            @endforeach
-                        </select>
-
-                        <span class="control-error" v-if="errors.has('status')">@{{ errors.first('status') }}</span>
-                    </div>
-                </div>
-            </accordian>
-
+                <x-admin::form.control-group.error
+                    control-name="title"
+                >
+                </x-admin::form.control-group.error>
+            </x-admin::form.control-group>
         </div>
 
-    </form>
-</div>
-@stop
+        <div class="flex gap-[16px] max-sm:flex-wrap">
+            <x-admin::form.control-group class="w-full mb-[10px]">
+                <x-admin::form.control-group.label>
+                    @lang('rma::app.admin.create-reasons.status')
+                </x-admin::form.control-group.label>
+                <x-admin::form.control-group.control
+                    type="select"
+                    name="status"
+                    id="status"
+                    rules="required"
+                >
+                 <!-- Default Option -->
+                 <option value="">
+                    @lang('rma::app.admin.create-reasons.status')
+                </option>
+                <option value="1">Enabled</option>
+                <option value="0">Disabled</option>
+                
+            </x-admin::form.control-group.control>
+            </x-admin::form.control-group>
+        </div>
+    </x-admin::form>
+</x-admin::layouts>
 
 @push('scripts')
 <script>

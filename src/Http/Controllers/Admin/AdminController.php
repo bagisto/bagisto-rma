@@ -383,7 +383,7 @@ class AdminController extends Controller
     /**
      * Mass delete by Request
      */
-    public function massDelete()
+    public function massDestroy(MassDestroyRequest $massDestroyRequest): JsonResponse
     {
         $suppressFlash = false;
 
@@ -420,22 +420,13 @@ class AdminController extends Controller
     */
     public function delete($id)
     {
-        try {
-            $this->rmaReasonRepository->delete($id);
+        $this->rmaReasonRepository->delete($id);
 
-            return response()->json([
-                'message' => trans('rma::app.response.delete-success', ['name' => 'Reason']),
-            ]);
+        session()->flash('success', trans('rma::app.response.delete-success'));
 
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => trans( 'rma::app.response.attribute-reason-error', ['name' => 'Reason']),
-            ]);
-        }
+        return redirect(route('admin.rma.reason.index'));
 
-        return redirect()->back();
     }
-
     /**
      * Create RMA
      */
