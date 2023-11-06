@@ -262,6 +262,7 @@ return [
 
         'admin-name' => [
             'rma' => 'RMA',
+            'info'      => 'Return merchandise authorization',
         ],
 
         'general' => [
@@ -270,8 +271,10 @@ return [
 
         'setting' => [
             'settings'  => 'Settings',
-            'general'   => 'General',
+            'info'      => 'E-commerce merchant to permit the return of a product.',
+            'general'   => 'General Setting',
             'fields'    => [
+                'info'   => 'RMA functionality allows handling situations when a customer returns items for repair and maintenance, or for refund or replacement.',
                 'default-allow-days' => 'Default Allowed Days',
                 'allow_new_request_for_canceled_order' => 'Allow New Request RMA for canceled order.',
                 'allow_new_request_for_pending_order' => 'Allow New RMA Request for pending order',
@@ -366,9 +369,9 @@ return [
         'cannot-delete-default' => 'Cannot delete the default channel',
         'create-success' => ':name created successfully.',
         'send-message' => ':name sent successfully.',
-        'update-status' => ':name updated successfully',
-        'update-success' => ':name updated successfully.',
-        'delete-success' => ':name deleted successfully.',
+        'update-status' => 'RMA updated successfully',
+        'update-success' => 'RMA updated successfully.',
+        'delete-success' => 'Reason deleted successfully.',
         'delete-failed' => 'Error encountered while deleting :name.',
         'last-delete-error' => 'At least one :name is required.',
         'user-define-error' => 'Can not delete system :name',

@@ -4,18 +4,19 @@ return [
     [
         'key'       => 'rma',
         'name'      => 'rma::app.admin.admin-name.rma',
-        'info'      => 'Return merchandise authorization.',
+        'info'      => 'rma::app.admin.admin-name.info',
         'icon'      => 'settings/order.svg',
         'sort'      => 2
     ],  [
         'key'       => 'rma.settings',
         'name'      => 'rma::app.admin.setting.settings',
-        'info'      => 'E-commerce merchant to permit the return of a product.',
+        'info'      => 'rma::app.admin.setting.info',
         'icon'      => 'settings/order.svg',
         'sort'      => 1,
     ],  [
         'key'       => 'rma.settings.general',
         'name'      => 'rma::app.admin.setting.general',
+        'info'      => 'rma::app.admin.setting.fields.info',
         'sort'      => 1,
         'fields'    => [
             [

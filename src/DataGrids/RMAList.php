@@ -207,7 +207,7 @@ class RMAList extends DataGrid
         $this->addColumn([
             'index' => 'created_at',
             'label' => trans('rma::app.shop.customer-index-field.date'),
-            'type' => 'datetime',
+            'type' => 'date_range',
             'sortable' => true,
             'searchable' => true,
             'filterable' => true

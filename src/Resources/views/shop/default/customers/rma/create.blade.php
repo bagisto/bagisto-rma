@@ -1,75 +1,98 @@
 <x-shop::layouts.account>
 
-{{-- Title of the page --}}
-<x-slot:title>
-    @lang('rma::app.shop.customer.title')
-</x-slot>
+{{-- Page Title --}}
+    <x-slot:title>
+        @lang('rma::app.shop.customer.title')
+    </x-slot>
 
-@section('content-wrapper')
-    <x-slot:content>
-        @if (auth()->guard('customer')->user())
-            @include('shop::customers.account.partials.sidemenu')
-        @endif
+    {{-- Reason Edit Form --}}
+        <x-shop::form
+        
+                :action="route('shop.customers.account.addresses.store')"
+                class="rounded mt-[30px]" 
+                method="POST"
+                enctype="multipart/form-data"
+            >
+            <div class="account-layout" @if(!auth()->guard('customer')->user())@endif>
+            <div class="flex gap-[16px] justify-between items-center max-sm:flex-wrap">
+                <div class="flex gap-x-[10px] items-center">
+                    <h1 class="text-[20px] text-gray-800 dark:text-white font-bold">
 
-        <div class="account-layout" @if(!auth()->guard('customer')->user()) style="width: 100%;" @endif>
-            <form method="POST" action="{{ route('rma.customers.store') }}" @submit.prevent="onSubmit" enctype="multipart/form-data">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-[26px] font-medium">
                         @lang('rma::app.shop.customer-rma-create.heading')
-                    </span>
+                    </h1>
+                </div>
+                <div class="flex gap-x-[10px] items-center">
 
-                    <div class="account-action">
-                        <button
-                            type="submit"
-                            onClick="formValidation()"
-                            class="secondary-button py-[12px] px-[20px] border-[#E9E9E9] font-normal"
-                            >
-                                @lang('rma::app.general.create')
-                        </button>
+                <!-- Update Button -->
+                <button type="submit" class="primary-button">
+                    @lang('rma::app.general.create')
+                </button>
+                </div>
+            </div>
+            <div class="horizontal-rule"></div>
+            @csrf()
+            {!! view_render_event('bagisto.customer.rma.create.form.images.before') !!}
+
+            <div class="relative p-[16px] bg-white dark:bg-gray-900 rounded-[4px] box-shadow">
+                <!-- Panel Header -->
+                <div class="flex gap-[20px] justify-between mb-[16px]">
+                    <div class="flex flex-col gap-[8px]">
+                        <p class="text-[16px] text-gray-800 dark:text-white font-semibold">
+                            @lang('rma::app.shop.customer-rma-create.images')
+                        </p>
                     </div>
                 </div>
-                <div class="horizontal-rule"></div>
-                @csrf()
+                <div class="row">
+                        <div class="control-group">
+                            <image-wrapper :button-label="'{{ __('admin::app.catalog.products.add-image-btn-title') }}'"
+                                input-name="images" :multiple="true">
+                            </image-wrapper>
+                            </div>
+                        </div>
                 <br>
-                <option-wrapper></option-wrapper>
-                <div class="sale-container">
-                    <div>
-                        <div class="sale-section">
-                            <div class="sale-title">
-                                <div class="secton-title">
-                                    @lang('rma::app.shop.customer-rma-create.images')
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="control-group">
-                                    <image-wrapper :button-label="'@lang('admin::app.catalog.products.add-image-btn-title')'"
-                                        input-name="images" :multiple="true">
-                                    </image-wrapper>
-                                </div>
-                            </div>
-                        </div>
-                        <input type="hidden" name="email" value="{{ $customerEmail }}">
-                        <input type="hidden" name="name" value="{{ $customerName }}">
-                        <input type="hidden" name="token" value="{!! csrf_token() !!} ">
 
-                        <div class="sale-section">
-                            <div class="sale-title">
-                                <div class="secton-title">
+                <!-- Image Blade Component -->
+                    <x-shop::media
+                        name="images[files]"
+                        allow-multiple="true"
+                        show-placeholders="true"
+                    >
+                    <input type="hidden" name="email" value="{{ $customerEmail }}">
+                    <input type="hidden" name="name" value="{{ $customerName }}">
+                    <input type="hidden" name="token" value="{!! csrf_token() !!} ">
+
+                    </x-shop::media>
+                </div>
+                {!! view_render_event('bagisto.customer.rma.create.form.images.after') !!}
+
+                        <div class="p-[16px]">
+                            <x-shop::form.control-group class="mb-[10px]">
+                                <x-shop::form.control-group.label class="required">
                                     @lang('rma::app.shop.customer-rma-create.information')
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="control-group" :class="[errors.has('information') ? 'has-error' : '']">
-                                    <textarea class="control" id="information" name="information"></textarea>
-                                </div>
-                            </div>
+                                </x-shop::form.control-group.label>
+
+                                <x-shop::form.control-group.control
+                                    type="text"
+                                    name="information"
+                                    id="information"
+                                    rules="required"
+                                    :label="trans('rma::app.shop.customer-rma-create.information')"
+                                    :placeholder="trans('rma::app.shop.customer-rma-create.information')"
+                                    rows="3"
+                                >
+                                </x-shop::form.control-group.control>
+
+                                <x-shop::form.control-group.error
+                                    control-name="information"
+                                >
+                                </x-shop::form.control-group.error>
+                            </x-shop::form.control-group>
                         </div>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
-    </div>
-</x-slot:content>
+    </x-shop::form>
 </x-shop::layouts.account>
 
 @push('scripts')
@@ -235,7 +258,7 @@
                             </table>
                             <div v-if="seller == true && resolutionShow == true">
                                 <div v-if="sellerOrderedData.length == 0" style="text-align: center;">
-                                    <p>{{ __('rma::app.shop.customer-rma-create.rma-not-avilable-quotes') }}</p>
+                                    <p>{{ __('rma::app.shop.customer-rma-create.rma-not-available-quotes') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -352,7 +375,8 @@
 
                     if(typeof order_id == 'number'){
                         orderId = order_id;
-                    }else{
+
+                    } else {
                         orderId = event.target.value;
                     }
                    
@@ -368,18 +392,18 @@
                     }
 
                     let currentObj = this_this;
-
+                    
                     if(orderId) {
 
                         immediate: true,
+
+                        this_this.orderId = orderId;
 
                         this_this.$http.get(`{{ route('rma.customers.getproduct') }}/${orderId}`)
                         .then(response => {
                             this_this.data = response.data;
 
                             this_this.resolutionSelect = response.data.resolutions;
-
-                            this_this.orderId = this_this.data.orderId;
 
                             // this_this.orderStatus = ['Not Delivered'];
                             this_this.orderStatus = response.data.orderStatus;
@@ -395,6 +419,7 @@
                             } else {
                                 this_this.showSelectBox = false;
                             }
+                            
                         }).catch(function (error) {
                             currentObj.output = error;
                         });
@@ -421,60 +446,60 @@
 
                     immediate: true,
 
-                        this_this.$http.get(`{{ route('rma.customers.getproduct') }}/${orderId}/${resolution}`)
-                        .then(response => {
+                    this_this.$http.get(`{{ route('rma.customers.getproduct') }}/${orderId}/${resolution}`)
+                    .then(response => {
 
-                            this_this.sellerOrderedData = response.data.orderItems;
+                        this_this.sellerOrderedData = response.data.orderItems;
 
-                            this_this.html = response.data.html;
+                        this_this.html = response.data.html;
 
-                            this_this.itemsId = response.data.itemsId;
+                        this_this.itemsId = response.data.itemsId;
 
-                            this_this.child = response.data.child;
+                        this_this.child = response.data.child;
 
-                            this_this.productImage = response.data.productImage;
+                        this_this.productImage = response.data.productImage;
 
-                            this_this.productImageCounts = response.data.productImageCounts;
+                        this_this.productImageCounts = response.data.productImageCounts;
 
-                            this_this.quantity = response.data.quantity;
+                        this_this.quantity = response.data.quantity;
 
-                            this_this.resolutionSelect= response.data.resolutions;
+                        this_this.resolutionSelect= response.data.resolutions;
 
-                            this_this.rmaOrderItemId = response.data.rmaOrderItemId;
+                        this_this.rmaOrderItemId = response.data.rmaOrderItemId;
 
-                            this_this.countRmaOrderItems = response.data.countRmaOrderItems;
+                        this_this.countRmaOrderItems = response.data.countRmaOrderItems;
 
-                            this_this.orderStatus = response.data.orderStatus;
+                        this_this.orderStatus = response.data.orderStatus;
 
-                            this_this.shippedProductId = response.data.shippedProductId;
+                        this_this.shippedProductId = response.data.shippedProductId;
 
-                            this_this.shippingOrderStatus = response.data.shippingOrderStatus;
+                        this_this.shippingOrderStatus = response.data.shippingOrderStatus;
 
-                            this_this.orderItemShipped = response.data.orderItems;
+                        this_this.orderItemShipped = response.data.orderItems;
 
-                            if(this_this.shippingOrderStatus) {
-                                
-                                let orders = [];
-                                for(let i = 0 ; i < this_this.shippedProductId.length ; i++){                                
-                                    for(let k = 0; k < this_this.sellerOrderedData.length ; k++){                                     
-                                        if(this_this.shippedProductId[i] != this_this.sellerOrderedData[k].product_id) {
-                                            orders.push(this_this.sellerOrderedData[k]);
-                                        }
+                        if(this_this.shippingOrderStatus) {
+                            
+                            let orders = [];
+                            for(let i = 0 ; i < this_this.shippedProductId.length ; i++){                                
+                                for(let k = 0; k < this_this.sellerOrderedData.length ; k++){                                     
+                                    if(this_this.shippedProductId[i] != this_this.sellerOrderedData[k].product_id) {
+                                        orders.push(this_this.sellerOrderedData[k]);
                                     }
                                 }
-
-                                this_this.sellerOrderedData = orders;
                             }
 
-                            if ($('#checkOrderStatus').val() == 'Delivered') {
-                                this_this.deliveredOrderStatus();
-                            }
+                            this_this.sellerOrderedData = orders;
+                        }
 
-                            this_this.seller = true;
+                        if ($('#checkOrderStatus').val() == 'Delivered') {
+                            this_this.deliveredOrderStatus();
+                        }
 
-                        }).catch(function (error) {
-                            currentObj.output = error;
-                        });
+                        this_this.seller = true;
+
+                    }).catch(function (error) {
+                        currentObj.output = error;
+                    });
 
                     this_this.orderId = this_this.data.orderId;
 
@@ -565,6 +590,7 @@
                             }
                         }).catch(error => {
                             this.output = error;
+                            console.log(error.getMessage());
                         });
 
                     event.preventDefault();

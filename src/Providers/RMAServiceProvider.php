@@ -40,13 +40,13 @@ class RMAServiceProvider extends ServiceProvider
             __DIR__ . '/../Resources/views/shop/velocity/UI/header.blade.php'
             => resource_path('themes/velocity/views/UI/header.blade.php'),
 
-            __DIR__ . '/../Resources/views/admin/sales/shipments/create.blade.php'
+            __DIR__ . '/../Resources/views/admin/sales/shipments/create.blade.php' 
             => resource_path('/views/vendor/admin/sales/shipments/create.blade.php'),
 
-            __DIR__ . '/../Resources/views/admin/sales/orders/view.blade.php'
+            __DIR__ . '/../Resources/views/admin/sales/orders/view.blade.php' 
             => resource_path('/views/vendor/admin/sales/orders/view.blade.php'),
 
-            __DIR__ . '/../Resources/views/admin/sales/invoices/create.blade.php'
+            __DIR__ . '/../Resources/views/admin/sales/invoices/create.blade.php' 
             => resource_path('/views/vendor/admin/sales/invoices/create.blade.php'),
         ]);
 

@@ -14,7 +14,6 @@
         @csrf
         <x-admin::form.control-group.control
             type="hidden"
-            name="_method"
             value="POST"
         >
 
@@ -86,7 +85,7 @@
     </x-admin::form>
 </x-admin::layouts>
 
-@pushOnce('scripts')
+@push('scripts')
     <script>
         $(document).ready(function () {
             $('.label .cross-icon').on('click', function(e) {
@@ -98,4 +97,4 @@
             })
         });
     </script>
-@endpushOnce
+@endpush

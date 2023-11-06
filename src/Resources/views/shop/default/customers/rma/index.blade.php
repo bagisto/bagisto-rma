@@ -19,7 +19,7 @@
                 </h2>
                 <div class="account-action">
                     <a
-                        @if(!auth()->guard('customer')->user())
+                        @if(! auth()->guard('customer')->user())
                             href="{{ route('rma.customers.guestcreaterma') }}"
                         @else
                             href="{{ route('rma.customers.create') }}"

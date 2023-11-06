@@ -94,10 +94,10 @@ class Reasons extends DataGrid
         $this->addColumn([
             'index' => 'created_at',
             'label' => trans('rma::app.shop.customer-index-field.date'),
-            'type' => 'datetime',
-            'sortable' => true,
-            'searchable' => false,
-            'filterable' => true
+            'type' => 'date_range',
+            'searchable' => true,
+            'filterable' => true,
+            'sortable'   => true,
         ]);
     }
 

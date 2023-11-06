@@ -24,4 +24,5 @@
     <x-admin::datagrid src="{{ route('admin.rma.reason.index') }}"></x-admin::datagrid>
     
     {!! view_render_event('bagisto.admin.rma.reason.list.after') !!}
+    
 </x-admin::layouts>
