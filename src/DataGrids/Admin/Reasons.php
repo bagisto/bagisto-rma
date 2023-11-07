@@ -46,7 +46,8 @@ class Reasons extends DataGrid
                         );
 
         $this->addFilter('status', 'rma_reasons.status');
-                        
+        $this->addFilter('created_at', 'rma_reasons.created_at');      
+
         return $queryBuilder;
     }
 
@@ -108,30 +109,30 @@ class Reasons extends DataGrid
      */
     public function prepareActions()
     {
-    if (bouncer()->hasPermission('rma.reason.edit')) {
-        $this->addAction([
-            'icon' => 'icon-edit',
-            'title' => trans('rma::app.shop.customer-rma-index.edit'),
-            'type' => 'Edit',
-            'method' => 'GET',
-            'url'    => function ($row) {
-                return route('admin.rma.reason.edit', $row->id);
-            },
-        ]);
-    }
+        if (bouncer()->hasPermission('rma.reason.edit')) {
+            $this->addAction([
+                'icon' => 'icon-edit',
+                'title' => trans('rma::app.shop.customer-rma-index.edit'),
+                'type' => 'Edit',
+                'method' => 'GET',
+                'url'    => function ($row) {
+                    return route('admin.rma.reason.edit', $row->id);
+                },
+            ]);
+        }
 
-    if (bouncer()->hasPermission('rma.reason.delete')) {
-        $this->addAction([
-            'icon' => 'icon-delete',
-            'title' => trans('rma::app.shop.customer-rma-index.delete'),
-            'type' => 'Delete',
-            'method' => 'GET',
-            'url'    => function ($row) {
-                return route('admin.rma.reason.delete', $row->id);
-            },
-        ]);
+        if (bouncer()->hasPermission('rma.reason.delete')) {
+            $this->addAction([
+                'icon' => 'icon-delete',
+                'title' => trans('rma::app.shop.customer-rma-index.delete'),
+                'type' => 'Delete',
+                'method' => 'GET',
+                'url'    => function ($row) {
+                    return route('admin.rma.reason.delete', $row->id);
+                },
+            ]);
+        }
     }
-}
     /**
      * Prepare mass actions.
      *
@@ -140,33 +141,33 @@ class Reasons extends DataGrid
     public function prepareMassActions()
     {
         if (bouncer()->hasPermission('rma.reason.massdelete')) {
-        $this->addMassAction([
-            'title'   => trans('rma::app.shop.customer-rma-index.delete'),
-            'type'    => 'Delete',
-            'label'   => trans('rma::app.admin.action-name.delete'),
-            'method'  => 'POST',
-            'url'     => route('admin.rma.reason.massdelete'),
-        ]);
+            $this->addMassAction([
+                'title'   => trans('rma::app.shop.customer-rma-index.delete'),
+                'type'    => 'Delete',
+                'label'   => trans('rma::app.admin.action-name.delete'),
+                'method'  => 'POST',
+                'url'     => route('admin.rma.reason.massdelete'),
+            ]);
 
         if (bouncer()->hasPermission('rma.reason.massupdate')) {
-        $this->addMassAction([
-            'title'   => trans('rma::app.shop.customer-rma-index.update'),
-            'type'    => 'update',
-            'label'   => trans('rma::app.admin.action-name.update'),
-            'method'  => 'POST',
-            'url'     => route('admin.rma.reason.massupdate'),
-            'options' => [
-                [
-                    'label'  => trans('rma::app.admin.action-name.options.enable'),
-                    'value' => 1,
+            $this->addMassAction([
+                'title'   => trans('rma::app.shop.customer-rma-index.update'),
+                'type'    => 'update',
+                'label'   => trans('rma::app.admin.action-name.update'),
+                'method'  => 'POST',
+                'url'     => route('admin.rma.reason.massupdate'),
+                'options' => [
+                    [
+                        'label'  => trans('rma::app.admin.action-name.options.enable'),
+                        'value' => 1,
+                    ],
+                    [
+                        'label'  => trans('rma::app.admin.action-name.options.disable'),
+                        'value' => 0,
+                    ],
                 ],
-                [
-                    'label'  => trans('rma::app.admin.action-name.options.disable'),
-                    'value' => 0,
-                ],
-            ],
-        ]);
+            ]);
+        }
     }
 }
-    }
 }

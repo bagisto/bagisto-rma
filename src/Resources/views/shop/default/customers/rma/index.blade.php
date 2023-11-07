@@ -1,15 +1,9 @@
 <x-shop::layouts.account>
 
 {{-- Title of the page --}}
-<x-slot:title>
-    @lang('rma::app.shop.customer.title')
-</x-slot>
-
-@section('content-wrapper')
-    <div class="account-content">
-        @if (auth()->guard('customer')->user())
-            <!-- @include('shop::customers.account.partials.sidemenu') -->
-        @endif
+    <x-slot:title>
+        @lang('rma::app.shop.customer.title')
+    </x-slot>
 
         <div class="account-layout" @if(!auth()->guard('customer')->user())@endif>
             
@@ -31,13 +25,12 @@
                 </div>
             </div>
 
-            {!! view_render_event('bagisto.rma.customers.allrma.list.before') !!}
-
+            {!! view_render_event('customer.account.rma.list.before') !!}
+            <div class="account-items-list">
             <x-shop::datagrid src="{{ route('rma.customers.allrma') }}"></x-shop::datagrid>
-
-            {!! view_render_event('bagisto.rma.customers.allrma.list.after') !!}
+            </div>
+            {!! view_render_event('customer.account.rma.list.after') !!}
 
         </div>
-    </div>
 
 </x-shop::layouts.account>

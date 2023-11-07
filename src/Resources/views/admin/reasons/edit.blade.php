@@ -39,6 +39,16 @@
         </div>
             @csrf()
 
+            <x-admin::form.control-group class="w-full mb-[10px]">
+
+                <x-admin::form.control-group.control
+                    type="hidden"
+                    name="id"
+                    :value="old('id') ?: $data->id"
+                >
+                </x-admin::form.control-group.control>
+            </x-admin::form.control-group> 
+
         <div class="flex gap-[16px] max-sm:flex-wrap">
             <x-admin::form.control-group class="w-full mb-[10px]">
                 <x-admin::form.control-group.label class="required">

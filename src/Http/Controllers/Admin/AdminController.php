@@ -2,6 +2,7 @@
 
 namespace Webkul\RMA\Http\Controllers\Admin;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Mail;
 use Webkul\RMA\Repositories\{RMARepository, RMAItemsRepository, RMAReasonsRepository, RMAImagesRepository, RMAMessagesRepository};
 use Webkul\RMA\Mail\{CustomerRMAStatusEmail, AdminConversationEmail, CustomerRmaCreationEmail};
@@ -107,8 +108,9 @@ class AdminController extends Controller
      */
     public function update()
     {
+      
        $data = request()->except('_token');
-
+      
        $this->rmaReasonRepository->find($data['id'])->update($data);
 
        session()->flash('success', trans('rma::app.response.update-success', ['name' => 'Reasons']));
@@ -370,18 +372,21 @@ class AdminController extends Controller
         $data = request()->all();
 
         $reasonIds = $data['indices'];
-
+       
         foreach ($reasonIds as $reasonId) {
+            
             $rmaReason = $this->rmaReasonRepository->find($reasonId);
-
-            if ($rmaReason->is_approved) {
+            
+            // if ($rmaReason->status) {
                 $rmaReason->update([
-                    'is_approved' => $data->input('update-options')
+                    'status' => $data['value']
                 ]);
-            }
+            // }
         }
 
-        session()->flash('success', trans('rma::app.response.update-success'));
+        return new JsonResponse([
+            'message' => trans('rma::app.response.mass-update-success'),
+        ]);
 
         return redirect(route('admin.rma.reason.index'));
     }
@@ -394,9 +399,8 @@ class AdminController extends Controller
         $suppressFlash = false;
 
         if (request()->all(['massaction-type'])) {
-            $indexes = explode(',', request()->input('indexes'));
 
-            foreach ($indexes as $key => $value) {
+            foreach (request()->input('indices') as $key => $value) {
                 try {
                     $this->rmaReasonRepository->delete($value);
                 } catch (\Exception $e) {
@@ -407,7 +411,9 @@ class AdminController extends Controller
             }
 
             if (! $suppressFlash)
-                session()->flash('success', trans('rma::app.response.delete-success', ['name' => 'Reason']));
+            return new JsonResponse([
+                'message' => trans('rma::app.response.mass-delete-success'),
+            ]);
             else
                 session()->flash('error', trans( 'rma::app.response.attribute-reason-error', ['name' => 'Reason']));
 

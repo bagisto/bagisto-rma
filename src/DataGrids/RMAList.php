@@ -105,104 +105,77 @@ class RMAList extends DataGrid
     public function prepareColumns()
     {
         $this->addColumn([
-            'index'      => 'id',
-            'label'      => trans('rma::app.shop.customer-index-field.id'),
-            'type'       => 'number',
+            'index' =>  'id',
+            'label' => trans('rma::app.shop.customer-index-field.id'),
+            'type' => 'number',
             'searchable' => false,
-            'sortable'   => true,
-            'filterable' => true,
+            'sortable' => true,
+            'filterable' => true
         ]);
 
         $this->addColumn([
-            'index'      => 'order_id',
-            'label'      => trans('rma::app.shop.customer-index-field.order-ref'),
-            'type'       => 'number',
+            'index' => 'order_id',
+            'label' => trans('rma::app.shop.customer-index-field.order-ref'),
+            'type' => 'number',
             'searchable' => true,
             'sortable' => true,
             'filterable' => true,
-            'closure' => function($rma) {
+            'wrapper' => function($rma) {
                 $routeName = request()->route()->getName();
 
                 if ($routeName == 'admin.rma.index' && auth()->guard('admin')->user()) {
                     $route = route('admin.sales.orders.view', ['id' => $rma->order_id]);
 
-                    return '<a href="' . $route . '">'.'#'.$rma->order_id.'</a>';
+                    echo '<a href="' . $route . '">'.'#'.$rma->order_id.'</a>';
                 } else if ($routeName == 'rma.customers.allrma' && auth()->guard('customer')->user()) {
-                    $route = route('shop.customer.orders.view', ['id' => $rma->order_id]);
+                    $route = route('customer.orders.view', ['id' => $rma->order_id]);
 
-                    return '<a href="' . $route . '">'.'#'.$rma->order_id.'</a>';
+                    echo '<a href="' . $route . '">'.'#'.$rma->order_id.'</a>';
                 } else if (session()->get('guestEmailId')) {
-                    return "#{$rma->order_id}";
+                    echo "#{$rma->order_id}";
                 }
             }
         ]);
 
         $this->addColumn([
-            'index'      => 'rma_status',
-            'label'      => trans('rma::app.shop.customer-index-field.status'),
-            'type'       => 'checkbox',
-            'options'    => [
-                'pending'                  => trans('rma::app.shop.customer-index-field.pending'),
-                'solved'                   => trans('rma::app.shop.customer-index-field.solved'),
-                'received package'         => trans('rma::app.shop.customer-index-field.received-package'),
-                'declined'                 => trans('rma::app.shop.customer-index-field.declined'),
-                'item canceled'            => trans('rma::app.shop.customer-index-field.item-canceled'),
-                'not received package yet' => trans('rma::app.shop.customer-index-field.not-received-package-yet'),
-                'dispatched package'        => trans('rma::app.shop.customer-index-field.dispatched-package'),
-                'accept'                   => trans('rma::app.shop.customer-index-field.accept'),
-            ],
+            'index' => 'rma_status',
+            'label' => trans('rma::app.shop.customer-index-field.status'),
+            'type' => 'string',
+            'sortable' => true,
             'searchable' => false,
-            'sortable'   => true,
-            'filterable' => true,
-            'closure' => function($value) {
-                $rmaStatus = $value->rma_status;
+            'filterable' => false,
+            'wrapper' => function($rma) {
+                $rmaStatus = $rma->rma_status;
 
                 if ($rmaStatus == NULL || $rmaStatus == 'Pending') {
-                    if ($value->status != 1) {
-                        return "Pending";
+                    if ($rma->status != 1) {
+                        echo "Pending";
                     } else {
-                        return "Solved";
+                        echo "Solved";
                     }
                 } else if($rmaStatus == 'Received Package') {
-                    if ($value->status != 1) {
-                        return 'Received Package';
+                    if ($rma->status != 1) {
+                        echo 'Received Package';
                     } else {
-                        return "Solved";
+                        echo "Solved";
                     }
-
                 } else if ($rmaStatus == 'Declined') {
-                    return $rmaStatus;
-
+                    echo $rmaStatus;
                 } else if($rmaStatus == 'Item Canceled') {
-                    return "Item Canceled";
-
-                }  else if($rmaStatus == 'Solved') {
-                    return "Solved";
-
+                    echo "Item Canceled";
                 } else if ($rmaStatus == 'Not Receive Package yet') {
-                    return 'Not Receive Package yet';
-
+                    echo 'Not Receive Package yet';
                 } else if ($rmaStatus == 'Dispatched Package') {
-                    return 'Dispatched Package';
-
+                    echo 'Dispatched Package';
                 } else if($rmaStatus == 'Accept') {
-                    if ($value->status != 1) {
-                        return 'Accept';
+                    if ($rma->status != 1) {
+                        echo 'Accept';
                     } else {
-                        return "Solved";
+                        echo "Solved";
                     }
                 }
             }
         ]);
-
-        // $this->addColumn([
-        //     'index' => 'customer_email',
-        //     'label' => trans('rma::app.shop.customer-index-field.customer_email'),
-        //     'type' => 'string',
-        //     'sortable' => true,
-        //     'searchable' => true,
-        //     'filterable' => true
-        // ]);
 
         $this->addColumn([
             'index' => 'created_at',
@@ -213,7 +186,6 @@ class RMAList extends DataGrid
             'filterable' => true
         ]);
     }
-
     /**
      * Prepare actions.
      */
@@ -233,7 +205,7 @@ class RMAList extends DataGrid
         $this->addAction([
             'title' => trans('rma::app.shop.customer-rma-index.view'),
             'type' => 'View',
-            'icon' => 'icon-view',
+            'icon' => 'icon-eye',
             'method' => 'GET',
             'url'    => function ($row) use ($route) {
                 return route($route, $row->id);

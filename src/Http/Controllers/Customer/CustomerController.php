@@ -136,21 +136,21 @@ class CustomerController extends Controller
 
         $reasons = $this->rmaItemsRepository->with('getReasons')->findWhere(['rma_id' => $id]);
 
-        $productDetails = $this->rmaItemsRepository->findWhere(['rma_id' => $id]);
+        $productDetails = $this->rmaItemsRepository->with('getOrderItem')->findWhere(['rma_id' => $id]);
 
         $orderItemsRMA = $this->rmaItemsRepository->findWhere(['rma_id' => $rmaData['id']]);
 
         $order = $this->orderRepository->findOrFail($rmaData['order_id']);
 
         $ordersItem = $order->items;
-
+      
         foreach ($orderItemsRMA as $orderItemRMA) {
             $orderItem[] = $orderItemRMA->id;
         }
 
         $orderData = $ordersItem->whereIn('id', $orderItem);
-
-        foreach ($order->items as $key => $configurableProducts) {
+    
+        foreach($order->items as $key => $configurableProducts) {
             if ($configurableProducts['type'] == 'configurable'){
                 $skus[] = $configurableProducts['child'];
             } else {
@@ -161,13 +161,14 @@ class CustomerController extends Controller
         if (! is_null($id)) {
             $messages = $this->rmaMessagesRepository
                         ->where('rma_id', $id)
-                        ->orderBy('id','desc')
-                        ->paginate(5);
+                        ->get();
         }
 
         // get the price of each product
         foreach ($productDetails as $key => $orderItemsDetails) {
-            $value[] = $orderItemsDetails->rmaOrderItem->price;
+            foreach ($orderItemsDetails->getOrderItem as $productPrice) {
+                $value[] = $productPrice['price'];
+            }
         }
 
         return view($this->_config['view'], compact(
@@ -191,11 +192,8 @@ class CustomerController extends Controller
      */
     public function create()
     {
-        if(! is_array($this->getOrdersForRMA(1, 5, ''))) {
-            return redirect()->route('rma.customers.allrma');
-        }
-
         extract($this->getOrdersForRMA(1, 5, ''));
+
         $reasons = $this->rmaReasonRepository->findWhere(['status'=> '1']);
 
         $orderItems = $orders;
@@ -216,14 +214,12 @@ class CustomerController extends Controller
      */
     public function getProducts($orderId, $resolution)
     {
-        
         if (gettype($resolution) == 'array') {
             //check the orderItems by selected $order_id
             $invoiceItems = app('Webkul\Sales\Repositories\InvoiceItemRepository');
-            $shipmentItems = app('Webkul\Sales\Repositories\ShipmentItemRepository');
+            $shippmentItems = app('Webkul\Sales\Repositories\ShipmentItemRepository');
             $productImageRepository = app('Webkul\Product\Repositories\ProductImageRepository');
-            $productRepository = app('Webkul\Product\Repositories\ProductRepository');
-            $enableRMAForPendingOrder = core()->getConfigData('sales.rma.setting.enable_rma_for_pending_order');
+            $enableRMAForPendingOrder = core()->getConfigData('rma.settings.general.enable_rma_for_pending_order');
 
             $order = $this->orderRepository->findOrFail($orderId);
             $orderItems = $order->items;
@@ -235,24 +231,12 @@ class CustomerController extends Controller
             }
 
             $invoiceCreatedItems = $invoiceItems->findWhereIn('order_item_id', $itemsId);
-            $shippedOrderItems = $shipmentItems->findWhereIn('order_item_id', $itemsId);
+            $shippedOrderItems = $shippmentItems->findWhereIn('order_item_id', $itemsId);
             $productImageCounts = $productImageRepository->findWhereIn('product_id', $productId)->count();
-
-            foreach ($productId as $orderItemIds) {
-                $allProducts[] = $productRepository->find($orderItemIds);
-            }
-            $productImage = [];
-            foreach ($allProducts as $product) {
-             
-                if ($product && $product->id) {
-                    $productImage[$product->id] = $product->getTypeInstance()->getBaseImage($product);
-                }
-            }
 
             foreach ($invoiceCreatedItems as $invoiceCreatedItem) {
                 $invoiceCreatedItemId[] = $invoiceCreatedItem->order_item_id;
             }
-
             foreach ($shippedOrderItems as $shippedOrderItem) {
                 $shippedOrderItemId[] = $shippedOrderItem->order_item_id;
             }
@@ -275,6 +259,10 @@ class CustomerController extends Controller
 
             if (isset($invoiceCreatedItemId)) {
                 $resolutions = ['Return','Exchange'];
+
+                // if ( count($invoiceCreatedItemId) != count($itemsId)) {
+                //     array_push($resolutions, 'Cancel Items');
+                // }
             }
 
             if (isset($invoiceCreatedItemId) && isset($shippedOrderItemId)) {
@@ -284,23 +272,13 @@ class CustomerController extends Controller
             if (isset($order) && $order->status == 'completed') {
                 $orderStatus = ['Delivered'];
             }
-
-            $order = $this->orderRepository->findOrFail($orderId);
-
-            $orderItems = $this->orderItemRepository->where("order_id", $order->id)->latest()->paginate(5);
-
-            return [
-                'search_results' => $orderItems,
-                'resolutions'    => $resolutions,
-            ]; 
-
+        
             return response()->json([
                 'orderId'               => $orderId,
                 'orderItems'            => $orderItems,
                 'orderStatus'           => $orderStatus,
                 'resolutions'           => $resolutions,
-                'productImageCounts'    => $productImageCounts,
-                'productImage'          => $productImage
+                'productImageCounts'    => $productImageCounts                
             ]);
             
         } else {
@@ -316,13 +294,14 @@ class CustomerController extends Controller
     private function fetchOrderDetails($orderId, $resolution)
     {
         $invoiceItems = app('Webkul\Sales\Repositories\InvoiceItemRepository');
-        $shipmentItems = app('Webkul\Sales\Repositories\ShipmentItemRepository');
-        $productRepository = app('Webkul\Product\Repositories\ProductRepository');
+        $shippmentItems = app('Webkul\Sales\Repositories\ShipmentItemRepository');
+        $productrepository = app('Webkul\Product\Repositories\ProductRepository');
         $productImageRepository = app('Webkul\Product\Repositories\ProductImageRepository');
 
         $order = $this->orderRepository->findOrFail($orderId);
 
         $allOrderItems = $order->items;
+
         $rmaDataByOrderId = $this->rmaRepository->findWhere([
             'order_id' => $orderId,
         ]);
@@ -342,9 +321,11 @@ class CustomerController extends Controller
         $rmaOrderItemId = [];
         $countRmaOrderItems = [];
 
-        foreach ($rmaOrderItems as $key => $rmaOrderItems) {
-            $rmaOrderItemId[$rmaOrderItems['order_item_id']] = $rmaOrderItems['order_item_id'];
-            $countRmaOrderItems[] = $rmaOrderItems['order_item_id'];
+        if (! empty($rmaOrderItems)) {
+            foreach ($rmaOrderItems as $key => $rmaOrderItems) {
+                $rmaOrderItemId[$rmaOrderItems['order_item_id']] = $rmaOrderItems['order_item_id'];
+                $countRmaOrderItems[] = $rmaOrderItems['order_item_id'];
+            }
         }
 
         foreach ($allOrderItems as $key => $item) {
@@ -357,15 +338,13 @@ class CustomerController extends Controller
                 'order_id'  => $orderId,
             ]);
 
-            if ($resolution != 'Cancel Items') {
-                // remove order items
-                foreach ($orderItemsData as $index => $orderItemData) {
-                    $isOrderItemValid = in_array($orderItemData->type, ['downloadable', 'virtual', 'booking']);
+            // remove order items
+            foreach ($orderItemsData as $index => $orderItemData) {
+                $isOrderItemValid = in_array($orderItemData->type, ['downloadable', 'virtual', 'booking']);
 
-                    if ($isOrderItemValid) {
-                        unset($orderItemsData[$index]);
-                    }
-                }    
+                if ($isOrderItemValid) {
+                    unset($orderItemsData[$index]);
+                }
             }
 
             if (sizeof($orderItemsData) > 0) {
@@ -384,38 +363,40 @@ class CustomerController extends Controller
         if ($checkRmaCreatedOrNot > 0) {
             $rmaItems = $this->rmaItemsRepository->findWhereIn('order_item_id', $itemsId);
 
-            foreach ($rmaItems as $rmaItem) {
-                $rmaOrderItemQty[$rmaItem->order_item_id][$rmaItem->id] = $rmaItem->quantity;
-            }
-
-            foreach ($rmaOrderItemQty as $key => $itemQty) {
-                $qtyAddedrma[$key] = array_sum($itemQty);
-                $rmaItemsId[] = $key;
-            }
-
-            foreach ($orderItems as $key => $orderItem) {
-                if (in_array ($orderItem->id,$rmaItemsId)) {
-                    $qty[$orderItem->id] = $orderItem->qty_ordered - $qtyAddedrma[$orderItem->id];
-                } else {
-                    $qty[$orderItem->id] = $orderItem->qty_ordered;
+            if (count($rmaItems) > 0) {
+                foreach ($rmaItems as $rmaItem) {
+                    $rmaOrderItemQty[$rmaItem->order_item_id][$rmaItem->id] = $rmaItem->quantity;
                 }
-            }
 
-            foreach ($orderItems as $orderItem) {
-                if ($qty[$orderItem->id] != 0) {
-                    $isExisting = false;
-                    foreach ($filteredData as $data) {
-                        if ($data->id == $orderItem->id) {
-                            $isExisting = true;
+                foreach ($rmaOrderItemQty as $key => $itemQty) {
+                    $qtyAddedrma[$key] = array_sum($itemQty);
+                    $rmaItemsId[] = $key;
+                }
+
+                foreach ($orderItems as $key => $orderItem) {
+                    if (in_array ($orderItem->id,$rmaItemsId)) {
+                        $qty[$orderItem->id] = $orderItem->qty_ordered - $qtyAddedrma[$orderItem->id];
+                    } else {
+                        $qty[$orderItem->id] = $orderItem->qty_ordered;
+                    }
+                }
+
+                foreach ($orderItems as $orderItem) {
+                    if ($qty[$orderItem->id] != 0) {
+
+                        $isExisting = false;
+                        foreach ($filteredData as $data) {
+                            if ($data->id == $orderItem->id) {
+                                $isExisting = true;
+                            }
+                        }
+
+                        if (! $isExisting) {
+                            $filteredData[] = $orderItem;
                         }
                     }
-
-                    if (! $isExisting) {
-                        $filteredData[] = $orderItem;
-                    }
                 }
             }
-
         } else {
             foreach ($orderItems as $orderItem) {
                 $qty[$orderItem->id] = $orderItem->qty_ordered;
@@ -423,31 +404,25 @@ class CustomerController extends Controller
         }
 
         $productId = [];
-
         $orderItemsData = array_unique($filteredData);
         foreach ($orderItemsData as $orderItem) {
             $productId[] = $orderItem->product_id;
 
-            $allProducts[] = $productRepository->find($orderItem->product_id);
+            $allProducts[] = $productrepository->find($orderItem->product_id);
         }
 
         $productImage = [];
         foreach ($allProducts as $product) {
-            if ($product && $product->type == 'configurable' && $product->id ) {
-                foreach ($allOrderItems as $orderItems){
-                    $productImage[$product->id] = $orderItems->product->getTypeInstance()->getBaseImage($orderItems) ;
-                }
-            } elseif ($product && $product->id) {
-                $productImage[$product->id] = ProductImage::getProductBaseImage($product);
+            if ($product && $product->id) {
+                $productImage[$product->id] = productimage()->getProductBaseImage($product);
             }
         }
 
         $orderItemsByItemId = $this->orderItemRepository->findWhereIn('id',$itemsId);
 
         $html = [];
-
         foreach($orderItemsByItemId as $key => $configurableProducts) {
-            if ($configurableProducts->type == 'configurable') {
+            if ($configurableProducts->type == 'configurable'){
                 $additional = '';
                 // $additional = $configurableProducts->getOptionDetailHtml();
                 $html[$configurableProducts->id] = str_replace(',', '<br>',  $additional);
@@ -459,9 +434,6 @@ class CustomerController extends Controller
                     'sku'       => $configurableProducts->child->sku,
                     'name'      => $configurableProducts->child->name,
                 ];
-
-                $variants = $configurableProducts->product->variants;
-
             } else {
                 $child[$configurableProducts->id] = $configurableProducts->sku;
             }
@@ -470,7 +442,7 @@ class CustomerController extends Controller
         $productImageCounts = $productImageRepository->findWhereIn('product_id',$productId)->count();
 
         $invoiceCreatedItems = $invoiceItems->findWhereIn('order_item_id',$itemsId);
-        $shippedOrderItems = $shipmentItems->findWhereIn('order_item_id',$itemsId);
+        $shippedOrderItems = $shippmentItems->findWhereIn('order_item_id',$itemsId);
 
         $invoiceCreatedItemId = [];
         foreach ($invoiceCreatedItems as $invoiceCreatedItem) {
@@ -501,7 +473,7 @@ class CustomerController extends Controller
                 $resolutionResponse = ['Return','Exchange','Cancel Items'];
                 $orderStatus = ['Not Delivered'];
             }
-        }   
+        }      
 
         if (! empty($invoiceCreatedItemId) && ! empty($shippedOrderItemId)) {
             if ( count(array_unique($invoiceCreatedItemId)) == count($itemsId)) {
@@ -510,13 +482,12 @@ class CustomerController extends Controller
             }
 
             if ($invoiceCreatedItemId && $shippedOrderItemId) {
-                $resolutionResponse = ['Return','Exchange'];
+                $resolutionResponse = ['Return','Exchange','Cancel Item'];
                 $orderStatus = ['Not Delivered','Delivered'];
             }           
-        }      
+        } 
 
         $items = [];
-
         foreach ($orderItemsData  as $orderItemData) {
             if ($qty[$orderItemData->id] != 0) {
                 $items[] =  $orderItemData;
@@ -553,18 +524,18 @@ class CustomerController extends Controller
                     }
                 }
             }
-        }       
+        }
 
         if (isset($resolution) &&  ( $resolution == 'Cancel Items' || $resolution == 'Exchange')) {
             foreach ($items as $item) {
                 if (! in_array($item->id, $invoiceCreatedItemId))  {
+
                     $isExisting = false;
                     foreach ($orderData as $existingData) {
                         if ($item->id == $existingData->id) {
                             $isExisting = true;
                         }
                     }
-                    
                     if ($item->product->type == 'configurable') {
                         $orderData[] = $item;
                     } else if (! $isExisting) {
@@ -572,6 +543,8 @@ class CustomerController extends Controller
                     }
                 }
             }
+
+            $orderStatus = ['Not Delivered','Delivered'];
         }
 
         if (is_null($resolution)) {
@@ -586,7 +559,6 @@ class CustomerController extends Controller
             'quantity'           => $qty,
             'html'               => $html,
             'child'              => $child,
-            'variants'           => $variants??[],
             'itemsId'            => $itemsId,
             'orderItems'         => $orderData,
             'orderStatus'        => $orderStatus,
@@ -597,8 +569,8 @@ class CustomerController extends Controller
             'countRmaOrderItems' => $countRmaOrderItems,
             'shippedProductId'   => $shippedProductId,
             'shippingOrderStatus'   => count($shippedOrderItemId) > 0 ? 1 : 0,
-        ]);
 
+        ]);
     }
 
     /**
@@ -608,6 +580,7 @@ class CustomerController extends Controller
      */
     public function store()
     {
+        
         $this->validate(request(), [
             'quantity' => 'required',
             'resolution' => 'required',
@@ -616,42 +589,38 @@ class CustomerController extends Controller
         ]);
 
         $items = [];
-
         $data = request()->all();
-      
-        if (! empty($data['information'])) {
-            if (str_word_count($data['information'], 0) > 100) {
-                $words = str_word_count($data['information'], 2);
-                $pos   = array_keys($words);
-                $info  = substr($data['information'], 0, $pos[100]) . '...';
-            } else {
-                $info = $data["information"];
-            }
-        }
-        
         $data['order_items'] = [];
 
         foreach ($data['order_item_id'] as $orderItemId) {
-            $orderItem = $this->orderItemRepository->find($orderItemId);
+            $orderItem = $this->orderItemRepository
+                        ->getModel()
+                        ->where('id', $orderItemId)
+                        ->get();
 
-            array_push($data['order_items'], $orderItem);
+            if (isset($orderItem[0])) {
+                $orderItem = $orderItem[0];
 
-            array_push($items, [
-                'order_id' => $orderItem->order_id,
-                'order_item_id' => $orderItem->id,
-            ]);
+                array_push($data['order_items'], $orderItem);
+
+                array_push($items, [
+                    'order_id' => $orderItem->order_id,
+                    'order_item_id' => $orderItem->id,
+                ]);
+            }
         }
+
         $orderRMAData = [
             'status'        => '',
             'order_id'      => $data['order_id'],
             'resolution'    => $data['resolution'],
-            'information'   => !empty($info) ? $info : '',
+            'information'   => $data['information'],
             'order_status'  => $data['order_status'],
-            'rma_status'    => 'Pending',
         ];
 
         $rma = $this->rmaRepository->create($orderRMAData);
-        $lastInsertId = $rma->id;
+
+        $lastInsertId = \DB::getPdo()->lastInsertId();
 
         if (isset($data['images'])) {
             $imageCheck = implode(",", $data['images']);
@@ -660,29 +629,30 @@ class CustomerController extends Controller
         $data['rma_id'] = $lastInsertId;
 
         // insert images
-        if (! empty($imageCheck)) {
+        if ( ! empty($imageCheck)) {
             foreach ($data['images'] as $itemImg) {
                 $this->rmaImagesRepository->create([
                     'rma_id' => $lastInsertId,
-                    'path' => !empty($itemImg) ?? $itemImg->getClientOriginalName(),
+                    'path' => $itemImg->getClientOriginalName(),
                 ]);
             }
         }
+
         // insert orderItems
-        foreach ($items as $key => $itemId) {
+        foreach ($items as $itemId) {
             $orderItemRMA = [
                 'rma_id' => $lastInsertId,
                 'order_item_id' => $itemId['order_item_id'],
                 'quantity' => $data['quantity'][$itemId['order_item_id']],
-                'rma_reason_id' => $data['rma_reason_id'][$itemId['order_item_id']],
-                'variant_id'    => isset($data['variant'][$key]) ? $data['variant'][$key] : null,
+                'rma_reason_id' => $data['rma_reason_id'][$itemId['order_item_id']]
             ];
 
             $rmaOrderItem = $this->rmaItemsRepository->create($orderItemRMA);
         }
+
         $data['reasonsData'] =  $this->rmaReasonRepository->findWhereIn('id', $data['rma_reason_id']);
 
-        foreach ($data['reasonsData'] as $reasons) {
+        foreach($data['reasonsData'] as $reasons) {
             $data['reasons'][] = $reasons->title;
         }
 
@@ -704,12 +674,12 @@ class CustomerController extends Controller
 
         $orderData = $ordersItem->whereIn('id', $orderItem);
 
-        foreach ($orderData as $key => $configurableProducts) {
+        foreach($orderData as $key => $configurableProducts) {
             if ($configurableProducts['type'] == 'configurable'){
                 $data['skus'][] = $configurableProducts['child'];
             }
         }
-      
+
         if ($rmaOrderItem) {
             try {
                 Mail::queue(new CustomerRmaCreationEmail($data));
@@ -719,10 +689,8 @@ class CustomerController extends Controller
             }
 
             session()->flash('success', trans('admin::app.response.create-success', ['name' => 'Request']));
-           
-            if (auth()->guard('customer')->user()) {
-                return redirect()->route('rma.customers.allrma');
-            } else {
+
+            if ($this->isGuest == 1) {
                 return redirect()->route('rma.customers.guestallrma');
             }
 
@@ -735,25 +703,36 @@ class CustomerController extends Controller
     }
 
     /**
-     * Save rma status by customer
+     * save rma status by customer
      *
-     * @return Illuminate\Http\Response
+     * @param $id
+     *
+     * return $value
      */
-    public function saveStatus()
+    public function savestatus()
     {
         $data = request()->all();
     
         if (isset($data['close_rma'])) {
+
             $status = 1;
+         
             $rma = $this->rmaRepository->find($data['rma_id']);
 
-            if ($rma) {
+            if($rma) {
                 $orderId = $rma->order_id;
+    
                 $order = $this->orderRepository->find($orderId);
+    
                 $order->update(['status' => 'closed']);
     
-                $this->rmaRepository->find($data['rma_id'])->update(['status' => $status, 'rma_status' => 'Solved']);
-            }
+                $this->rmaRepository->find($data['rma_id'])->update(['status' => $status]);
+            }else{
+
+                session()->flash('error','Something Went Wrong');
+
+                return back();
+            }           
         }
 
         session()->flash('success', trans('rma::app.response.update-status', ['name' => 'Status']));
@@ -762,37 +741,35 @@ class CustomerController extends Controller
     }
 
     /**
-     * Send message by Email
+     * send message by Email
+     * @param $request
      *
-     * @return Illuminate\Http\Response
+     * return $value
      */
-    public function sendMessage()
+    public function sendmessage()
     {
         $data = request()->all();
-
+        
         $conversationDetails['adminName'] = 'Admin';
         $conversationDetails['message'] = $data['message'];
-        $conversationDetails['adminEmail'] = core()->getConfigData('emails.configure.email_settings.admin_email');
-
-        if (auth()->guard('customer')->user())
-            $this->isGuest = 0;
+        $conversationDetails['adminEmail'] = core()->getConfigData('emails.configure.email_settings.admin_email') ?: config('mail.admin.address');
 
         if (isset($this->isGuest) && $this->isGuest == 1) {
             $conversationDetails['customerEmail'] = $this->orderRepository->find(session()->get('guestOrderId'))->customer_email;
         } else {
             $conversationDetails['customerEmail'] = auth()->guard('customer')->user()->email;
         }
-       
+        
         $storeMessage =  $this->rmaMessagesRepository->create($data); 
-      
 
         if ($storeMessage) {
 
             try {
-                Mail::queue(new CustomerConversationEmail($conversationDetails));
+                if ( $conversationDetails['adminEmail'] ) {
+                    Mail::queue(new CustomerConversationEmail($conversationDetails));
 
-                session()->flash('success', trans('shop::app.customer.signup-form.success-verify'));
-
+                    session()->flash('success', trans('shop::app.customer.signup-form.success-verify'));
+                }
             } catch (\Exception $e) {
 
                 session()->flash('info', trans('rma::app.response.send-message', ['name' => 'Message']));
@@ -812,18 +789,11 @@ class CustomerController extends Controller
         return redirect()->back();
     }
 
-    /**
-     * Reopen RMA
-     *
-     * @param int $id
-     * 
-     * @return Illuminate\Http\Response
-     */
     public function reopenRMA($id)
     {
         $rma = $this->rmaRepository->find($id);       
     
-        if ($rma) {
+        if ($rma){
             $rma->rma_status = null;
             $rma->status = 0;
             $rma->save();
@@ -839,7 +809,6 @@ class CustomerController extends Controller
     public function guestLogin()
     {
         $isGuest = $this->isGuest;
-
         if ($isGuest == 1) {
             return view($this->_config['view']);
         } else if($isGuest == 0) {
@@ -853,9 +822,7 @@ class CustomerController extends Controller
     public function guestLoginCreate()
     {
         $guestUserData = request()->all();
-        $checkData = $this->orderRepository->findWhere([
-                'id' => $guestUserData['order_id'], 'customer_email' => $guestUserData['email'], 'is_guest' => 1
-            ])->first();
+        $checkData = $this->orderRepository->findWhere(['id' => $guestUserData['order_id'],'customer_email' => $guestUserData['email'],'is_guest'=>1])->first();
 
         if (isset($checkData)) {
             session()->put('guestOrderId',$guestUserData['order_id']);
@@ -869,25 +836,19 @@ class CustomerController extends Controller
     }
 
     /**
-     * Create the RMA for tha specific Order
+     *
+     * create the RMA for tha specific Order
      *
      */
     public function guestRMACreate()
     {
-        dd('asdfasdf');
         $guestOrderId = session()->get('guestOrderId');
 
         $guestEmailId = session()->get('guestEmailId');
 
-        if (auth()->guard('customer')->user()) {
-            session()->flash('error', trans('rma::app.response.permission-denied'));
-
-            return redirect()->back();
-
-        } else if (isset($guestEmailId) && isset($guestOrderId) &&  !empty($guestEmailId) && !empty($guestOrderId) || $this->isGuest == 1) {
-
+        if (isset($guestEmailId) && isset($guestOrderId) || $this->isGuest == 1) {
             $allOrderItems = $this->orderRepository->orderBy('id', 'desc')->with('items')->findWhere(
-                [
+                [                   
                     'customer_email' => $guestEmailId,
                     ['status', '<>', 'canceled'],
                     ['status', '<>', 'closed']
@@ -899,109 +860,49 @@ class CustomerController extends Controller
                 ['status', '<>', 'canceled']]
             );
 
-            if (! $orderData) {
+            if( ! $orderData){
                 return redirect()->route('customer.session.index');
             }
 
             $customerEmail = $orderData->customer_email;
 
             $customerName = $orderData->customer_first_name." ".$orderData->customer_last_name;
+        } else {
+            $customer = auth()->guard('customer')->user();
+
+            $customerEmail = $customer->email;
+
+            $customerName = $customer->first_name ." ". $customer->last_name;
+
+            $allOrderItems = $this->orderRepository
+                ->orderBy('id','desc')
+                ->with('items')
+                ->findWhere([
+                    'customer_id' => $customer->id,
+                    ['status', '<>', 'canceled']
+                ]);
         }
 
-        $returnData = $this->createRMA($allOrderItems);
-
-        $orderItems =  $returnData["orderItems"];
-        $reasons =  $returnData["reasons"];
-
-        return view(
-            $this->_config['view'],
-            compact(
-                'customerName',
-                'customerEmail',
-                'orderItems',
-                'reasons'
-            )
-        );
-    }
-
-    /**
-     * Create Customer RMA
-     *
-     */
-    public function customerRMACreate() 
-    {
-        $customer = auth()->guard('customer')->user();
-
-        $customerEmail = $customer->email;
-
-        $customerName = $customer->first_name ." ". $customer->last_name;
-
-        $allOrderItems = $this->orderRepository
-            ->orderBy('id','desc')
-            ->with('items')
-            ->findWhere([
-                'customer_id' => $customer->id,
-                ['status', '<>', 'canceled']
-            ]);
-
-        $returnData = $this->createRMA($allOrderItems);
-        $orderItems =  $returnData["orderItems"];
-        $reasons =  $returnData["reasons"];
-
-        return view(
-            $this->_config['view'],
-            compact(
-                'customerName',
-                'customerEmail',
-                'orderItems',
-                'reasons'
-            )
-        );
-    }
-
-    public function addReason($id) {
-        $reasons = $this->rmaReasonRepository->create([
-            'status'=> '1',
-             'title' => request()['inputData']]);
-             
-        return response()->json(['reasons' => $reasons]);
-        // return view($this->_config['view'],compact('reasons')); 
-    }
-
-    /**
-     * Create RMA
-     *
-     * @param array $allOrderItems
-     * @return array
-     */
-    public function createRMA($allOrderItems) 
-    {
         $orderItems = collect();
 
         $reasons = $this->rmaReasonRepository->findWhere(['status'=> '1']);
 
-        $defaultAllowedDays = core()->getConfigData('sales.rma.setting.default_allow_days');
-        
-        $enableRMAForCanceledOrder = core()->getConfigData('sales.rma.setting.enable_rma_for_cancel_order');
+        $defaultAllowedDays = core()->getConfigData('rma.settings.general.default_allow_days');
+        $enableRMAForCanceledOrder = core()->getConfigData('rma.settings.general.enable_rma_for_cancel_order');
 
-        $enableRMAForPendingOrder = core()->getConfigData('sales.rma.setting.enable_rma_for_pending_order');
-
-        foreach ($allOrderItems as $key => $orderItem) {            
-            if (! $defaultAllowedDays || ($orderItem->created_at->addDays($defaultAllowedDays)->format('Y-m-d') >= now()->format('Y-m-d'))) {
+        foreach ($allOrderItems as $orderItem) {
+            if (!$defaultAllowedDays || ($orderItem->created_at->addDays($defaultAllowedDays)->format('Y-m-d') >= now()->format('Y-m-d'))) {
                 $orderItems->push($orderItem);
-            }
-
-            if (! $enableRMAForPendingOrder && $orderItem->status == 'pending') {
-                unset($orderItems[$key]);
             }
         }
 
         $orderIds = $orderItems->pluck('id')->toArray();
 
         $rmaCollection = $this->rmaRepository
-                        ->findWhereIn('order_id', $orderIds)
-                        ->groupBy('order_id');
+                    ->findWhereIn('order_id', $orderIds)
+                    ->groupBy('order_id');
 
+        $removeOrderId = [];
         foreach ($rmaCollection->toArray() as $rma) {
             $rmaIds = [];
 
@@ -1024,37 +925,25 @@ class CustomerController extends Controller
                     }
                 }
 
-                if ($enableRMAForCanceledOrder) {
+                if ($enableRMAForCanceledOrder == "1") {
                     if ($order->status == "canceled") {
                         unset($orderItems[$key]);
                     }
                 }
             }
         }
-
-        foreach ($orderItems as $key => $orderValue) {
-            foreach ($orderValue->items as $itemValue) {
-                if (in_array($itemValue->type, ["virtual", "downloadable", "booking"])
-                    && (! core()->getConfigData('sales.rma.setting.enable_rma_for_digital_products') 
-                    || $orderValue->status == "completed")
-                ) {
-                    unset($orderItems[$key]);
-                }
-            }
-        }
-
-        $returnData['orderItems'] = $orderItems;
-        $returnData['reasons'] = $reasons;
-
-        return $returnData;
+                    
+        return view(
+            $this->_config['view'],
+            compact(
+                'customerName',
+                'customerEmail',
+                'orderItems',
+                'reasons'
+            )
+        );
     }
 
-    /**
-     * Search Order
-     *
-     * @param int $orderId
-     * @return orders
-     */
     public function searchOrder($orderId)
     {
         extract($this->getOrdersForRMA(1, 5, $orderId == 'all' ? '' : $orderId));
@@ -1062,12 +951,6 @@ class CustomerController extends Controller
         return $orders;
     }
 
-    /**
-     * Get Orders for RMA
-     *
-     * @param array ...$params
-     * @return array
-     */
     private function getOrdersForRMA(...$params)
     {
         list($page, $perPage, $search) = $params;
@@ -1170,85 +1053,5 @@ class CustomerController extends Controller
             'count'         => $orders->count(),
             'orders'        => $orders->forPage($page, $perPage)
         ];
-    }
-
-    /**
-     * Get Orders
-     *
-     * @return array
-     */
-    public function getOrders($orderId, $resolutions)
-    {
-        $productRepository = app('Webkul\Product\Repositories\ProductRepository');
-        $productImageRepository = app('Webkul\Product\Repositories\ProductImageRepository');
-
-        $order = $this->orderRepository->findOrFail($orderId);
-        
-        $orderItems = $this->orderItemRepository
-        ->where("order_id", $order->id)
-        ->where("type","!=" ,"configurable")
-        ->latest()->paginate(5);
-                    
-        if ($resolutions == "null") {
-            $enableRMAForPendingOrder = core()->getConfigData('sales.rma.setting.enable_rma_for_pending_order');
-
-            //check the product's shipment and invoice is generated or not
-
-            foreach ($orderItems as $orderItem) {
-                $itemsId[] = $orderItem->id;
-                $productImage = [];
-                $productId = [];
-                $product = $productRepository->find($orderItem->product_id);
-                $productImage[$product->id] = ProductImage::getProductBaseImage($product);  
-                $productId[] = $orderItem->product_id;
-                $productImageCounts = $productImageRepository->findWhereIn('product_id',$productId)->count();              
-            }
-
-            $shipmentItems = app('Webkul\Sales\Repositories\ShipmentItemRepository');
-            $shippedOrderItems = $shipmentItems->findWhereIn('order_item_id', $itemsId);
-
-            foreach ($shippedOrderItems as $shippedOrderItem) {
-                $shippedOrderItemId[] = $shippedOrderItem->order_item_id;
-            }
-
-            $invoiceItems = app('Webkul\Sales\Repositories\InvoiceItemRepository');
-            $invoiceCreatedItems = $invoiceItems->findWhereIn('order_item_id', $itemsId);
-
-            foreach ($invoiceCreatedItems as $invoiceCreatedItem) {
-                $invoiceCreatedItemId[] = $invoiceCreatedItem->order_item_id;
-            }
-
-            if ($enableRMAForPendingOrder) {
-                $resolutions = ['Cancel Items'];
-            } else {
-                $resolutions = [];
-            }
-
-            $orderStatus = ['Not Delivered'];
-
-            if (isset($shippedOrderItemId)) {
-                $resolutions = ['Cancel Items','Exchange'];
-                
-                if ( count($shippedOrderItemId) == count($itemsId)) {
-                $orderStatus = ['Not Delivered','Delivered'];
-                }
-            }
-
-            if (isset($invoiceCreatedItemId)) {
-                $resolutions = ['Return','Exchange'];
-            }
-
-            if (isset($invoiceCreatedItemId) && isset($shippedOrderItemId)) {
-                $resolutions = ['Return','Exchange'];
-            }
-        } else {
-            $resolutions = [$resolutions];
-        }
-        return [
-            'search_results' => $orderItems,
-            'resolutions'    => $resolutions,
-            'productImage'   => $productImage,
-            'productImageCounts' => $productImageCounts
-        ];       
     }
 }
