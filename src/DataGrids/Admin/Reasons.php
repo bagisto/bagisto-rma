@@ -83,13 +83,13 @@ class Reasons extends DataGrid
             'searchable' => true,
             'sortable' => true,
             'filterable' => true,
-            'wrapper' => function($status) {
-                if ($status->status == '0') {
-                    echo "Disabled";
-                } else {
-                    echo "Enabled";
+            'closure'    => function ($value) {
+                if ($value->status) {
+                    return '<span class="badge badge-md label-active">' . trans('rma::app.admin.action-name.options.active') . '</span>';
                 }
-            }
+
+                return '<span class="badge badge-md label-cancelled">' . trans('rma::app.admin.action-name.options.inactive') . '</span>';
+            },
         ]);
 
         $this->addColumn([
@@ -158,11 +158,11 @@ class Reasons extends DataGrid
                 'url'     => route('admin.rma.reason.massupdate'),
                 'options' => [
                     [
-                        'label'  => trans('rma::app.admin.action-name.options.enable'),
+                        'label'  => trans('rma::app.admin.action-name.options.active'),
                         'value' => 1,
                     ],
                     [
-                        'label'  => trans('rma::app.admin.action-name.options.disable'),
+                        'label'  => trans('rma::app.admin.action-name.options.inactive'),
                         'value' => 0,
                     ],
                 ],

@@ -26,9 +26,13 @@
             </div>
 
             {!! view_render_event('customer.account.rma.list.before') !!}
+
             <div class="account-items-list">
+
             <x-shop::datagrid src="{{ route('rma.customers.allrma') }}"></x-shop::datagrid>
+            
             </div>
+
             {!! view_render_event('customer.account.rma.list.after') !!}
 
         </div>

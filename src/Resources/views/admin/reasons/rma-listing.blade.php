@@ -1,6 +1,6 @@
 <x-admin::layouts>
     <x-slot name="title">
-        @lang('rma::app.admin.title.reason')
+        @lang('rma::app.admin.title.reason-title')
     </x-slot>
 
     <div class="flex gap-16 justify-between items-center max-sm:flex-wrap">

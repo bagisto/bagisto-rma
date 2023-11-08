@@ -87,8 +87,8 @@
                  <option value="">
                     @lang('rma::app.admin.create-reasons.status')
                 </option>
-                <option value="1">Enabled</option>
-                <option value="0">Disabled</option>
+                <option value="1">Active</option>
+                <option value="0">InActive</option>
                 
             </x-admin::form.control-group.control>
             </x-admin::form.control-group>

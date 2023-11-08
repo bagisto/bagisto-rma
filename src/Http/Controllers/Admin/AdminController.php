@@ -376,12 +376,10 @@ class AdminController extends Controller
         foreach ($reasonIds as $reasonId) {
             
             $rmaReason = $this->rmaReasonRepository->find($reasonId);
-            
-            // if ($rmaReason->status) {
+
                 $rmaReason->update([
                     'status' => $data['value']
                 ]);
-            // }
         }
 
         return new JsonResponse([
@@ -410,14 +408,14 @@ class AdminController extends Controller
                 }
             }
 
-            if (! $suppressFlash)
-            return new JsonResponse([
-                'message' => trans('rma::app.response.mass-delete-success'),
-            ]);
-            else
-                session()->flash('error', trans( 'rma::app.response.attribute-reason-error', ['name' => 'Reason']));
+        if (! $suppressFlash)
 
-            return redirect()->back();
+            return new JsonResponse([
+                
+                'message' => trans('rma::app.response.mass-delete-success'),
+
+            ]);
+
         } else {
             session()->flash('error', trans( 'rma::app.response.attribute-reason-error', ['name' => 'Reason']));
 

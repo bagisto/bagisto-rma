@@ -255,8 +255,8 @@ return [
             'delete' => 'Delete',
             'update' => 'Update',
             'options' => [
-                'enable' => 'Enable',
-                'disable' => 'Disable',
+                'active' => 'Active',
+                'inactive' => 'InActive',
             ],
         ],
 

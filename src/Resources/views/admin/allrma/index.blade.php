@@ -4,9 +4,9 @@
     </x-slot>
 
     <div class="flex gap-16 justify-between items-center max-sm:flex-wrap">
-        <p class="text-20 text-gray-800 dark:text-white font-bold">
+        <h1 class="text-20 text-gray-800 dark:text-white font-bold">
             @lang('rma::app.admin.rma-tab.heading')
-        </p>  
+        </h1>  
             </div>
 
             {!! view_render_event('bagisto.admin.rma.list.before') !!}
