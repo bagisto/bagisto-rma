@@ -11,7 +11,7 @@
 </div>
 
 @pushOnce('scripts')
-    <script type="text/x-template" id="rma-request-template">
+<script type="text/x-template" id="rma-request-template">
         <div>
             <x-shop::form
                 :action="route('rma.customers.store')"
@@ -44,27 +44,19 @@
                             type="text"
                             class="control"
                             v-model="searchOrderValue"
-                            placeholder="trans('rma::app.shop.customer-rma-create.search_order')"
+                           
                         />
                     </div>
 
-                    <div class="control-group">
+                    <!-- <div class="control-group">
                         <button
                             class="btn btn-md btn-primary"
                         >
                             @lang('rma::app.datagrid.apply')
                         </button>
-                    </div>
+                    </div> -->
 
-                    <div class="sale-title">
-                        <!-- <div class="flex gap-[20px] justify-between mb-[16px]">
-                                <div class="flex flex-col gap-[8px]">
-                                    <p class="text-[16px] text-gray-800 dark:text-white font-semibold">
-                                        @lang('rma::app.shop.customer-rma-create.orders')
-                                    </p>
-                                </div>
-                            </div>
-                        </div> -->
+                    <!-- <div class="flex gap-[16px] justify-between items-center max-sm:flex-wrap"> -->
 
                         <div class="p-[16px]">
                             <x-shop::form.control-group class="mb-[10px]">
@@ -77,10 +69,15 @@
                                     name="order_id"
                                     id="orderItem"
                                     rules="required"
-                                    :value="null"
-                                    :label="trans('rma::app.shop.default-option.select-order')"
-                                    :placeholder="trans('rma::app.shop.default-option.select-order')"
+                                    @change="getSellersName($event)"
+                                    :label="trans('rma::app.shop.validation.order_id')"
+                                    :placeholder="trans('rma::app.shop.validation.order_id')"
                                 >
+                                <option
+                                    :value="null"
+                                >
+                                @lang('rma::app.shop.default-option.select-order')
+                                </option>
                                 <option
                                     v-for="(orderItem, index) in orderItems"
                                     :value="orderItem.id"
@@ -96,21 +93,27 @@
                                 </x-shop::form.control-group.error>
                             </x-shop::form.control-group>
 
+                            
                             <x-shop::form.control-group class="mb-[10px]">
-                                <x-shop::form.control-group.label class="required">
+                                <x-shop::form.control-group.label  class="required">
                                     @lang('rma::app.shop.customer-rma-create.resolution')
                                 </x-shop::form.control-group.label>
                         
                                 <x-shop::form.control-group.control
+                                    type="select"
                                     id="resolution"
                                     name="resolution"
                                     rules="required"
+                                    @change="getOrderByResolution()"
                                     :label="trans('rma::app.shop.validation.resolution')"
-                                    :placeholder="trans('rma::app.shop.validation.resolution')"
                                 >
+                                @lang('rma::app.shop.validation.resolution')
                                 <option
                                     :value="null"
                                 >
+                                @lang('rma::app.shop.default-option.select-resolution')
+
+                                </option>
                                 <option
                                     v-for="selectResolutionByOrder in resolutionSelect"
                                     :value="selectResolutionByOrder"
@@ -131,35 +134,225 @@
                                 </x-shop::form.control-group.label>
                         
                                 <x-shop::form.control-group.control
+                                    type="select"
                                     id="checkOrderStatus"
                                     name="order_status"
                                     rules="required"
                                     for="order_status"
-                                    :label="trans('rma::app.shop.customer-rma-create.order_status')"
-                                    :placeholder="trans('rma::app.shop.customer-rma-create.order_status')"
+                                    @change="checkOrderStatus($event)"
+                                    :label="trans('rma::app.shop.validation.order_status')"
+                                    :placeholder="trans('rma::app.shop.validation.order_status')"
                                 >
                                 <option
-                                v-for="orderStatusOptions in orderStatus"
-                                :value="orderStatusOptions"
+                                    v-for="orderStatusOptions in orderStatus"
+                                    :value="orderStatusOptions"
                                 >
                                 @{{ orderStatusOptions }}
-                                <option
-                                    v-if="orderStatus == 0"
-                                >
-                                <p>@lang('rma::app.shop.customer-rma-create.not_allowed')</p>
-
                                 </option>
                                 </x-shop::form.control-group.control>
 
                                 <x-shop::form.control-group.error
+                                    v-if="orderStatus == 0"
                                     control-name="order_status"
                                 >
+                                <p>@lang('rma::app.shop.customer-rma-create.not_allowed')</p>
                                 </x-shop::form.control-group.error>
                             </x-shop::form.control-group>
                         </div>
-                    </div>
+                    <!-- </div> -->
                 </div>
-                    
+                 <br><br>  
+                <div class="flex justify-between items-center">
+                    <p class="text-[20px] text-gray-800 dark:text-white font-bold">
+                        @lang('rma::app.shop.customer-rma-create.item-ordered')
+                    </p>
+                </div>
+                <!-- <div class="section-content">
+                        <div class="table"> -->
+                        <div class="mt-[15px] overflow-x-auto">
+                            <x-admin::table>
+                            <draggable
+                                    tag="tbody"
+                                    ghost-class="draggable-ghost"
+            
+                                >
+                                <x-admin::table.thead class="text-[14px] font-medium dark:bg-gray-800">
+                                    <x-admin::table.thead.tr>
+                                        <x-admin::table.th class="!p-0"></x-admin::table.th>
+                                        <x-admin::table.th>
+
+                                            <x-admin::form.control-group.control
+                                                type="checkbox"
+                                                v-model="isCheckAll"
+                                                id="checkbox"
+                                                @click="checkAll()"
+                                            >
+                                            </x-admin::form.control-group.control>
+                                        </x-admin::table.th>
+
+                                        <x-admin::table.th>
+                                            @lang('rma::app.shop.customer-rma-create.image')
+                                        </x-admin::table.th>
+
+                                        <x-admin::table.th>
+                                            @lang('rma::app.shop.customer-rma-create.product')
+                                        </x-admin::table.th>
+
+                                        <x-admin::table.th>
+                                            @lang('rma::app.shop.customer-rma-create.sku')
+                                        </x-admin::table.th>
+
+                                        <x-admin::table.th>
+                                            @lang('rma::app.shop.customer-rma-create.price')
+                                        </x-admin::table.th>
+
+                                        <x-admin::table.th>
+                                            @lang('rma::app.shop.customer-rma-create.quantity')
+                                        </x-admin::table.th>
+
+                                        <x-admin::table.th>
+                                            @lang('rma::app.shop.customer-rma-create.reason')
+                                        </x-admin::table.th>
+                                    </x-admin::table.thead.tr>
+                                </x-admin::table.thead>
+
+                                <x-admin::table.thead.tr  v-for="(orderData,index) in sellerOrderedData" class="hover:bg-gray-50 dark:hover:bg-gray-950">
+                                    
+                                    <x-admin::table.td>
+
+                                        <input
+                                            type="checkbox"
+                                            id="checkboxSingle"
+                                            name="order_item_id[]"
+                                            v-bind:value="orderData.id"
+                                            v-model='selected'
+                                            @change='updateCheckall(); getId($event)'
+                                        />
+                                        <x-admin::form.control-group.label
+                                            type="checkbox-view"
+                                            name="checkbox"
+                                        >
+                                        </x-admin::form.control-group.label>
+                                    </x-admin::table.td>
+
+                                    <x-admin::table.td v-if="productImageCounts > 0">
+                                        <!-- Image -->
+                                        <div>
+                                            <img 
+                                                src="productImage[orderData.product_id]['medium_image_url']"
+                                            />
+
+                                            <img 
+                                                src="{{  url('vendor/webkul/ui/assets/images/product/small-product-placeholder.png') }}"
+                                            /> 
+                                        </div>
+                                    </x-admin::table.td>
+
+                                    <x-admin::table.td>
+                                    <span>
+                                        @{{ orderData.type == 'configurable' ? child[orderData.id] ? child[orderData.id].name : orderData.name : orderData.name }}
+                                    </span>
+                                    <li 
+                                        v-if="html.length != 0" 
+                                        :v-html="html[orderData.id]"
+                                    >
+
+                                        @{{ html[orderData.id] }}
+
+                                    </li>
+                                    </x-admin::table.td>
+
+                                    <x-admin::table.td>
+                                        @{{  orderData.type == 'configurable' ? child[orderData.id] ? child[orderData.id].sku : orderData.sku : orderData.sku }}
+                                    </x-admin::table.td>
+
+                                    <x-admin::table.td>
+                                        @{{ orderData.price }}
+                                    </x-admin::table.td>
+
+                                    <x-admin::table.td>
+                                        <x-admin::form.control-group class="mb-[10px]">
+                                            <x-admin::form.control-group.label class="required">
+                                                @lang('rma::app.shop.default-option.select-quantity')
+                                            </x-admin::form.control-group.label>
+                                    
+                                            <x-admin::form.control-group.control
+                                                type="select"
+                                                id="quantity"
+                                                name="quantity"
+                                                rules="required"
+                                                :label="trans('rma::app.shop.default-option.select-quantity')"
+                                                :placeholder="trans('rma::app.shop.default-option.select-quantity')"
+                                            >
+                                            <option
+                                                :value="null"
+                                            >
+                                            <p>@lang('rma::app.shop.default-option.select-quantity')</p>
+                                            </option>
+
+                                            <option
+                                                v-for="qtyLength in quantity[orderData.id]"
+                                                :value="qtyLength"
+                                            >
+                                            @{{ qtyLength }}
+
+                                            </option>
+                                            </x-admin::form.control-group.control>
+
+                                            <x-admin::form.control-group.error
+                                                control-name="('quantity[' + sellerOrderedData[index].id + ']')"
+                                            >
+                                            </x-admin::form.control-group.error>
+                                        </x-admin::form.control-group>
+                                    </x-admin::table.td>
+                            
+                                    <x-admin::table.td>
+                                        <x-admin::form.control-group class="mb-[10px]">
+                                            <x-admin::form.control-group.label class="required">
+                                                @lang('rma::app.shop.default-option.select-reason')
+                                            </x-admin::form.control-group.label>
+                                    
+                                            <x-admin::form.control-group.control
+                                                type="select"
+                                                id="rma_reason_id"
+                                                name="rma_reason_id"
+                                                v-validate="validate[sellerOrderedData[index].id] || is_required ? 'required' : ''"
+                                                rules="required"
+                                                :label="trans('rma::app.shop.default-option.select-reason')"
+                                                :placeholder="trans('rma::app.shop.default-option.select-reason')"
+                                            >
+                                            <option
+                                                :value="null"
+                                            >
+                                            <p>@lang('rma::app.shop.default-option.select-reason')</p>
+                                            </option>
+
+                                            @foreach($reasons as $reasons_value)
+                                                <option value="{{ $reasons_value->id }}">
+                                                    {{ $reasons_value->title }}
+                                                </option>
+                                            @endforeach
+
+                                            </x-admin::form.control-group.control>
+
+                                            <x-admin::form.control-group.error
+                                                control-name="rma_reason_id"
+                                            >
+                                            </x-admin::form.control-group.error>
+                                        </x-admin::form.control-group>
+                                    </x-admin::table.td>
+                                </x-admin::table.thead.tr>
+                                </draggable>
+                            </x-admin::table>
+                            <div v-if="seller == true && resolutionShow == true">
+                                <div v-if="sellerOrderedData.length == 0" style="text-align: center;">
+                                    <p>@lang('rma::app.shop.customer-rma-create.rma-not-avilable-quotes')</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- </div>
+                    </div> -->
+                    <br><br>
                 <div class="sale-container">
                     <div>
                     <div class="sale-section">
@@ -201,7 +394,7 @@
                         >
                         </x-shop::form.control-group.control>
 
-                        <div class="sale-section">
+                        <div class="flex gap-x-[10px] items-center">
                             <div class="p-[16px]">
                             <x-shop::form.control-group class="mb-[10px]">
                                 <x-shop::form.control-group.label class="required">
@@ -241,6 +434,7 @@
             data: function(data) {
                 return {
                     orderItems: @json($orderItems),
+                    
                     sellerOrderedData : [],
                     seller: false,
                     data: [],
@@ -275,6 +469,7 @@
             },
 
             mounted() {
+                // console.log(this.orderItems);
                 if(this.orderItems) {
                     this.getSellersName(this.orderItems[0].id);
                 }
@@ -360,7 +555,7 @@
 
                         immediate: true,
 
-                        this.$axios.get('{{ route('rma.customers.getproduct') }}+/{orderId}')
+                        this.$axios.get(`{{ route('rma.customers.getproduct') }}/${orderId}`)
                         .then(response => {
                             this_this.data = response.data;
 
@@ -390,6 +585,8 @@
 
                 getOrderByResolution: function() {
 
+                    let this_this = this;
+
                     var orderId = this.orderId;
 
                     var resolution = event.target.value;
@@ -402,13 +599,12 @@
                         this_this.sellerOrderedData = this_this.blankData;
                     }
 
-                    this_this = this;
 
                     let currentObj = this_this;
 
                     immediate: true,
 
-                    this.$axios.get("{{ route('rma.customers.getproduct') }}+/{orderId}+/${resolution}")
+                    this.$axios.get(`{{ route('rma.customers.getproduct') }}/${orderId}/${resolution}`)
                         .then(response => {
 
                             this_this.sellerOrderedData = response.data.orderItems;
@@ -493,9 +689,9 @@
                         this.$axios.post("{{ route('rma.customers.getproductbyseller') }}",
 
                         {marketplace_seller_id: marketplace_seller_id, order_id: order_id,resolution:this_this.resolutionSelect})
-
+                        
                         .then(response => {
-
+                        
                             this_this.orderStatus = response.data.orderStatus;
 
                             this_this.resolutionSelect= response.data.resolutionSelect;
@@ -542,7 +738,7 @@
                 },
 
                 searchOrders: function (event) {
-                    this.$axios.get(`{{ route('rma.customer.search.order') }}+/${this.searchOrderValue != '' ? this.searchOrderValue : 'all'}`)
+                    this.$axios.get(`{{ route('rma.customer.search.order') }}/${this.searchOrderValue != '' ? this.searchOrderValue : 'all'}`)
                         .then(response => {
                             if (response.data.length) {
                                 this.orderItems = response.data; 
@@ -559,24 +755,23 @@
             }, 
         });
 
-        // function  formValidation() {
-        //     var allCheckbox = document.getElementById('checkbox').checked;
-        //     var checkboxes = document.querySelectorAll('#checkboxSingle:checked'), values = [];
-        //     Array.prototype.forEach.call(checkboxes, function(el) {
-        //         values.push(el.value);
-        //     });
-        //     if (values.length > 0) {
-        //         singleCheckBox = true;
-        //     } else {
-        //         singleCheckBox = false;
-        //     }
-        //     if (allCheckbox == false && singleCheckBox == false) {
-        //         alert('Please select item');
-        //         event.preventDefault();
-        //         return false;
-        //     }
-        // }
-
+        function  formValidation() {
+            var allCheckbox = document.getElementById('checkbox').checked;
+            var checkboxes = document.querySelectorAll('#checkboxSingle:checked'), values = [];
+            Array.prototype.forEach.call(checkboxes, function(el) {
+                values.push(el.value);
+            });
+            if (values.length > 0) {
+                singleCheckBox = true;
+            } else {
+                singleCheckBox = false;
+            }
+            if (allCheckbox == false && singleCheckBox == false) {
+                alert('Please select item');
+                event.preventDefault();
+                return false;
+            }
+        }
     </script>
 @endpushOnce
 </x-shop::layouts.account>
