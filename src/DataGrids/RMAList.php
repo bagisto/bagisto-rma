@@ -144,34 +144,34 @@ class RMAList extends DataGrid
             'sortable' => true,
             'searchable' => false,
             'filterable' => false,
-            'wrapper' => function($rma) {
+            'closure'    => function ($rma) {
                 $rmaStatus = $rma->rma_status;
 
                 if ($rmaStatus == NULL || $rmaStatus == 'Pending') {
                     if ($rma->status != 1) {
-                        echo "Pending";
+                        return '<p class="label-pending">' . trans('rma::app.status.status-name.pending') . '</p>';
                     } else {
-                        echo "Solved";
+                        return '<p class="label-solved">' . trans('rma::app.status.status-name.solved') . '</p>';
                     }
                 } else if($rmaStatus == 'Received Package') {
                     if ($rma->status != 1) {
-                        echo 'Received Package';
+                        return '<p class="label-received_package">' . trans('rma::app.status.status-name.received_package') . '</p>';
                     } else {
-                        echo "Solved";
+                        return '<p class="label-solved">' . trans('rma::app.status.status-name.solved') . '</p>';
                     }
                 } else if ($rmaStatus == 'Declined') {
-                    echo $rmaStatus;
+                    return '<p class="label-cancelled">' . trans('rma::app.status.status-name.declined') . '</p>';
                 } else if($rmaStatus == 'Item Canceled') {
-                    echo "Item Canceled";
+                    return '<p class="label-cancelled">' . trans('rma::app.status.status-name.item_canceled') . '</p>';
                 } else if ($rmaStatus == 'Not Receive Package yet') {
-                    echo 'Not Receive Package yet';
+                    return '<p class="label-processing">' . trans('rma::app.status.status-name.not_received_package_yet') . '</p>';
                 } else if ($rmaStatus == 'Dispatched Package') {
-                    echo 'Dispatched Package';
+                    return '<p class="label-dispatched_package">' . trans('rma::app.status.status-name.dispatched_package') . '</p>';
                 } else if($rmaStatus == 'Accept') {
                     if ($rma->status != 1) {
-                        echo 'Accept';
+                        return '<p class="label-accept">' . trans('rma::app.status.status-name.accept') . '</p>';
                     } else {
-                        echo "Solved";
+                        return '<p class="label-completed">' . trans('rma::app.status.status-name.solved') . '</p>';
                     }
                 }
             }
@@ -191,7 +191,7 @@ class RMAList extends DataGrid
      */
     public function prepareActions()
     {
-    if (bouncer()->hasPermission('admin.rma.index')) {
+        if (bouncer()->hasPermission('admin.rma.index')) {
         $routeName = request()->route()->getName();
 
         if ($routeName == 'admin.rma.index' && auth()->guard('admin')->user()) {
@@ -205,12 +205,12 @@ class RMAList extends DataGrid
         $this->addAction([
             'title' => trans('rma::app.shop.customer-rma-index.view'),
             'type' => 'View',
-            'icon' => 'icon-eye',
+            'icon' => 'icon-view',
             'method' => 'GET',
             'url'    => function ($row) use ($route) {
                 return route($route, $row->id);
             },
         ]);
-        }
+    }
     }
 }

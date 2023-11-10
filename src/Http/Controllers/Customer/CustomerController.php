@@ -645,7 +645,7 @@ class CustomerController extends Controller
                 ]);
             }
         }
-        dd($lastInsertId);
+        
         // insert orderItems
         foreach ($items as $itemId) {
             $orderItemRMA = [

@@ -1,35 +1,17 @@
-@extends('admin::layouts.master')
+<x-admin::layouts>
 
-@section('page_title')
-    {{ __('rma::app.admin.rma-tab-name.title', ['id' => $rmaData->id]) }}
-@stop
+<x-slot:title>
+        @lang('rma::app.admin.rma-tab-name.title', ['id' => $rmaData->id])
+    </x-slot:title>
 
-@section('css')
-    <style>
-        .tagbutton{
-            border-radius: 44px;
-            padding: 4px 9px 4px 10px;
-            width: fit-content;
-            height: auto;
-            color: white;
-            font-size: 16px;
-            display: inline;
-        }
-        .title {
-            vertical-align: top;
-        }
 
-    </style>
-@stop
-
-@section('content-wrapper')
     <div class="content full-page">
         <div class="page-header">
             <div class="page-title">
                 <h1>
                     <i class="icon angle-left-icon back-link"
                         onclick="history.length > 1 ? history.go(-1) : window.location = '{{ url('/admin/rma/requests') }}';"></i>
-                    {{ __('rma::app.shop.view-admin-rma.rma') }} {{ '#'.$rmaData['id'] }}
+                    @lang('rma::app.shop.view-admin-rma.rma') {{ '#'.$rmaData['id'] }}
                 </h1>
             </div>
         </div>
@@ -202,6 +184,7 @@
                                                     <form method="POST" action="{{ route('rma.admin.save.status') }}">
                                                         @csrf()
                                                         <input type="hidden" name="rma_id" value="{{ $rmaData['id'] }}">
+                                                       
                                                         <div class="control-group">
                                                             <select class="control" id="orderItem" name="rma_status">
                                                                 @if($createdInvoiceItems != 0)
@@ -230,9 +213,14 @@
                                                             </select>
                                                         </div>
 
-                                                        <button type="submit" class="btn btn-lg btn-primary" style="margin-top: 7px;">
-                                                            {{ __('rma::app.shop.view-admin-rma.save-btn') }}
-                                                        </button>
+                                                        <div class="account-action">
+                                                            <button
+                                                                type="submit"
+                                                                class="primary-button"
+                                                            >
+                                                                @lang('rma::app.shop.view-admin-rma.save-btn')
+                                                            </button>
+                                                        </div>
                                                     </form>
                                                 </div>
                                             </div>
@@ -246,11 +234,11 @@
                                         && $rmaData['status'] == 1 || $rmaData['status'] == 1
                                         && $rmaData['rma_status'] != 'Declined'
                                     )
-                                        <div class="sale-section">
-                                            <div class="sale-title">
-                                                <div class="secton-title">
-                                                    {{ __('rma::app.shop.view-admin-rma.change-rma-status') }}
-                                                </div><br>
+                                        <div class="flex justify-between items-center">
+                                                <h2 class="text-[26px] font-medium">
+                                                    @lang('rma::app.shop.view-admin-rma.change-rma-status')
+                                                </h2>
+                                                </div><br><br>
 
                                                 <div class="section-content">
                                                     <form method="POST" action="{{ route('rma.admin.save.status') }}">
@@ -298,12 +286,14 @@
 
                                                             </select>
 
-                                                            <button
-                                                                type="submit"
-                                                                class="btn btn-lg btn-primary"
-                                                                style="display: block;margin-top: 10px;">
-                                                                {{ __('rma::app.shop.view-admin-rma.save-btn') }}
-                                                            </button>
+                                                            <div class="account-action">
+                                                                <button
+                                                                    type="submit"
+                                                                    class="primary-button"
+                                                                >
+                                                                    @lang('rma::app.shop.view-admin-rma.save-btn')
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -345,26 +335,31 @@
                             <div slot="body">
                                 <div class="sale-section">
                                     <div class="row">
-                                        <div class="table">
-                                            <table>
-                                                <thead>
+                                        <div class="mt-[15px] overflow-x-auto">
+                                            <x-admin::table>
+                                               
+                                                <x-admin::table.thead class="text-[14px] font-medium dark:bg-gray-800">
                                                     @php($lang = Lang::get('rma::app.shop.table-heading'))
-                                                    <tr>
+
+                                                    <x-admin::table.thead.tr>
                                                         @foreach($lang as $languageFile)
-                                                            <th>{{ $languageFile }}</th>
+                                                        <x-admin::table.th>
+                                                            {{ $languageFile }}
+                                                        </x-admin::table.th>
                                                         @endforeach
-                                                    </tr>
-                                                </thead>
+                                                    </x-admin::table.thead.tr>
+                                                </x-admin::table.thead>
 
                                                 @foreach($productDetails as $key => $prodDetail)
                                                     @foreach($prodDetail->getOrderItem as $orderItem)
-                                                        <tr style="border-bottom: 0px solid #d3d3d3;">
-                                                            <td>
+                                                    <x-admin::table.thead.tr class="hover:bg-gray-50 dark:hover:bg-gray-950">
+                                                            <x-admin::table.td>
                                                                 {!! $orderItem['name'] !!}
 
                                                                 {!! app('Webkul\RMA\Helpers\Helper')->getOptionDetailHtml($orderItem->additional['attributes'] ?? []) !!}
-                                                            </td>
-                                                            <td>
+                                                            </x-admin::table.td>
+                                                    
+                                                            <x-admin::table.td>
                                                                 @if($orderItem['type'] == 'configurable')
 
                                                                     @foreach ($skus as $k => $sku)
@@ -375,15 +370,24 @@
                                                                 @else
                                                                     {!! $orderItem['sku'] !!}
                                                                 @endif
-                                                            </td>
-                                                            <td>{!! $orderItem['price'] !!}</td>
-                                                            <td>{!! $prodDetail['quantity'] !!}</td>
-                                                            <td>{!! wordwrap($prodDetail->getReasons->title, 15, "<br>\n") !!}</td>
-                                                        </tr>
+                                                            </x-admin::table.td>
+
+                                                            <x-admin::table.td>
+                                                                {!! $orderItem['price'] !!}
+                                                            </x-admin::table.td>
+
+                                                            <x-admin::table.td>
+                                                                {!! $prodDetail['quantity'] !!}
+                                                            </x-admin::table.td>
+
+                                                            <x-admin::table.td>
+                                                                {!! wordwrap($prodDetail->getReasons->title, 15, "<br>\n") !!}
+                                                            </x-admin::table.td>
+                                                    </x-admin::table.thead.tr>    
                                                     @endforeach
                                                 @endforeach
                                                 </tbody>
-                                            </table>
+                                            </x-admin::table>
                                         </div>
                                     </div>
                                 </div>
@@ -392,7 +396,7 @@
                     </div>
 
                     <div class="sale-container">
-                        <accordian :title="'{{ __('rma::app.admin.rma-tab-name.tab-content.conversation') }} ({{ count($adminMessages) }})'" :active="true">
+                        <accordian :title="'@lang('rma::app.admin.rma-tab-name.tab-content.conversation') ({{ count($adminMessages) }})'" :active="true">
                             <div slot="body">
                                 <div class="sale-section">
                                     <div class="">
@@ -400,12 +404,12 @@
                                    
                                         @foreach($adminMessages as $key => $message)
                                             <span class="title">
-                                                {{ __('rma::app.shop.conversation-texts.by') }}
+                                                @lang('rma::app.shop.conversation-texts.by')
                                                     <strong>
                                                         @if($message->is_admin == 1)
-                                                            {{ __('rma::app.shop.view-customer-rma.you') }}
+                                                            @lang('rma::app.shop.view-customer-rma.you')
                                                         @else
-                                                            {{ __('rma::app.shop.conversation-texts.customer') }} {{ $orderDetails->customer_first_name }} {{ $orderDetails->customer_last_name }}
+                                                            ('rma::app.shop.conversation-texts.customer') {{ $orderDetails->customer_first_name }} {{ $orderDetails->customer_last_name }}
                                                         @endif
                                                     </strong>, {{ __('rma::app.shop.conversation-texts.on') }}
                                                 {{ date("F j, Y, h:i:s A" ,strtotime($message['created_at'])) }}
@@ -424,29 +428,60 @@
                                     <div class="section-content">
                                         <div class="secton-title">
                                             <span class="title">
-                                                {{ __('rma::app.shop.view-admin-rma.send-message') }}
+                                                @lang('rma::app.shop.view-admin-rma.send-message')
                                             </span>
-                                        </div>
-
-                                            <form method="POST" @submit.prevent="onSubmit" action="{{ route('admin.rma.sendmessage') }}">
+                                            </div>
+                                            <x-shop::form method="POST" @submit.prevent="onSubmit" action="{{ route('admin.rma.sendmessage') }}">
                                                 @csrf()
 
-                                                <input type="hidden" name="order_id" value="{{ $rmaData['order_id'] }}">
-                                                <input type="hidden" name="is_admin" value="1">
+                                                <x-shop::form.control-group.control
+                                                    type="hidden"
+                                                    name="order_id"
+                                                    value="{{ $rmaData['order_id'] }}"
+                                                >
+                                                </x-shop::form.control-group.control>
+
+                                                <x-shop::form.control-group.control
+                                                    type="hidden"
+                                                    name="is_admin"
+                                                    value="1"
+                                                >
+                                                </x-shop::form.control-group.control>
+
                                                 <input type="hidden" name="rma_id" value="{{ $rmaData['id'] }}">
 
-                                                <div class="control-group" :class="[errors.has('message') ? 'has-error' : '']">
-                                                    <label class="required">
-                                                        {{ __('rma::app.shop.view-admin-rma.enter-message') }}
-                                                    </label>
-                                                    <textarea  v-validate="'required'" class="control required" id="message" name="message" data-vv-as="&quot;{{ __('rma::app.shop.validation.message') }}&quot;"></textarea>
-                                                    <span class="control-error" v-if="errors.has('message')">@{{ errors.first('message') }}</span>
+                                                <div class="flex gap-x-[10px] items-center">
+                                                    <div class="p-[16px]">
+                                                    <x-shop::form.control-group class="mb-[10px]">
+                                                        <x-shop::form.control-group.label class="required">
+                                                            @lang('rma::app.shop.view-admin-rma.enter-message')
+                                                        </x-shop::form.control-group.label>
+                                                
+                                                        <x-admin::form.control-group.control
+                                                            type="textarea"
+                                                            name="message"
+                                                            id="message"
+                                                            rules="required"
+                                                            :label="trans('rma::app.shop.view-admin-rma.enter-message')"
+                                                            :placeholder="trans('rma::app.shop.view-admin-rma.enter-message')"
+                                                           
+                                                            >
+                                                        </x-admin::form.control-group.control>
+                                                        <x-shop::form.control-group.error
+                                                            control-name="message"
+                                                        >
+                                                        </x-shop::form.control-group.error>
                                                         <br>
-                                                    <button type="submit" class="btn btn-lg btn-primary" style="margin-top: 7px;">
-                                                        {{ __('rma::app.shop.view-admin-rma.send-message-btn') }}
-                                                    </button>
+                                                        <button
+                                                            type="submit"
+                                                            class="primary-button"
+                                                        >
+                                                        @lang('rma::app.shop.view-admin-rma.send-message-btn')
+                                                        </button>
+                                                    </x-shop::form.control-group>
+                                                    </div>
                                                 </div>
-                                            </form>
+                                            </x-shop::form>
 
                                         </div>
                                     </div>
@@ -457,4 +492,4 @@
             </tabs>
         </div>
     </div>
-@stop
+</x-admin::layouts>

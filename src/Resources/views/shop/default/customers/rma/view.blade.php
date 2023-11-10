@@ -1,71 +1,103 @@
-<x-shop::layouts.account>
+@extends('shop::layouts.master')
 
-{{-- Title of the page --}}
-<x-slot:title>
-    @lang('rma::app.shop.customer.title')
-</x-slot>
+@section('page_title')
+    {{ __('rma::app.shop.customer.title') }}
+@endsection
 
-<div class="account-layout" @if(!auth()->guard('customer')->user())@endif>
-</div>
+@push('css')
+    <style>
+        .tagbutton {
+            border-radius: 44px;
+            padding: 4px 9px 4px 10px;
+            width: fit-content;
+            height: auto;
+            color: white;
+            font-size: 16px;
+            display: inline;
+        }
+        .title {
+            font-weight: 600;
+        }
+        .rma-image {
+            width: 200px;
+            height: 200px;
+        }
+    </style>
+@endpush
 
-@pushOnce('scripts')
+@php
+    $show = true;
 
-<script type="text/x-template" id="rma-request-template">
+    if (
+        is_null($rmaData['rma_status'])
+        || $rmaData['rma_status'] == 'Received Package'
+    ) {
+        if ($rmaData['status'] == 1) {
+            $show = false;
+        }
+    } else if (
+        $rmaData['rma_status'] == 'Item Canceled'
+        || $rmaData['rma_status'] == 'Declined'
+    ) {
+        $show = false;
+    }
+@endphp
 
-    <div>
-            <x-shop::form
-                :action="route('rma.customers.store')"
-                method="POST"
-                enctype="multipart/form-data"
-            >
+@section('content-wrapper')
+    <div class="account-content">
+        @if (auth()->guard('customer')->user())
+            @include('shop::customers.account.partials.sidemenu')
+        @endif
 
-            <div class="flex justify-between items-center">
+        <div class="account-layout">
+
+            <div class="account-head">
                 <span class="back-icon">
-                    </span>
-                        <h2 class="text-[26px] font-medium">
-                            @lang('rma::app.shop.view-customer-rma.rma') {{ '#'.$rmaData['id'] }}
-                        </h2>
-                </div><br>
-
-                <div class="sale-section">
-                    <div class="section-content">
-                        <div class="row">
-                            <div class="flex justify-between items-center">
-                                <h2 class="text-[26px] font-medium">
-                                    @lang('rma::app.shop.view-customer-rma-content.request-on')
-                                </h2>
+                </span>
+                <span class="account-heading">
+                    {{ __('rma::app.shop.view-customer-rma.rma') }} {{ '#'.$rmaData['id'] }}
+                </span>
+            </div><br>
+            <div class="horizontal-rule"></div>
+            <div class="sale-container">
+                <div>
+                    <div class="sale-section">
+                        <div class="section-content">
+                            <div class="row">
+                                <span class="title">
+                                    {{ __('rma::app.shop.view-customer-rma-content.request-on') }}
+                                </span>
+                                <span class="value">
+                                    {{ date("F j, Y, h:i:s A" ,strtotime($rmaData['created_at'])) }}
+                                </span>
                             </div>
-                            <span class="value">
-                                {{ date("F j, Y, h:i:s A" ,strtotime($rmaData['created_at'])) }}
-                            </span>
-                        </div>
-                        <div class="row">
-                            <span class="title">
-                                @lang('rma::app.shop.view-customer-rma.order-id')
-                            </span>
-                            <span class="value">
-                                @if (!session()->get('guestEmailId'))
-                                    <a href="{{ route('customer.orders.view', $rmaData['order_id']) }}"
-                                    target="_blank">{{ '#'.$rmaData['order_id'] }}</a>
-                                @endif
-                                @if (session()->get('guestEmailId'))
-                                    {{ '#'.$rmaData['order_id'] }}
-                                @endif
-                            </span>
-                        </div>
-                        <div class="row">
-                            <span class="title">
-                                @lang('rma::app.shop.view-customer-rma.resolution-type')
-                            </span>
-                            <span class="value">
-                                {{ $rmaData['resolution'] }}
-                            </span>
-                        </div>
+                            <div class="row">
+                                <span class="title">
+                                    {{ __('rma::app.shop.view-customer-rma.order-id')  }}
+                                </span>
+                                <span class="value">
+                                    @if (!session()->get('guestEmailId'))
+                                        <a href="{{ route('customer.orders.view', $rmaData['order_id']) }}"
+                                        target="_blank">{{ '#'.$rmaData['order_id'] }}</a>
+                                    @endif
+                                    @if (session()->get('guestEmailId'))
+                                        {{ '#'.$rmaData['order_id'] }}
+                                    @endif
+                                </span>
+                            </div>
+                            <div class="row">
+                                <span class="title">
+                                    {{ __('rma::app.shop.view-customer-rma.resolution-type') }}
+                                </span>
+                                <span class="value">
+                                    {{ $rmaData['resolution'] }}
+                                </span>
+                            </div>
 
                             @if(! empty($rmaData['information']))
                                 <div class="row">
                                     <span class="title">
-                                        @lang('rma::app.shop.view-customer-rma.additional-information')
+                                        {{ __('rma::app.shop.view-customer-rma.additional-information') }}
                                     </span>
                                     <span class="value"  style="display:inline;line-height: 28px;">
                                         {{ $rmaData['information'] }}
@@ -78,7 +110,7 @@
                     <div class="sale-section">
                         <div class="secton-title">
                             <span>
-                                @lang('rma::app.shop.view-admin-rma.items-request')
+                                {{ __('rma::app.shop.view-admin-rma.items-request') }}
                             </span>
                         </div>
                         <div class="row">
@@ -147,18 +179,18 @@
                     <div class="sale-section">
                         <div class="secton-title">
                             <span>
-                                @lang('rma::app.shop.view-customer-rma.status-details')
+                                {{ __('rma::app.shop.view-customer-rma.status-details')  }}
                             </span>
                         </div>
                         <div class="section-content">
                             <div class="row">
                                 <span class="title">
-                                    @lang('rma::app.shop.view-customer-rma-content.rma-status')
+                                    {{ __('rma::app.shop.view-customer-rma-content.rma-status') }}
                                 </span>
 
                                 @if (is_null($rmaData['rma_status']) || $rmaData['rma_status'] == 'Pending')
                                     @if ($rmaData['status'] != 1)
-                                        <span class="tagbutton" style="background-color:#FBC02D">@lang('rma::app.status.status-name.pending')</span>
+                                        <span class="tagbutton" style="background-color:#FBC02D">{{ __('rma::app.status.status-name.pending') }}</span>
                                     @else
                                         <span style="background-color:#00796B" class="tagbutton">
                                             {{ __('rma::app.status.status-name.solved') }}
@@ -259,6 +291,10 @@
             </div>
         </div>
     </div>
+@stop
+
+@push('scripts')
+    <script type="text/x-template" id="options-template">
         <div>
             @if ($show)
                 <div class="sale-section">
@@ -381,5 +417,4 @@
 
         })
     </script>
-@endpushOnce
-</x-shop::layouts.account>
+@endpush
