@@ -212,5 +212,5 @@ class RMAList extends DataGrid
             },
         ]);
     }
-    }
+}
 }

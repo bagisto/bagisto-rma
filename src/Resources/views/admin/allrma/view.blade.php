@@ -24,50 +24,60 @@
                             <div slot="body">
                                 <div class="sale-section">
                                     <div class="section-content">
-                                        <div class="row">
-                                            <span class="title">
-                                                {{ __('rma::app.shop.view-admin-rma-content.request-on') }}
-                                            </span>
-                                            <span class="value">
-                                                {{ date("F j, Y, h:i:s A" ,strtotime($rmaData['created_at'])) }}
-                                            </span>
-                                        </div>
-                                        <div class="row">
-                                            <span class="title">
-                                                {{ __('rma::app.shop.view-admin-rma.order-id')  }}
-                                            </span>
-                                            <span class="value">
+                                    <x-admin::table>
+                                        <x-table.tr>
+                                            <x-table.td>
+                                                @lang('rma::app.shop.view-admin-rma-content.request-on')
+                                            </x-table.td>
+                                            <x-table.td>
+                                                {{ date("F j, Y, h:i:s A" ,strtotime($rmaData['created_at'])) }}    
+                                            </x-table.td>
+                                        </x-table.tr>
+                                    
+
+                                        <x-table.tr>
+                                            <x-table.td>
+                                                @lang('rma::app.shop.view-admin-rma.order-id')
+                                            </x-table.td>
+                                            <x-table.td>
                                                 <a href="{{ route('admin.sales.orders.view',$rmaData['order_id']) }}"
                                                     target="_blank">{{ '#'.$rmaData['order_id'] }}
                                                 </a>
-                                            </span>
-                                        </div>
-                                        <div class="row">
-                                            <span class="title">
-                                                    {{ __('rma::app.shop.view-admin-rma-content.customer') }}
-                                            </span>
-                                            <span class="value">
+                                            </x-table.td>
+                                        </x-table.tr>
+
+                                        <x-table.tr>
+                                            <x-table.td>
+                                                @lang('rma::app.shop.view-admin-rma-content.customer')
+                                            </x-table.td>
+                                            <x-table.td>
                                                 {{ $orderDetails->customer_first_name }} {{ $orderDetails->customer_last_name }}
-                                            </span>
-                                        </div>
-                                        <div class="row">
-                                            <span class="title">
-                                                {{ __('rma::app.shop.view-admin-rma.resolution-type') }}
-                                            </span>
-                                            <span class="value">
+                                            </x-table.td>
+                                        </x-table.tr>
+
+                                        <x-table.tr>
+                                            <x-table.td>
+                                                @lang('rma::app.shop.view-admin-rma.resolution-type')
+                                            </x-table.td>
+                                            <x-table.td>
                                                 {{ $rmaData['resolution'] }}
-                                            </span>
-                                        </div>
+                                            </x-table.td>
+                                        </x-table.tr>
+
+                                
+                                
                                         @if(! empty($rmaData['information']))
-                                            <div class="row">
-                                                <span class="title">
-                                                    {{ __('rma::app.shop.view-admin-rma.additional-information') }}
-                                                </span>
-                                                <span class="value">
-                                                    {!! wordwrap($rmaData['information'],99,"<br>\n") !!}
-                                                </span>
-                                            </div>
+
+                                        <x-table.tr>
+                                            <x-table.td>
+                                                @lang('rma::app.shop.view-admin-rma.additional-information')
+                                            </x-table.td>
+                                            <x-table.td>
+                                                {!! wordwrap($rmaData['information'],99,"<br>\n") !!}
+                                            </x-table.td>
+                                        </x-table.tr>
                                         @endif
+
                                         @if(is_null($rmaImages) || count($rmaImages) > 0)
                                             <div class="sale-section">
                                                 <div class="secton-title">
@@ -87,6 +97,7 @@
                                                 </div>
                                             </div>
                                         @endif
+                                    </x-admin::table>
                                     </div>
                                 </div>
                             </div>
@@ -98,10 +109,10 @@
                                 <div slot="body">
                                     <div class="sale-section">
                                         <div class="section-content">
-                                                <div class="row">
-                                                    <span class="title">
-                                                        {{ __('rma::app.shop.view-admin-rma-content.rma-status') }}
-                                                    </span>
+                                            <div class="flex  gap-[20px] justify-between items-center max-sm:flex-wrap">
+                                                <span class="py-[11px] text-[15px] text-gray-800 dark:text-white font-bold">
+                                                    @lang('rma::app.shop.view-admin-rma-content.rma-status')
+                                                </span>
                                                     <span class="value" @if($rmaData['status'] == 1) style="display: none;" @endif>
                                                         @if (empty($rmaData['rma_status']) || $rmaData['rma_status']=='Pending')
                                                             <span id="tag" class="tagbutton" style="background-color:#FBC02D">
@@ -145,9 +156,9 @@
                                                     </span>
                                                 </div>
 
-                                                <div class="row">
-                                                    <span class="title">
-                                                        {{ __('rma::app.shop.view-admin-rma-content.order-status') }}
+                                                <div class="flex  gap-[20px] justify-between items-center max-sm:flex-wrap">
+                                                    <span class="py-[11px] text-[15px] text-gray-800 dark:text-white font-bold">
+                                                        @lang('rma::app.shop.view-admin-rma-content.order-status')
                                                     </span>
                                                     <span
                                                         class="value tagbutton"
@@ -212,7 +223,7 @@
                                                                 @endforeach
                                                             </select>
                                                         </div>
-
+                                                        <br><br>
                                                         <div class="account-action">
                                                             <button
                                                                 type="submit"
@@ -285,7 +296,7 @@
                                                                 @endforeach
 
                                                             </select>
-
+                                                            <br><br><br>
                                                             <div class="account-action">
                                                                 <button
                                                                     type="submit"
@@ -329,7 +340,7 @@
                                 </div>
                         </accordian>
                     </div>
-
+                    <br>
                     <div class="sale-container">
                         <accordian :title="'{{ __('rma::app.admin.rma-tab-name.tab-content.order-details') }}'" :active="true">
                             <div slot="body">
@@ -394,7 +405,7 @@
                             </div>
                         </accordian>
                     </div>
-
+                    <br><br>
                     <div class="sale-container">
                         <accordian :title="'@lang('rma::app.admin.rma-tab-name.tab-content.conversation') ({{ count($adminMessages) }})'" :active="true">
                             <div slot="body">

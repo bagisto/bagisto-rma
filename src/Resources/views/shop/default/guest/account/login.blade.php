@@ -1,37 +1,77 @@
-@extends('shop::layouts.master')
+<x-shop::layouts>
 
-@section('page_title')
-{{ __('rma::app.shop.guest-users.title') }}
-@endsection
+{{-- Title of the page --}}
+<x-slot:title>
+    @lang('rma::app.shop.guest-users.title')
+</x-slot>
 
-@section('content-wrapper')
+    <div class="auth-content">
 
-<div class="auth-content">
+        <x-shop::form
+            :action="route('rma.guest.logincreate')"
+            method="POST"
+            enctype="multipart/form-data"
+        >
 
-    <form method="POST" action="{{ route('rma.guest.logincreate') }}" @submit.prevent="onSubmit">
-        @csrf()
-        <div class="login-form">
-            <div class="login-text">{{ __('rma::app.shop.guest-users.heading') }}</div>
-
-            <div class="control-group" :class="[errors.has('order_id') ? 'has-error' : '']">
-                <label for="order_id" class="required">{{ __('rma::app.shop.guest-users.order-id') }}</label>
-                <input type="text" class="control" name="order_id" v-validate="'required|integer'"
-                    value="{{ old('order_id') }}"
-                    data-vv-as="&quot;{{ __('rma::app.shop.guest-users.order-id') }}&quot;">
-                <span class="control-error" v-if="errors.has('order_id')">@{{ errors.first('order_id') }}</span>
-            </div>
-
-            <div class="control-group" :class="[errors.has('email') ? 'has-error' : '']">
-                <label for="email" class="required">{{ __('rma::app.shop.guest-users.email') }}</label>
-                <input type="text" class="control" name="email" v-validate="'required'" value="{{ old('email') }}"
-                    data-vv-as="&quot;{{ __('rma::app.shop.guest-users.email') }}&quot;">
-                <span class="control-error" v-if="errors.has('email')">@{{ errors.first('email') }}</span>
-            </div>
-
-            <input class="btn btn-primary btn-lg" type="submit"
-                value="{{ __('rma::app.shop.guest-users.button-text') }}">
+        <div class="flex gap-[16px] justify-between items-center max-sm:flex-wrap">
+            <h2 class="text-[25px] font-medium">
+                @lang('rma::app.shop.guest-users.heading')
+            </h2>
         </div>
-    </form>
-</div>
+            <div class="flex gap-[16px] justify-between items-center max-sm:flex-wrap">
+                <div class="p-[10px]">
+                    <x-shop::form.control-group class="mb-4">
+                        <x-shop::form.control-group.label class="required">
+                            @lang('rma::app.shop.guest-users.order-id')
+                        </x-shop::form.control-group.label>
 
-@endsection
+                        <x-shop::form.control-group.control
+                            type="text"
+                            name="order_id"
+                            value="{{ old('order_id') }}"
+                            rules="required|integer"
+                            :label="trans('rma::app.shop.guest-users.order-id')"
+                            :placeholder="trans('rma::app.shop.guest-users.order-id')"
+                        >
+                        </x-shop::form.control-group.control>
+
+                        <x-shop::form.control-group.error
+                            control-name="order_id"
+                        >
+                        </x-shop::form.control-group.error>
+                    </x-shop::form.control-group>
+
+                    <x-shop::form.control-group class="mb-4">
+                        <x-shop::form.control-group.label class="required">
+                            @lang('rma::app.shop.guest-users.email')
+                        </x-shop::form.control-group.label>
+
+                        <x-shop::form.control-group.control
+                            type="email"
+                            name="email"
+                            id="email"
+                            value="{{ old('email') }}"
+                            rules="required|email"
+                            :label="trans('rma::app.shop.guest-users.email')"
+                            placeholder="email@example.com"
+                        >
+                        </x-shop::form.control-group.control>
+
+                        <x-shop::form.control-group.error
+                            control-name="email"
+                        >
+                        </x-shop::form.control-group.error>
+                    </x-shop::form.control-group>
+
+            
+                    <button
+                        type="submit"
+                        class="primary-button"
+                    >
+                        @lang('rma::app.shop.guest-users.button-text')
+                    </button>
+                </div>
+            </div>
+        </x-shop::form>
+    </div>
+</x-shop::layouts>

@@ -170,55 +170,51 @@
                 <!-- <div class="section-content">
                         <div class="table"> -->
                         <div class="mt-[15px] overflow-x-auto">
-                            <x-admin::table>
-                            <draggable
-                                    tag="tbody"
-                                    ghost-class="draggable-ghost"
-            
-                                >
-                                <x-admin::table.thead class="text-[14px] font-medium dark:bg-gray-800">
-                                    <x-admin::table.thead.tr>
-                                        <x-admin::table.th class="!p-0"></x-admin::table.th>
-                                        <x-admin::table.th>
+                            <x-table>
+                                <x-table.thead class="text-[14px] font-medium dark:bg-gray-800">
+                                    <x-table.tr>
+                                        <x-table.th>
 
-                                            <x-admin::form.control-group.control
+                                            <x-shop::form.control-group.control
                                                 type="checkbox"
                                                 v-model="isCheckAll"
                                                 id="checkbox"
                                                 @click="checkAll()"
                                             >
-                                            </x-admin::form.control-group.control>
-                                        </x-admin::table.th>
+                                            </x-shop::form.control-group.control>
+                                        </x-table.th>
 
-                                        <x-admin::table.th>
+                                        <x-table.th>
                                             @lang('rma::app.shop.customer-rma-create.image')
-                                        </x-admin::table.th>
+                                        </x-table.th>
 
-                                        <x-admin::table.th>
+                                        <x-table.th>
                                             @lang('rma::app.shop.customer-rma-create.product')
-                                        </x-admin::table.th>
+                                        </x-table.th>
 
-                                        <x-admin::table.th>
+                                        <x-table.th>
                                             @lang('rma::app.shop.customer-rma-create.sku')
-                                        </x-admin::table.th>
+                                        </x-table.th>
 
-                                        <x-admin::table.th>
+                                        <x-table.th>
                                             @lang('rma::app.shop.customer-rma-create.price')
-                                        </x-admin::table.th>
+                                        </x-table.th>
 
-                                        <x-admin::table.th>
+                                        <x-table.th>
                                             @lang('rma::app.shop.customer-rma-create.quantity')
-                                        </x-admin::table.th>
+                                        </x-table.th>
 
-                                        <x-admin::table.th>
+                                        <x-table.th>
                                             @lang('rma::app.shop.customer-rma-create.reason')
-                                        </x-admin::table.th>
-                                    </x-admin::table.thead.tr>
-                                </x-admin::table.thead>
+                                        </x-table.th>
+                                    </x-table.tr>
+                                </x-table.thead>
 
-                                <x-admin::table.thead.tr  v-for="(orderData,index) in sellerOrderedData" class="hover:bg-gray-50 dark:hover:bg-gray-950">
+                                <x-table.tbody>
+                                <!-- v-if="seller == true && sellerOrderedData.length != 0 && resolutionSelect != null" -->
+                                    <x-table.tr v-for="(orderData,index) in sellerOrderedData">
                                     
-                                    <x-admin::table.td>
+                                    <x-table.td>
 
                                         <input
                                             type="checkbox"
@@ -228,14 +224,14 @@
                                             v-model='selected'
                                             @change='updateCheckall(); getId($event)'
                                         />
-                                        <x-admin::form.control-group.label
+                                        <x-shop::form.control-group.label
                                             type="checkbox-view"
                                             name="checkbox"
                                         >
-                                        </x-admin::form.control-group.label>
-                                    </x-admin::table.td>
+                                        </x-shop::form.control-group.label>
+                                    </x-table.td>
 
-                                    <x-admin::table.td v-if="productImageCounts > 0">
+                                    <x-table.td v-if="productImageCounts > 0">
                                         <!-- Image -->
                                         <div>
                                             <img 
@@ -246,9 +242,9 @@
                                                 src="{{  url('vendor/webkul/ui/assets/images/product/small-product-placeholder.png') }}"
                                             /> 
                                         </div>
-                                    </x-admin::table.td>
+                                    </x-table.td>
 
-                                    <x-admin::table.td>
+                                    <x-table.td>
                                     <span>
                                         @{{ orderData.type == 'configurable' ? child[orderData.id] ? child[orderData.id].name : orderData.name : orderData.name }}
                                     </span>
@@ -260,23 +256,23 @@
                                         @{{ html[orderData.id] }}
 
                                     </li>
-                                    </x-admin::table.td>
+                                    </x-table.td>
 
-                                    <x-admin::table.td>
+                                    <x-table.td>
                                         @{{  orderData.type == 'configurable' ? child[orderData.id] ? child[orderData.id].sku : orderData.sku : orderData.sku }}
-                                    </x-admin::table.td>
+                                    </x-table.td>
 
-                                    <x-admin::table.td>
+                                    <x-table.td>
                                         @{{ orderData.price }}
-                                    </x-admin::table.td>
+                                    </x-table.td>
 
-                                    <x-admin::table.td>
-                                        <x-admin::form.control-group class="mb-[10px]">
-                                            <x-admin::form.control-group.label class="required">
+                                    <x-table.td>
+                                        <x-shop::form.control-group class="mb-[10px]">
+                                            <x-shop::form.control-group.label class="required">
                                                 @lang('rma::app.shop.default-option.select-quantity')
-                                            </x-admin::form.control-group.label>
+                                            </x-shop::form.control-group.label>
                                     
-                                            <x-admin::form.control-group.control
+                                            <x-shop::form.control-group.control
                                                 type="select"
                                                 id="quantity"
                                                 name="quantity"
@@ -297,22 +293,22 @@
                                             @{{ qtyLength }}
 
                                             </option>
-                                            </x-admin::form.control-group.control>
+                                            </x-shop::form.control-group.control>
 
-                                            <x-admin::form.control-group.error
+                                            <x-shop::form.control-group.error
                                                 control-name="('quantity[' + sellerOrderedData[index].id + ']')"
                                             >
-                                            </x-admin::form.control-group.error>
-                                        </x-admin::form.control-group>
-                                    </x-admin::table.td>
+                                            </x-shop::form.control-group.error>
+                                        </x-shop::form.control-group>
+                                    </x-table.td>
                             
-                                    <x-admin::table.td>
-                                        <x-admin::form.control-group class="mb-[10px]">
-                                            <x-admin::form.control-group.label class="required">
+                                    <x-table.td>
+                                        <x-shop::form.control-group class="mb-[10px]">
+                                            <x-shop::form.control-group.label class="required">
                                                 @lang('rma::app.shop.default-option.select-reason')
-                                            </x-admin::form.control-group.label>
+                                            </x-shop::form.control-group.label>
                                     
-                                            <x-admin::form.control-group.control
+                                            <x-shop::form.control-group.control
                                                 type="select"
                                                 id="rma_reason_id"
                                                 name="rma_reason_id"
@@ -333,20 +329,23 @@
                                                 </option>
                                             @endforeach
 
-                                            </x-admin::form.control-group.control>
+                                            </x-shop::form.control-group.control>
 
-                                            <x-admin::form.control-group.error
+                                            <x-shop::form.control-group.error
                                                 control-name="rma_reason_id"
                                             >
-                                            </x-admin::form.control-group.error>
-                                        </x-admin::form.control-group>
-                                    </x-admin::table.td>
-                                </x-admin::table.thead.tr>
-                                </draggable>
-                            </x-admin::table>
+                                            </x-shop::form.control-group.error>
+                                        </x-shop::form.control-group>
+                                    </x-table.td>
+                                    </x-table.tr>
+                                </x-table.tbody>
+                            </x-table>
+
                             <div v-if="seller == true && resolutionShow == true">
                                 <div v-if="sellerOrderedData.length == 0" style="text-align: center;">
-                                    <p>@lang('rma::app.shop.customer-rma-create.rma-not-avilable-quotes')</p>
+                                    <p>
+                                        @lang('rma::app.shop.customer-rma-create.rma-not-avilable-quotes')
+                                    </p>
                                 </div>
                             </div>
                         </div>

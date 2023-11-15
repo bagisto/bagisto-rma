@@ -1,31 +1,11 @@
-@extends('shop::layouts.master')
+<x-shop::layouts.account>
 
-@section('page_title')
-    {{ __('rma::app.shop.customer.title') }}
-@endsection
+{{-- Title of the page --}}
+<x-slot:title>
+    @lang('rma::app.shop.customer.title')
+</x-slot>
 
-@push('css')
-    <style>
-        .tagbutton {
-            border-radius: 44px;
-            padding: 4px 9px 4px 10px;
-            width: fit-content;
-            height: auto;
-            color: white;
-            font-size: 16px;
-            display: inline;
-        }
-        .title {
-            font-weight: 600;
-        }
-        .rma-image {
-            width: 200px;
-            height: 200px;
-        }
-    </style>
-@endpush
-
-@php
+@php 
     $show = true;
 
     if (
@@ -41,259 +21,262 @@
     ) {
         $show = false;
     }
-@endphp
-
-@section('content-wrapper')
-    <div class="account-content">
-        @if (auth()->guard('customer')->user())
-            @include('shop::customers.account.partials.sidemenu')
-        @endif
-
-        <div class="account-layout">
-
-            <div class="account-head">
-                <span class="back-icon">
-                </span>
-                <span class="account-heading">
-                    {{ __('rma::app.shop.view-customer-rma.rma') }} {{ '#'.$rmaData['id'] }}
-                </span>
-            </div><br>
-            <div class="horizontal-rule"></div>
-            <div class="sale-container">
-                <div>
-                    <div class="sale-section">
-                        <div class="section-content">
-                            <div class="row">
-                                <span class="title">
-                                    {{ __('rma::app.shop.view-customer-rma-content.request-on') }}
-                                </span>
-                                <span class="value">
-                                    {{ date("F j, Y, h:i:s A" ,strtotime($rmaData['created_at'])) }}
-                                </span>
-                            </div>
-                            <div class="row">
-                                <span class="title">
-                                    {{ __('rma::app.shop.view-customer-rma.order-id')  }}
-                                </span>
-                                <span class="value">
-                                    @if (!session()->get('guestEmailId'))
-                                        <a href="{{ route('customer.orders.view', $rmaData['order_id']) }}"
-                                        target="_blank">{{ '#'.$rmaData['order_id'] }}</a>
-                                    @endif
-                                    @if (session()->get('guestEmailId'))
-                                        {{ '#'.$rmaData['order_id'] }}
-                                    @endif
-                                </span>
-                            </div>
-                            <div class="row">
-                                <span class="title">
-                                    {{ __('rma::app.shop.view-customer-rma.resolution-type') }}
-                                </span>
-                                <span class="value">
-                                    {{ $rmaData['resolution'] }}
-                                </span>
-                            </div>
-
-                            @if(! empty($rmaData['information']))
-                                <div class="row">
-                                    <span class="title">
-                                        {{ __('rma::app.shop.view-customer-rma.additional-information') }}
-                                    </span>
-                                    <span class="value"  style="display:inline;line-height: 28px;">
-                                        {{ $rmaData['information'] }}
-                                    </span>
-                                </div>
-                            @endif
-                        </div>
-                    </div><br>
-
-                    <div class="sale-section">
-                        <div class="secton-title">
-                            <span>
-                                {{ __('rma::app.shop.view-admin-rma.items-request') }}
-                            </span>
-                        </div>
-                        <div class="row">
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <thead>
-                                        @php($lang = Lang::get('rma::app.shop.table-heading'))
-                                        <tr>
-                                            @foreach($lang as $languageFile)
-                                            <th>{{ $languageFile }}</th>
-                                            @endforeach
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($productDetails as $key=>$prodDetail)
-                                            @foreach($prodDetail->getOrderItem as $key => $orderItem)
-                                                <tr style="border-bottom: 0px solid #d3d3d3;">
-                                                    <td>
-                                                        {!! $orderItem['name'] !!}
-
-                                                        {!! app('Webkul\RMA\Helpers\Helper')->getOptionDetailHtml($orderItem->additional['attributes'] ?? []) !!}
-                                                    </td>
-
-                                                    <td>@if($orderItem['type'] == 'configurable')
-                                                            @foreach ($skus as $k => $sku)
-                                                                @if(isset($sku['parent_id']) && $sku['parent_id'] == $orderItem['id'])
-                                                                    {!! $sku['sku'] !!}
-                                                                @endif
-                                                            @endforeach
-                                                        @else
-                                                            {!! $orderItem['sku'] !!}
-                                                        @endif
-                                                    </td>
-                                                    <td>{!! $orderItem['price'] !!}</td>
-                                                    <td>{!! $prodDetail['quantity'] !!}</td>
-                                                    <td>{!! wordwrap($reasons[$key]->getReasons->title,15,"<br>\n") !!}</td>
-                                                </tr>
-                                            @endforeach
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div><br>
-
-                    <!––images shown which is uploaded––>
-                    @if(is_null($rmaImages) || count($rmaImages) > 0)
-                        <div class="sale-section">
-                            <div class="secton-title">
-                                <span>
-                                    {{ __('rma::app.shop.view-customer-rma.images')  }}
-                                </span>
-                            </div>
-                            <div class="section-content">
-                                <div class="row">
-                                    <span class="value">
-                                        @foreach($rmaImages as $images)
-                                            <img @if(isset($rmaImages)) class="rma-image" style="margin-right:20px;" src="{{  bagisto_asset('/storage/'.$images['path']) }}" @else src="" @endif style="max-width:70%;">
-                                        @endforeach
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-
-                    <div class="sale-section">
-                        <div class="secton-title">
-                            <span>
-                                {{ __('rma::app.shop.view-customer-rma.status-details')  }}
-                            </span>
-                        </div>
-                        <div class="section-content">
-                            <div class="row">
-                                <span class="title">
-                                    {{ __('rma::app.shop.view-customer-rma-content.rma-status') }}
-                                </span>
-
-                                @if (is_null($rmaData['rma_status']) || $rmaData['rma_status'] == 'Pending')
-                                    @if ($rmaData['status'] != 1)
-                                        <span class="tagbutton" style="background-color:#FBC02D">{{ __('rma::app.status.status-name.pending') }}</span>
-                                    @else
-                                        <span style="background-color:#00796B" class="tagbutton">
-                                            {{ __('rma::app.status.status-name.solved') }}
-                                        </span>
-                                    @endif
-                                @elseif ($rmaData['rma_status'] == 'Received Package')
-                                    @if ($rmaData['status'] != 1)
-                                        <span style="background-color:#1976D2" class="tagbutton">
-                                            {{ __('rma::app.status.status-name.received_package') }}
-                                        </span>
-                                    @else
-                                        <span style="background-color:#00796B" class="tagbutton">
-                                            {{ __('rma::app.status.status-name.solved') }}
-                                        </span>
-                                    @endif
-                                @elseif ($rmaData['rma_status'] == 'Item Canceled')
-                                    <span style="background-color:#00796B" class="tagbutton">
-                                        {{ __('rma::app.status.status-name.item_canceled') }}
-                                    </span>
-                                @elseif ($rmaData['rma_status'] != 'Item Canceled' || $rmaData['rma_status'] == 'Declined')
-                                    <span style="background-color:#616161" class="tagbutton">
-                                        {{  $rmaData['rma_status'] }}
-                                    </span>
-                                @elseif ($rmaData['rma_status'] == 'Not Receive Package yet')
-                                    <span class="tagbutton" style="background-color:#FBC02D">
-                                        {{ __('rma::app.status.status-name.not_received_package_yet') }}
-                                    </span>
-                                @elseif ($rmaData['rma_status'] == 'Dispatched Package')
-                                    <span class="tagbutton" style="background-color:#FBC02D">
-                                        {{ __('rma::app.status.status-name.dispatched_package') }}
-                                    </span>
-                                @endif
-                            </div>
-
-                            <div class="row">
-                                <span class="title">
-                                    {{ __('rma::app.shop.view-customer-rma-content.order-status') }}
-                                </span>
-                                <span class="value tagbutton" @if($rmaData['order_status'] == 'Delivered') style="background-color:#2E7D32" @else style="background-color:#d32f2f" @endif>
-                                    {{ $rmaData['order_status'] }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    @if ($rmaData['rma_status'] == 'Declined')
-                        @if(auth()->guard('customer')->user())
-                            <a href="{{ route('rma.customer.reopen.rma-status', ['id' => $rmaData['id']]) }}">
-                                <button type="button" class="btn btn-lg btn-primary" style="margin-top: 15px;">
-                                    {{ __('rma::app.shop.customer-rma-create.reopen_request') }}
-                                </button>
-                            </a>
-                        @else
-                            <a href="{{ route('rma.guest.reopen.rma-status', ['id' => $rmaData['id']]) }}">
-                                <button type="button" class="btn btn-lg btn-primary" style="margin-top: 15px;">
-                                    {{ __('rma::app.shop.customer-rma-create.reopen_request') }}
-                                </button>
-                            </a>
-                        @endif
-                    @endif
-
-                    @if ($rmaData['status'] == 1 && $rmaData['rma_status'] != 'Declined')
-                        <div class="sale-section">
-                            <div class="secton-title">
-                                {{ __('rma::app.shop.view-customer-rma.close-rma') }}
-                            </div><br>
-                            <div class="row">
-                                {{ __('rma::app.status.status-quotes.solved') }}
-                            </div>
-                        </div>
-                    @endif
-
-                    @if ($rmaData['rma_status'] == 'Item Canceled')
-                        <div class="sale-section">
-                            <div class="secton-title">
-                                {{ __('rma::app.shop.view-customer-rma.close-rma') }}
-                            </div><br>
-                            <div class="row">
-                                {{ __('rma::app.status.status-quotes.solved_by_admin') }}
-                            </div>
-                        </div>
-                    @endif
-
-                    @if ($rmaData['rma_status'] == 'Declined')
-                        <div class="sale-section">
-                            <div class="sale-title">
-                                <div class="secton-title">
-                                    {{ __('rma::app.shop.view-customer-rma.close-rma') }}
-                                </div><br>
-                                <div class="row">
-                                    {{ __('rma::app.status.status-quotes.declined-admin') }}
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                    <option-wrapper></option-wrapper>
-                </div>
-            </div>
-        </div>
-    </div>
-@stop
+@endphp 
 
 @push('scripts')
+    <div class="account-layout">
+
+        <div class="flex justify-between items-center">
+            <h2 class="text-[26px] font-medium">
+                @lang('rma::app.shop.view-customer-rma.rma') {{ '#'.$rmaData['id'] }}
+            </h2>
+        </div><br>
+        <x-shop::form
+            enctype="multipart/form-data"
+        >
+        <div class="horizontal-rule"></div>
+        <div>
+            <div class="sale-section">
+                <div class="mt-[15px] overflow-x-auto">
+                    <x-table>
+                    <x-table.tr>
+                        <x-table.td>
+                            @lang('rma::app.shop.view-customer-rma-content.request-on')
+                        </x-table.td>
+                        <x-table.td>
+                            {{ date("F j, Y, h:i:s A" ,strtotime($rmaData['created_at'])) }}
+                        </x-table.td>
+                    </x-table.tr>
+
+                    <x-table.tr>
+                        <x-table.td>
+                            @lang('rma::app.shop.view-customer-rma.order-id')
+                        </x-table.td>
+                        <x-table.td>
+                            @if (!session()->get('guestEmailId'))
+                                <a href="{{ route('rma.customers.allrma', $rmaData['order_id']) }}"
+                                target="_blank">{{ '#'.$rmaData['order_id'] }}</a>
+                            @endif
+                            @if (session()->get('guestEmailId'))
+                                {{ '#'.$rmaData['order_id'] }}
+                            @endif
+                        </x-table.td>
+                    </x-table.tr>
+                    
+                    <x-table.tr>
+                        <x-table.td>
+                            @lang('rma::app.shop.view-customer-rma.resolution-type')
+                        </x-table.td>
+                        <x-table.td>
+                            {{ $rmaData['resolution'] }}
+                        </x-table.td>
+                    </x-table.tr>
+
+                    @if(! empty($rmaData['information']))
+                        <x-table.tr>
+                            <x-table.td>
+                                {{ __('rma::app.shop.view-customer-rma.additional-information') }}
+                            </x-table.td>
+                            <x-table.td>
+                                {{ $rmaData['information'] }}
+                            </x-table.td>
+                        </x-table.tr>
+                    @endif
+                </x-table>
+            </div>
+            </div><br>
+
+            <div class="flex justify-between items-center">
+                <p class="text-[20px] text-gray-800 dark:text-white font-bold">
+                    @lang('rma::app.shop.view-admin-rma.items-request')
+                </p>
+                </div>
+    
+                <div>
+                    <div class="mt-[15px] overflow-x-auto">
+                        <x-table>
+                            <x-table.thead>
+                                @php($lang = Lang::get('rma::app.shop.table-heading'))
+                                <x-table.tr>
+                                    @foreach($lang as $languageFile)
+                                    <x-table.th>{{ $languageFile }}</x-table.th>
+                                    @endforeach
+                                </x-table.tr>
+                            </x-table.thead>
+
+                            <x-table.tbody>
+                                @foreach($productDetails as $key=>$prodDetail)
+                                    @foreach($prodDetail->getOrderItem as $key => $orderItem)
+                                        <x-table.tr>
+                                            <x-table.td>
+                                                {!! $orderItem['name'] !!}
+
+                                                {!! app('Webkul\RMA\Helpers\Helper')->getOptionDetailHtml($orderItem->additional['attributes'] ?? []) !!}
+                                            </x-table.td>
+
+                                            <x-table.td>@if($orderItem['type'] == 'configurable')
+                                                    @foreach ($skus as $k => $sku)
+                                                        @if(isset($sku['parent_id']) && $sku['parent_id'] == $orderItem['id'])
+                                                            {!! $sku['sku'] !!}
+                                                        @endif
+                                                    @endforeach
+                                                @else
+                                                    {!! $orderItem['sku'] !!}
+                                                @endif
+                                            </x-table.td>
+                                            <x-table.td>{!! $orderItem['price'] !!}</x-table.td>
+                                            <x-table.td>{!! $prodDetail['quantity'] !!}</x-table.td>
+                                            <x-table.td>{!! wordwrap($reasons[$key]->getReasons->title,15,"<br>\n") !!}</x-table.td>
+                                        </x-table.tr>
+                                    @endforeach
+                                @endforeach
+                            </x-table.tbody>
+                        </x-table>
+                    </div>
+                </div>
+            </div><br>
+
+            <!––images shown which is uploaded––>
+            @if(is_null($rmaImages) || count($rmaImages) > 0)
+                <div class="sale-section">
+                    <div class="secton-title">
+                        <span>
+                            @lang('rma::app.shop.view-customer-rma.images')
+                        </span>
+                    </div>
+                    <div class="section-content">
+                        <div class="row">
+                            <span class="value">
+                                @foreach($rmaImages as $images)
+                                    <img @if(isset($rmaImages)) class="rma-image" style="margin-right:20px;" src="{{  bagisto_asset('/storage/'.$images['path']) }}" @else src="" @endif style="max-width:70%;">
+                                @endforeach
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            <div class="flex justify-between items-center">
+                <p class="text-[20px] text-gray-800 dark:text-white font-bold">
+                    @lang('rma::app.shop.view-customer-rma.status-details')
+                </p>
+                </div>
+                <br>
+
+                <div class="flex justify-between items-center">
+                    <span class="text-[15px] text-gray-800 dark:text-white font-bold">
+                        @lang('rma::app.shop.view-customer-rma-content.rma-status')
+                    </span>
+                        @if (is_null($rmaData['rma_status']) || $rmaData['rma_status'] == 'Pending')
+                            @if ($rmaData['status'] != 1)
+                                <span class="tagbutton" style="background-color:#FBC02D">@lang('rma::app.status.status-name.pending')</span>
+                            @else
+                                <span style="background-color:#00796B" class="tagbutton">
+                                    @lang('rma::app.status.status-name.solved')
+                                </span>
+                            @endif
+                        @elseif ($rmaData['rma_status'] == 'Received Package')
+                            @if ($rmaData['status'] != 1)
+                                <span style="background-color:#1976D2" class="tagbutton">
+                                    {{ __('rma::app.status.status-name.received_package') }}
+                                </span>
+                            @else
+                                <span style="background-color:#00796B" class="tagbutton">
+                                    {{ __('rma::app.status.status-name.solved') }}
+                                </span>
+                            @endif
+                        @elseif ($rmaData['rma_status'] == 'Item Canceled')
+                            <span style="background-color:#00796B" class="tagbutton">
+                                {{ __('rma::app.status.status-name.item_canceled') }}
+                            </span>
+                        @elseif ($rmaData['rma_status'] != 'Item Canceled' || $rmaData['rma_status'] == 'Declined')
+                            <span style="background-color:#616161" class="tagbutton">
+                                {{  $rmaData['rma_status'] }}
+                            </span>
+                        @elseif ($rmaData['rma_status'] == 'Not Receive Package yet')
+                            <span class="tagbutton" style="background-color:#FBC02D">
+                                {{ __('rma::app.status.status-name.not_received_package_yet') }}
+                            </span>
+                        @elseif ($rmaData['rma_status'] == 'Dispatched Package')
+                            <span class="tagbutton" style="background-color:#FBC02D">
+                                {{ __('rma::app.status.status-name.dispatched_package') }}
+                            </span>
+                        @endif
+                    </div>
+
+                    <div class="flex justify-between items-center">
+                        <span class="text-[15px] text-gray-800 dark:text-white font-bold">
+                            @lang('rma::app.shop.view-customer-rma-content.order-status')
+                        </span>
+                        <span class="value tagbutton" @if($rmaData['order_status'] == 'Delivered') style="background-color:#2E7D32" @else style="background-color:#d32f2f" @endif>
+                            {{ $rmaData['order_status'] }}
+                        </span>
+                    </div>
+                </div>
+                <br><br>
+
+            @if ($rmaData['rma_status'] == 'Declined')
+                @if(auth()->guard('customer')->user())
+                    <a href="{{ route('rma.customer.reopen.rma-status', ['id' => $rmaData['id']]) }}">
+                        <button
+                            type="submit"
+                            class="primary-button"
+                            onClick="formValidation()"
+                        >
+                            @lang('rma::app.shop.customer-rma-create.reopen_request')
+                        </button>
+                    </a>
+                @else
+                    <a href="{{ route('rma.guest.reopen.rma-status', ['id' => $rmaData['id']]) }}">
+                        <button
+                            type="submit"
+                            class="primary-button"
+                            onClick="formValidation()"
+                        >
+                            @lang('rma::app.shop.customer-rma-create.reopen_request')
+                        </button>
+                    </a>
+                @endif
+            @endif
+
+            @if ($rmaData['status'] == 1 && $rmaData['rma_status'] != 'Declined')
+                <div class="flex justify-between items-center">
+                    <div class="text-[15px] text-gray-800 dark:text-white font-bold">
+                        @lang('rma::app.shop.view-customer-rma.close-rma')
+                    </div><br>
+                    <div class="row">
+                        @lang('rma::app.status.status-quotes.solved')
+                    </div>
+                </div>
+            @endif
+
+            @if ($rmaData['rma_status'] == 'Item Canceled')
+                <div class="sale-section">
+                    <div class="secton-title">
+                        @lang('rma::app.shop.view-customer-rma.close-rma')
+                    </div><br>
+                    <div class="row">
+                        @lang('rma::app.status.status-quotes.solved_by_admin')
+                    </div>
+                </div>
+            @endif
+
+            @if ($rmaData['rma_status'] == 'Declined')
+                <div class="sale-section">
+                    <div class="sale-title">
+                        <div class="secton-title">
+                            @lang('rma::app.shop.view-customer-rma.close-rma')
+                        </div><br>
+                        <div class="row">
+                            @lang('rma::app.status.status-quotes.declined-admin')
+                        </div>
+                    </div>
+                </div>
+            @endif
+            <option-wrapper></option-wrapper>
+        </div>
+    </div>
+
     <script type="text/x-template" id="options-template">
         <div>
             @if ($show)
@@ -336,22 +319,30 @@
                     </div><br>
 
                     @foreach($messages as $key => $message)
-                        <div class="">
-                            <span class="title">
-                                {{ __('rma::app.shop.conversation-texts.by') }}
-                                <strong>
+                    <div class="message">
+                        <div class="title" style='text-align:{{$message->is_admin ? "right" : "left"}}'>
+                            {{ __('rma::app.shop.conversation-texts.by') }}
+                            <strong>
                                     @if ($message->is_admin == 1)
                                         {{ __('rma::app.shop.view-customer-rma.admin') }}
                                     @elseif ($message->is_admin == 0)
-                                        {{ __('rma::app.shop.view-customer-rma.you') }}
+                                        @if(auth()->guard('customer')->user())
+                                            {{ auth()->guard('customer')->user()->name }}
+                                        @else
+                                            {{ __('rma::app.shop.view-customer-rma.guest') }}
+                                        @endif
                                     @endif
-                                </strong> {{ __('rma::app.shop.conversation-texts.on') }}
+                            </strong>
+
+                            <div>
+                                {{ __('rma::app.shop.conversation-texts.on') }}
                                 {{ date("F j, Y, h:i:s A" ,strtotime($message->created_at)) }}
-                            </span><br>
-                            <div class="value" style="margin-top:10px;word-break: break-all;">
-                                {{ $message->message }}
                             </div>
-                        </div><br>
+                        </div>
+                        <div class="value" style="margin-top:10px;word-break: break-all;text-align:{{$message->is_admin ? 'right' : 'left'}}">
+                            {{ $message->message }}
+                        </div>
+                    </div><br>
                     @endforeach
                 </div>
             @endif
@@ -367,6 +358,8 @@
                             {{ __('rma::app.shop.view-admin-rma.enter-message') }}
                             <span style="color:red;">*</span>
                         </span>
+                       
+                        </div>
                         <form  data-vv-scope="form-2" id="form-2" method="POST" @submit.prevent="validateForm('form-2')"
                             action="{{ route('rma.customer.sendmessage') }}">
                             @csrf()
@@ -384,15 +377,15 @@
                                 </button>
                             </div>
                         </form>
-                    </div>
                 </div>
             </div>
         </div>
+        </x-shop::form>
     </script>
 
-    <script>
-        Vue.component('option-wrapper', {
-
+    <script type="module">
+        
+            app.component('option-wrapper', {
             template: '#options-template',
 
             inject: ['$validator'],
@@ -417,4 +410,4 @@
 
         })
     </script>
-@endpush
+</x-shop::layouts.account>

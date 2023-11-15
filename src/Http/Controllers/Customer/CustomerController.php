@@ -144,11 +144,13 @@ class CustomerController extends Controller
 
         $ordersItem = $order->items;
      
+        $orderItem = [];
+
         foreach ($orderItemsRMA as $orderItemRMA) {
             $orderItem[] = $orderItemRMA->id;
         }
-   
-        $orderData = $order->whereIn('id', $order);
+
+        $orderData = $ordersItem->whereIn('id', $orderItem);
 
         foreach ($order->items as $key => $configurableProducts) {
             if ($configurableProducts['type'] == 'configurable'){
@@ -183,7 +185,6 @@ class CustomerController extends Controller
             'customerFirstName'
         ));
     }
-
 
     /**
      *
@@ -628,34 +629,35 @@ class CustomerController extends Controller
 
         $rma = $this->rmaRepository->create($orderRMAData);
 
-        $lastInsertId = \DB::getPdo()->lastInsertId();
+        $lastInsertId = $rma->id;
 
-        // if (isset($data['images'])) {
-        //     $imageCheck = implode(",", $data['images']);
-        // }
-
-        $data['rma_id'] = $lastInsertId;
-
-        // insert images
-        if ( ! empty($imageCheck)) {
+        if (isset($data['images']) && !empty($data['images'])) {
+            $imageNames = [];
+            
             foreach ($data['images'] as $itemImg) {
-                $this->rmaImagesRepository->create([
-                    'rma_id' => $lastInsertId,
-                    'path' => $itemImg->getClientOriginalName(),
-                ]);
+                $imageNames[] = $itemImg->getClientOriginalName();
             }
+            
+            $imageCheck = implode(",", $imageNames);
+            
+        } else {
+
         }
-        
+        $data['rma_id'] = $lastInsertId;
+       
         // insert orderItems
         foreach ($items as $itemId) {
-            $orderItemRMA = [
-                'rma_id' => $lastInsertId,
-                'order_item_id' => $itemId['order_item_id'],
-                'quantity' => $data['quantity'][$itemId['order_item_id']],
-                'rma_reason_id' => $data['rma_reason_id'][$itemId['order_item_id']]
-            ];
+            if (is_array($itemId) && isset($itemId['order_item_id'])) {
+                $orderItemRMA = [
+                    'rma_id' => $lastInsertId,
+                    'order_item_id' => $itemId['order_item_id'],
+                    'quantity' => $data['quantity'][$itemId['order_item_id']],
+                    'rma_reason_id' => $data['rma_reason_id'][$itemId['order_item_id']]
+                ];
         
-            $rmaOrderItem = $this->rmaItemsRepository->create($orderItemRMA);
+                $rmaOrderItem = $this->rmaItemsRepository->create($orderItemRMA);
+            } else {
+            }
         }
 
         $data['reasonsData'] =  $this->rmaReasonRepository->findWhereIn('id', $data['rma_reason_id']);
