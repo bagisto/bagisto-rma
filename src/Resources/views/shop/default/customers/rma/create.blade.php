@@ -1,9 +1,10 @@
-<x-shop::layouts.account>
+<x-shop::layouts>
 
 {{-- Title of the page --}}
 <x-slot:title>
     @lang('rma::app.shop.customer.title')
 </x-slot>
+<br>
 
 <div class="account-layout" @if(!auth()->guard('customer')->user())@endif>
     <rma-request-wrapper></rma-request-wrapper>
@@ -12,6 +13,7 @@
 
 @pushOnce('scripts')
 <script type="text/x-template" id="rma-request-template">
+    <div class="container px-[60px] max-lg:px-[30px]">  
         <div>
             <x-shop::form
                 :action="route('rma.customers.store')"
@@ -211,37 +213,17 @@
                                 </x-table.thead>
 
                                 <x-table.tbody>
-                                <!-- v-if="seller == true && sellerOrderedData.length != 0 && resolutionSelect != null" -->
                                     <x-table.tr v-for="(orderData,index) in sellerOrderedData">
-                                    
+                                        <x-table.td>
+                                            <div class="checkbox">
+                                                <input type='checkbox' id="checkboxSingle" name="order_item_id[]"  v-bind:value="orderData.id" v-model='selected' @change='updateCheckall(); getId($event)'>
+                                                <label class="checkbox-view" for="checkbox"></label>
+                                            </div>
+                                        </x-table.td>
+
                                     <x-table.td>
-
-                                        <input
-                                            type="checkbox"
-                                            id="checkboxSingle"
-                                            name="order_item_id[]"
-                                            v-bind:value="orderData.id"
-                                            v-model='selected'
-                                            @change='updateCheckall(); getId($event)'
-                                        />
-                                        <x-shop::form.control-group.label
-                                            type="checkbox-view"
-                                            name="checkbox"
-                                        >
-                                        </x-shop::form.control-group.label>
-                                    </x-table.td>
-
-                                    <x-table.td v-if="productImageCounts > 0">
-                                        <!-- Image -->
-                                        <div>
-                                            <img 
-                                                src="productImage[orderData.product_id]['medium_image_url']"
-                                            />
-
-                                            <img 
-                                                src="{{  url('vendor/webkul/ui/assets/images/product/small-product-placeholder.png') }}"
-                                            /> 
-                                        </div>
+                                        <img style="height: auto; max-width: 30%;" v-if="productImageCounts > 0" :src="productImage[orderData.product_id]['medium_image_url']">
+                                        <img v-else style="max-width: 100%;max-height: 50%;" src="{{  url('vendor/webkul/ui/assets/images/product/small-product-placeholder.png') }}">
                                     </x-table.td>
 
                                     <x-table.td>
@@ -290,13 +272,12 @@
                                                 v-for="qtyLength in quantity[orderData.id]"
                                                 :value="qtyLength"
                                             >
-                                            @{{ qtyLength }}
-
+                                                @{{ qtyLength }}
                                             </option>
                                             </x-shop::form.control-group.control>
 
                                             <x-shop::form.control-group.error
-                                                control-name="('quantity[' + sellerOrderedData[index].id + ']')"
+                                                control-name="quantity"
                                             >
                                             </x-shop::form.control-group.error>
                                         </x-shop::form.control-group>
@@ -393,35 +374,34 @@
                         >
                         </x-shop::form.control-group.control>
 
-                        <div class="flex gap-x-[10px] items-center">
-                            <div class="p-[16px]">
-                            <x-shop::form.control-group class="mb-[10px]">
-                                <x-shop::form.control-group.label class="required">
-                                    @lang('rma::app.shop.customer-rma-create.information')
-                                </x-shop::form.control-group.label>
-                        
-                                <x-shop::form.control-group.control
-                                    type="text"
-                                    name="information"
-                                    id="information"
-                                    rules="required"
-                                    :label="trans('rma::app.shop.customer-rma-create.information')"
-                                    :placeholder="trans('rma::app.shop.customer-rma-create.information')"
-                                    rows="3"
-                                >
-                                </x-shop::form.control-group.control>
+                        <div class="p-[16px]">
+                        <x-shop::form.control-group class="mb-[10px]">
+                            <x-shop::form.control-group.label class="required">
+                                @lang('rma::app.shop.customer-rma-create.information')
+                            </x-shop::form.control-group.label>
+                    
+                            <x-shop::form.control-group.control
+                                type="textarea"
+                                name="information"
+                                id="information"
+                                rules="required"
+                                :label="trans('rma::app.shop.customer-rma-create.information')"
+                                :placeholder="trans('rma::app.shop.customer-rma-create.information')"
+                                rows="3"
+                            >
+                            </x-shop::form.control-group.control>
 
-                                <x-shop::form.control-group.error
-                                    control-name="information"
-                                >
-                                </x-shop::form.control-group.error>
-                            </x-shop::form.control-group>
-                            </div>
+                            <x-shop::form.control-group.error
+                                control-name="information"
+                            >
+                            </x-shop::form.control-group.error>
+                        </x-shop::form.control-group>
                         </div>
                     </div>
                     </div>
             </x-shop::form>
         </div>
+    </div>
     </script>
 
     <script type="module">
@@ -773,4 +753,4 @@
         }
     </script>
 @endpushOnce
-</x-shop::layouts.account>
+</x-shop::layouts>

@@ -56,7 +56,7 @@ class CustomerController extends Controller
      * @return Mixed
      */
     public function index()
-    {
+    { 
         if (request()->ajax()) {
             return app(RMAList::class)->toJson();
         }
@@ -169,7 +169,7 @@ class CustomerController extends Controller
 
         // get the price of each product
         foreach ($productDetails as $key => $orderItemsDetails) {
-            $value[] = $orderItemsDetails->rmaOrderItem->price;
+            // $value[] = $orderItemsDetails->rmaOrderItem->price;
         }
 
         return view($this->_config['view'], compact(
@@ -580,8 +580,6 @@ class CustomerController extends Controller
 
     }
 
-
-
     /**
      * Store a newly created rma.
      *
@@ -589,6 +587,7 @@ class CustomerController extends Controller
      */
     public function store()
     {
+
         $this->validate(request(), [
             'quantity' => 'required',
             'resolution' => 'required',
@@ -631,36 +630,36 @@ class CustomerController extends Controller
 
         $lastInsertId = $rma->id;
 
-        if (isset($data['images']) && !empty($data['images'])) {
-            $imageNames = [];
-            
-            foreach ($data['images'] as $itemImg) {
-                $imageNames[] = $itemImg->getClientOriginalName();
-            }
-            
-            $imageCheck = implode(",", $imageNames);
-            
-        } else {
-
+        if (isset($data['images'])) {
+            $imageCheck = 1;
         }
+
         $data['rma_id'] = $lastInsertId;
-       
+    
+        // insert images
+        if (! empty($imageCheck)) {
+            foreach ($data['images'] as $itemImg) {
+                $this->rmaImagesRepository->create([
+                    'rma_id' => $lastInsertId,
+                    'path' => !empty($itemImg) ?? $itemImg->getClientOriginalName(),
+                ]);
+            }
+        }
+    
         // insert orderItems
         foreach ($items as $itemId) {
-            if (is_array($itemId) && isset($itemId['order_item_id'])) {
-                $orderItemRMA = [
-                    'rma_id' => $lastInsertId,
-                    'order_item_id' => $itemId['order_item_id'],
-                    'quantity' => $data['quantity'][$itemId['order_item_id']],
-                    'rma_reason_id' => $data['rma_reason_id'][$itemId['order_item_id']]
-                ];
-        
-                $rmaOrderItem = $this->rmaItemsRepository->create($orderItemRMA);
-            } else {
-            }
+            $orderItemRMA = [
+                'rma_id' => $lastInsertId,
+                'order_item_id' => $itemId['order_item_id'],
+                'quantity' => $data['quantity'],
+                'rma_reason_id' => $data['rma_reason_id'],
+                'variant_id'    => isset($data['variant']),
+            ];
+
+            $rmaOrderItem = $this->rmaItemsRepository->create($orderItemRMA);
         }
 
-        $data['reasonsData'] =  $this->rmaReasonRepository->findWhereIn('id', $data['rma_reason_id']);
+        $data['reasonsData'] =  $this->rmaReasonRepository->where('id', $data['rma_reason_id']);
 
         foreach($data['reasonsData'] as $reasons) {
             $data['reasons'][] = $reasons->title;
@@ -697,8 +696,7 @@ class CustomerController extends Controller
             } catch (\Exception $e) {
                 session()->flash('success', trans('shop::app.customer.signup-form.success-verify-email-unsent'));
             }
-
-            session()->flash('success', trans('admin::app.response.create-success', ['name' => 'Request']));
+            session()->flash('success', trans('rma::app.response.create-success', ['name' => 'Request']));
 
             if ($this->isGuest == 1) {
                 return redirect()->route('rma.customers.guestallrma');
@@ -710,7 +708,9 @@ class CustomerController extends Controller
 
             return redirect()->route('rma.customer.view');
         }
+
     }
+
 
     /**
      * save rma status by customer
