@@ -255,8 +255,10 @@ return [
             'delete' => 'Delete',
             'update' => 'Update',
             'options' => [
+                'enable' => 'Enable',
+                'disable' => 'Disable',
                 'active' => 'Active',
-                'inactive' => 'InActive',
+                'inactive' => 'InActive'
             ],
         ],
 
@@ -271,6 +273,7 @@ return [
 
         'setting' => [
             'settings'  => 'Settings',
+            'general'   => 'General',
             'info'      => 'E-commerce merchant to permit the return of a product.',
             'general'   => 'General Setting',
             'fields'    => [

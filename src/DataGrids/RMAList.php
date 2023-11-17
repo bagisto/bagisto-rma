@@ -62,7 +62,7 @@ class RMAList extends DataGrid
                                 $query->where('orders.customer_id', $customerId);
                             }
                         } else if (auth()->guard('admin')->user()) {
-                            if (request()->route()->getName() == 'rma.customers.guestallrma') {
+                            if (request()->route()->getName() == 'rma.customers.allrma') {
                                 $query->where('orders.customer_email', $customerId);
                             }
                         } else {
@@ -145,6 +145,7 @@ class RMAList extends DataGrid
             'searchable' => false,
             'filterable' => false,
             'closure'    => function ($rma) {
+
                 $rmaStatus = $rma->rma_status;
 
                 if ($rmaStatus == NULL || $rmaStatus == 'Pending') {
@@ -194,8 +195,12 @@ class RMAList extends DataGrid
         if (bouncer()->hasPermission('admin.rma.index')) {
         $routeName = request()->route()->getName();
 
+        $iconClass = 'icon-eye';
+
         if ($routeName == 'admin.rma.index' && auth()->guard('admin')->user()) {
             $route = 'admin.rma.view';
+            $iconClass = 'icon-view';
+
         } else if ($routeName == 'rma.customers.allrma' && auth()->guard('customer')->user()) {
            $route = 'rma.customer.view';
         } else {
@@ -205,12 +210,12 @@ class RMAList extends DataGrid
         $this->addAction([
             'title' => trans('rma::app.shop.customer-rma-index.view'),
             'type' => 'View',
-            'icon' => 'icon-view',
+            'icon' => $iconClass,
             'method' => 'GET',
             'url'    => function ($row) use ($route) {
                 return route($route, $row->id);
             },
         ]);
     }
-}
+    }
 }

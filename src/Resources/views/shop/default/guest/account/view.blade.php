@@ -1,4 +1,4 @@
-<x-shop::layouts.account>
+<x-shop::layouts>
 
 {{-- Title of the page --}}
 <x-slot:title>
@@ -24,8 +24,8 @@
 @endphp 
 
 @push('scripts')
-    <div class="account-layout">
-
+    
+    <div class="container px-[60px] max-lg:px-[30px]">
         <div class="flex justify-between items-center">
             <h2 class="text-[26px] font-medium">
                 @lang('rma::app.shop.view-customer-rma.rma') {{ '#'.$rmaData['id'] }}
@@ -160,61 +160,61 @@
                 <p class="text-[20px] text-gray-800 dark:text-white font-bold">
                     @lang('rma::app.shop.view-customer-rma.status-details')
                 </p>
-            </div>
-            <br>
-
-            <div class="flex justify-between items-center">
-                <span class="text-[15px] text-gray-800 dark:text-white font-bold">
-                    @lang('rma::app.shop.view-customer-rma-content.rma-status')
-                </span>
-                    @if (is_null($rmaData['rma_status']) || $rmaData['rma_status'] == 'Pending')
-                        @if ($rmaData['status'] != 1)
-                            <span class="tagbutton" style="border-radius:35px; background-color:#FBC02D">@lang('rma::app.status.status-name.pending')</span>
-                        @else
-                            <span style="border-radius:35px; background-color:#00796B" class="tagbutton">
-                                @lang('rma::app.status.status-name.solved')
-                            </span>
-                        @endif
-                    @elseif ($rmaData['rma_status'] == 'Received Package')
-                        @if ($rmaData['status'] != 1)
-                            <span style="border-radius:35px; background-color:#1976D2" class="tagbutton">
-                                {{ __('rma::app.status.status-name.received_package') }}
-                            </span>
-                        @else
-                            <span style="border-radius:35px; background-color:#00796B" class="tagbutton">
-                                {{ __('rma::app.status.status-name.solved') }}
-                            </span>
-                        @endif
-                    @elseif ($rmaData['rma_status'] == 'Item Canceled')
-                        <span style="border-radius:35px; background-color:#00796B" class="tagbutton">
-                            {{ __('rma::app.status.status-name.item_canceled') }}
-                        </span>
-                    @elseif ($rmaData['rma_status'] != 'Item Canceled' || $rmaData['rma_status'] == 'Declined')
-                        <span style="border-radius:35px; background-color:#616161" class="tagbutton">
-                            {{  $rmaData['rma_status'] }}
-                        </span>
-                    @elseif ($rmaData['rma_status'] == 'Not Receive Package yet')
-                        <span class="tagbutton" style="border-radius:35px; background-color:#FBC02D">
-                            {{ __('rma::app.status.status-name.not_received_package_yet') }}
-                        </span>
-                    @elseif ($rmaData['rma_status'] == 'Dispatched Package')
-                        <span class="tagbutton" style="border-radius:35px; background-color:#FBC02D">
-                            {{ __('rma::app.status.status-name.dispatched_package') }}
-                        </span>
-                    @endif
                 </div>
                 <br>
 
                 <div class="flex justify-between items-center">
                     <span class="text-[15px] text-gray-800 dark:text-white font-bold">
-                        @lang('rma::app.shop.view-customer-rma-content.order-status')
+                        @lang('rma::app.shop.view-customer-rma-content.rma-status')
                     </span>
-                    <span class="value tagbutton" @if($rmaData['order_status'] == 'Delivered') style="border-radius:35px; background-color:#2E7D32" @else style="border-radius:35px; background-color:#d32f2f" @endif>
-                        {{ $rmaData['order_status'] }}
-                    </span>
+                        @if (is_null($rmaData['rma_status']) || $rmaData['rma_status'] == 'Pending')
+                            @if ($rmaData['status'] != 1)
+                            <span class="tagbutton" style="border-radius:35px; background-color:#FBC02D">@lang('rma::app.status.status-name.pending')</span>
+                            @else
+                                <span style="border-radius:35px; background-color:#00796B" class="tagbutton">
+                                    @lang('rma::app.status.status-name.solved')
+                                </span>
+                            @endif
+                        @elseif ($rmaData['rma_status'] == 'Received Package')
+                            @if ($rmaData['status'] != 1)
+                                <span style="border-radius:35px; background-color:#1976D2" class="tagbutton">
+                                    {{ __('rma::app.status.status-name.received_package') }}
+                                </span>
+                            @else
+                                <span style="border-radius:35px; background-color:#00796B" class="tagbutton">
+                                    {{ __('rma::app.status.status-name.solved') }}
+                                </span>
+                            @endif
+                        @elseif ($rmaData['rma_status'] == 'Item Canceled')
+                            <span style="border-radius:35px; background-color:#00796B" class="tagbutton">
+                                {{ __('rma::app.status.status-name.item_canceled') }}
+                            </span>
+                        @elseif ($rmaData['rma_status'] != 'Item Canceled' || $rmaData['rma_status'] == 'Declined')
+                            <span style="border-radius:35px; background-color:#616161" class="tagbutton">
+                                {{  $rmaData['rma_status'] }}
+                            </span>
+                        @elseif ($rmaData['rma_status'] == 'Not Receive Package yet')
+                            <span class="tagbutton" style="border-radius:35px; background-color:#FBC02D">
+                                {{ __('rma::app.status.status-name.not_received_package_yet') }}
+                            </span>
+                        @elseif ($rmaData['rma_status'] == 'Dispatched Package')
+                            <span class="tagbutton" style="border-radius:35px; background-color:#FBC02D">
+                                {{ __('rma::app.status.status-name.dispatched_package') }}
+                            </span>
+                        @endif
+                    </div>
+                    <br>
+
+                    <div class="flex justify-between items-center">
+                        <span class="text-[15px] text-gray-800 dark:text-white font-bold">
+                            @lang('rma::app.shop.view-customer-rma-content.order-status')
+                        </span>
+                        <span class="value tagbutton" @if($rmaData['order_status'] == 'Delivered') style="border-radius:35px; background-color:#2E7D32" @else style="border-radius:35px; background-color:#d32f2f" @endif>
+                            {{ $rmaData['order_status'] }}
+                        </span>
+                    </div>
                 </div>
-            </div>
-            <br><br>
+                <br><br>
 
             @if ($rmaData['rma_status'] == 'Declined')
                 @if(auth()->guard('customer')->user())
@@ -378,9 +378,9 @@
                                 </button>
                             </div>
                         </form>
-                    </div>
                 </div>
             </div>
+        </div>
         </x-shop::form>
     </script>
 
@@ -411,4 +411,4 @@
 
         })
     </script>
-</x-shop::layouts.account>
+</x-shop::layouts>

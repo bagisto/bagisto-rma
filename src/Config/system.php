@@ -5,7 +5,6 @@ return [
         'key'       => 'rma',
         'name'      => 'rma::app.admin.admin-name.rma',
         'info'      => 'rma::app.admin.admin-name.info',
-        'icon'      => 'settings/order.svg',
         'sort'      => 2
     ],  [
         'key'       => 'rma.settings',

@@ -699,7 +699,7 @@ class CustomerController extends Controller
             session()->flash('success', trans('rma::app.response.create-success', ['name' => 'Request']));
 
             if ($this->isGuest == 1) {
-                return redirect()->route('rma.customers.guestallrma');
+                return redirect()->route('rma.customers.allrma');
             }
 
             return redirect()->route('rma.customers.allrma');
@@ -838,7 +838,7 @@ class CustomerController extends Controller
             session()->put('guestOrderId',$guestUserData['order_id']);
             session()->put('guestEmailId',$guestUserData['email']);
 
-            return redirect()->route('rma.customers.guestallrma')->with('guestUserData');
+            return redirect()->route('rma.customers.allrma')->with('guestUserData');
         } else {
             return redirect()->back()->with('error','Invalid details for guest');
         }
