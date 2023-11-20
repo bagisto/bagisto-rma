@@ -1,4 +1,4 @@
-<x-shop::layouts.account>
+<x-shop::layouts>
 
 {{-- Title of the page --}}
 <x-slot:title>
@@ -7,12 +7,12 @@
 <br>
 
 <div class="account-layout" @if(!auth()->guard('customer')->user())@endif>
-    <rma-request-wrapper></rma-request-wrapper>
-    
+    <rma-request-wrapper></rma-request-wrapper>  
 </div>
 
 @pushOnce('scripts')
-    <script type="text/x-template" id="rma-request-template">
+<script type="text/x-template" id="rma-request-template">
+    <div class="container px-[60px] max-lg:px-[30px]">  
         <div>
             <x-shop::form
                 :action="route('rma.customers.store')"
@@ -158,6 +158,7 @@
                         @lang('rma::app.shop.customer-rma-create.item-ordered')
                     </p>
                 </div>
+
                     <div class="mt-[15px] overflow-x-auto">
                         <x-table>
                             <x-table.thead class="text-[14px] font-medium dark:bg-gray-800">
@@ -304,7 +305,7 @@
                                         >
                                         </x-shop::form.control-group.error>
                                     </x-shop::form.control-group>
-                                </x-table.td>
+                                    </x-table.td>
                                 </x-table.tr>
                             </x-table.tbody>
                         </x-table>
@@ -322,71 +323,72 @@
                     <div class="sale-container">
                         <div>
                         <div class="sale-section">
-                        <div class="flex justify-between items-center">
-                            <h2 class="text-[26px] font-medium">
-                                @lang('rma::app.shop.customer-rma-create.images')
-                            </h2>
-                        </div>
+                            <div class="flex justify-between items-center">
+                                <h2 class="text-[26px] font-medium">
+                                    @lang('rma::app.shop.customer-rma-create.images')
+                                </h2>
+                            </div>
                         <div class="row">
-                            <x-shop::form.control-group>
-                                <x-shop::media
-                                    name="images"
-                                    :multiple="true"
-                                >
-                                @lang('admin::app.catalog.products.add-image-btn-title')
-                                </x-shop::media>
-                            </x-shop::form.control-group>
-                            </div>
-                            </div>
+                        <x-shop::form.control-group>
+                            <x-shop::media
+                                name="images"
+                                :multiple="true"
+                            >
+                            @lang('admin::app.catalog.products.add-image-btn-title')
+                            </x-shop::media>
+                        </x-shop::form.control-group>
+                        </div>
+                        </div>
 
+                        <x-shop::form.control-group.control
+                            type="hidden"
+                            name="email"
+                            value="{{ $customerEmail }}"
+                        >
+                        </x-shop::form.control-group.control>
+
+                        <x-shop::form.control-group.control
+                            type="hidden"
+                            name="name"
+                            value="{{ $customerName }}"
+                        >
+                        </x-shop::form.control-group.control>
+
+                        <x-shop::form.control-group.control
+                            type="hidden"
+                            name="token"
+                            value="{!! csrf_token() !!}"
+                        >
+                        </x-shop::form.control-group.control>
+
+                        <div class="p-[16px]">
+                        <x-shop::form.control-group class="mb-[10px]">
+                            <x-shop::form.control-group.label class="required">
+                                @lang('rma::app.shop.customer-rma-create.information')
+                            </x-shop::form.control-group.label>
+                    
                             <x-shop::form.control-group.control
-                                type="hidden"
-                                name="email"
-                                value="{{ $customerEmail }}"
+                                type="textarea"
+                                name="information"
+                                id="information"
+                                rules="required"
+                                :label="trans('rma::app.shop.customer-rma-create.information')"
+                                :placeholder="trans('rma::app.shop.customer-rma-create.information')"
+                                rows="3"
                             >
                             </x-shop::form.control-group.control>
 
-                            <x-shop::form.control-group.control
-                                type="hidden"
-                                name="name"
-                                value="{{ $customerName }}"
+                            <x-shop::form.control-group.error
+                                control-name="information"
                             >
-                            </x-shop::form.control-group.control>
-
-                            <x-shop::form.control-group.control
-                                type="hidden"
-                                name="token"
-                                value="{!! csrf_token() !!}"
-                            >
-                            </x-shop::form.control-group.control>
-
-                            <div class="p-[16px]">
-                            <x-shop::form.control-group class="mb-[10px]">
-                                <x-shop::form.control-group.label class="required">
-                                    @lang('rma::app.shop.customer-rma-create.information')
-                                </x-shop::form.control-group.label>
-                        
-                                <x-shop::form.control-group.control
-                                    type="textarea"
-                                    name="information"
-                                    id="information"
-                                    rules="required"
-                                    :label="trans('rma::app.shop.customer-rma-create.information')"
-                                    :placeholder="trans('rma::app.shop.customer-rma-create.information')"
-                                    rows="3"
-                                >
-                                </x-shop::form.control-group.control>
-
-                                <x-shop::form.control-group.error
-                                    control-name="information"
-                                >
-                                </x-shop::form.control-group.error>
-                            </x-shop::form.control-group>
-                            </div>
+                            </x-shop::form.control-group.error>
+                        </x-shop::form.control-group>
                         </div>
                     </div>
+                </div>
             </x-shop::form>
         </div>
+    </div>
     </script>
 
     <script type="module">
@@ -738,4 +740,4 @@
         }
     </script>
 @endpushOnce
-</x-shop::layouts.account>
+</x-shop::layouts>

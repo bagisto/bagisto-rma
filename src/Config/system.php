@@ -4,14 +4,18 @@ return [
     [
         'key'       => 'rma',
         'name'      => 'rma::app.admin.admin-name.rma',
+        'info'      => 'rma::app.admin.admin-name.info',
         'sort'      => 2
     ],  [
         'key'       => 'rma.settings',
         'name'      => 'rma::app.admin.setting.settings',
+        'info'      => 'rma::app.admin.setting.info',
+        'icon'      => 'settings/order.svg',
         'sort'      => 1,
     ],  [
         'key'       => 'rma.settings.general',
         'name'      => 'rma::app.admin.setting.general',
+        'info'      => 'rma::app.admin.setting.fields.info',
         'sort'      => 1,
         'fields'    => [
             [

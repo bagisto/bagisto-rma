@@ -1,66 +1,89 @@
-@extends('admin::layouts.content')
+<x-admin::layouts>
 
-@section('page_title')
-{{ __('rma::app.admin.title.create') }}
-@stop
+    {{-- Title of the page --}}
+    <x-slot:title>
+        @lang('rma::app.admin.title.create')
+    </x-slot>
+    
+    {{-- Reason Edit Form --}}
+    <x-admin::form 
+        method="POST"
+        :action="route('admin.rma.reason.store')"
+        enctype="multipart/form-data"
+    >
+        @csrf
+        <x-admin::form.control-group.control
+            type="hidden"
+            value="POST"
+        >
 
-@section('content')
-    <div class="content">
-        <form method="POST" action="{{ route('admin.rma.reason.store') }}" @submit.prevent="onSubmit">
+        </x-admin::form.control-group.control>
 
-            <div class="page-header">
-                <div class="page-title">
-                    <h1>
-                        <i class="icon angle-left-icon back-link"
-                            onclick="history.length > 1 ? history.go(-1) : window.location = '{{ url('/rma/reasons') }}';"></i>
-                        {{ __('rma::app.admin.create-reasons.heading') }}
-                    </h1>
-                </div>
+        <div class="flex gap-[16px] justify-between items-center max-sm:flex-wrap">
+            <div class="flex gap-x-[10px] items-center">
+                <h1 class="text-[20px] text-gray-800 dark:text-white font-bold">
 
-                <div class="page-action">
-                    <button type="submit" class="btn btn-lg btn-primary">
-                        {{ __('rma::app.admin.create-reasons.save-btn') }}
-                    </button>
-                </div>
+                <i class="icon angle-left-icon back-link" onclick="history.length > 1 ? history.go(-1) : window.location = '{{ url('/rma/reasons') }}';"></i>
+                @lang('rma::app.admin.create-reasons.heading')
+                </h1>
             </div>
 
-            <div class="page-content">
-                @csrf()
+            <div class="flex gap-x-[10px] items-center">
+               
+               <!-- save Button -->
+               <button type="submit" class="primary-button">
+                   @lang('rma::app.admin.create-reasons.save-btn')
+               </button>
+           </div>
+       </div>
+           @csrf()
 
-                <accordian :title="'{{ __('admin::app.catalog.products.general') }}'" :active="true">
-                    <div slot="body">
-                        <div class="control-group" :class="[errors.has('title') ? 'has-error' : '']">
-                            <label for="title"
-                                class="required">{{ __('rma::app.admin.create-reasons.reason') }}</label>
-                            <input type="text" v-validate="'required'" class="control" id="reasons" name="title"
-                                value="{{ old('title') }}"
-                                data-vv-as="&quot;{{ __('rma::app.admin.create-reasons.reason') }}&quot;" />
-                            <span class="control-error" v-if="errors.has('title')">@{{ errors.first('title') }}</span>
-                        </div>
+           <div class="flex gap-[16px] max-sm:flex-wrap">
+            <x-admin::form.control-group class="w-full mb-[10px]">
+                <x-admin::form.control-group.label class="required">
+                    @lang('rma::app.admin.create-reasons.reason')
+                </x-admin::form.control-group.label>
 
+                <x-admin::form.control-group.control
+                    type="text"
+                    name="title"
+                    :value="old('title')"
+                    rules="required"
+                    :label="trans('rma::app.admin.create-reasons.reason')"
+                    :placeholder="trans('rma::app.admin.create-reasons.reason')"
+                >
+                </x-admin::form.control-group.control>
 
-                        <div class="control-group" :class="[errors.has('status') ? 'has-error' : '']">
-                            <label for="status"
-                                class="required">{{ __('rma::app.admin.create-reasons.status') }}</label>
-
-                            <select class="control" v-validate="'required'" id="status" name="status"
-                                data-vv-as="&quot;{{ __('rma::app.admin.create-reasons.status') }}&quot;">
-
-                                <option value="">Please Select Value</option>
-                                <option value="1">Enabled</option>
-                                <option value="0">Disabled</option>
-
-                            </select>
-
-                            <span class="control-error" v-if="errors.has('status')">@{{ errors.first('status') }}</span>
-                        </div>
-
-                    </div>
-                </accordian>
-            </div>
-        </form>
-    </div>
-@stop
+                <x-admin::form.control-group.error
+                    control-name="title"
+                >
+                </x-admin::form.control-group.error>
+            </x-admin::form.control-group>
+        </div>
+            
+        <div class="flex gap-[16px] max-sm:flex-wrap">
+            <x-admin::form.control-group class="w-full mb-[10px]">
+                <x-admin::form.control-group.label>
+                    @lang('rma::app.admin.create-reasons.status')
+                </x-admin::form.control-group.label>
+                <x-admin::form.control-group.control
+                    type="select"
+                    name="status"
+                    id="status"
+                    rules="required"
+                >
+                 <!-- Default Option -->
+                 <option value="">
+                    @lang('rma::app.admin.create-reasons.status')
+                </option>
+                <option value="1">Active</option>
+                <option value="0">InActive</option>
+                
+            </x-admin::form.control-group.control>
+            </x-admin::form.control-group>
+        </div>
+    </x-admin::form>
+</x-admin::layouts>
 
 @push('scripts')
     <script>

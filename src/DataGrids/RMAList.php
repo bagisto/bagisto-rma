@@ -2,27 +2,37 @@
 
 namespace Webkul\RMA\DataGrids;
 
-use DB;
-use Webkul\Ui\DataGrid\DataGrid;
+use Illuminate\Support\Facades\DB;
+use Webkul\DataGrid\DataGrid;
 
 class RMAList extends DataGrid
+
 {
     /**
      * @var integer
      */
     protected $index = 'id';
+
+    /**
+     * Sort Order
+     *
+     * @var string
+     */    
     protected $sortOrder = 'desc'; //asc or desc
 
     /**
-     * Create a new repository instance.
-     *
-     * @return void
+     * Constructor
      */
     public function __construct()
     {
         $this->invoker = $this;
     }
 
+    /**
+     * Prepare query builder.
+     *
+     * @return \Illuminate\Database\Query\Builder
+     */
     public function prepareQueryBuilder()
     {
         $orderId = $customerId = NULL;
@@ -35,14 +45,14 @@ class RMAList extends DataGrid
 
             $customerId = auth()->guard('customer')->user()->id;
         }
-
-        // get the guest orderId for the data filteration
+        
+        // get the guest orderId for the data filtration
         if (request()->route()->getName() != 'admin.rma.index') {
             $guestEmailId = session()->get('guestEmailId');
         }
 
         $orders = DB::table('orders')
-                ->where(function($query) use ($guestEmailId, $customerId)  {
+                  ->where(function($query) use ($guestEmailId, $customerId)  {
                     if ($guestEmailId) {
                         $query->where('orders.customer_email', $guestEmailId);
                         $query->where('orders.is_guest', 1);
@@ -52,14 +62,14 @@ class RMAList extends DataGrid
                                 $query->where('orders.customer_id', $customerId);
                             }
                         } else if (auth()->guard('admin')->user()) {
-                            if (request()->route()->getName() == 'rma.customers.guestallrma') {
+                            if (request()->route()->getName() == 'rma.customers.allrma') {
                                 $query->where('orders.customer_email', $customerId);
                             }
                         } else {
                             $query->where('orders.customer_email', $customerId);
                         }
                     }
-                });
+                  });
 
         $orderId = [];
         foreach ($orders->get() as $order) {
@@ -67,19 +77,32 @@ class RMAList extends DataGrid
         }
 
         $queryBuilder = DB::table('rma')
+                        ->leftJoin('orders', 'orders.id', '=', 'rma.order_id')
                         ->addSelect(
                             'rma.id',
                             'rma.status',
                             'rma.order_id',
                             'rma.rma_status',
-                            'rma.created_at'
+                            'rma.created_at',
+                            'orders.customer_email',
                         )
                         ->whereIn('order_id', $orderId);
 
-        $this->setQueryBuilder($queryBuilder);
+
+        $this->addFilter('id', 'rma.id');
+        $this->addFilter('order_id', 'rma.order_id');
+        $this->addFilter('customer_email', 'orders.customer_email');
+        $this->addFilter('created_at', 'rma.created_at');
+       
+        return $queryBuilder;
     }
 
-    public function addColumns()
+    /**
+     * Add columns.
+     *
+     * @return void
+     */
+    public function prepareColumns()
     {
         $this->addColumn([
             'index' =>  'id',
@@ -121,34 +144,35 @@ class RMAList extends DataGrid
             'sortable' => true,
             'searchable' => false,
             'filterable' => false,
-            'wrapper' => function($rma) {
+            'closure'    => function ($rma) {
+
                 $rmaStatus = $rma->rma_status;
 
                 if ($rmaStatus == NULL || $rmaStatus == 'Pending') {
                     if ($rma->status != 1) {
-                        echo "Pending";
+                        return '<p class="label-pending">' . trans('rma::app.status.status-name.pending') . '</p>';
                     } else {
-                        echo "Solved";
+                        return '<p class="label-solved">' . trans('rma::app.status.status-name.solved') . '</p>';
                     }
                 } else if($rmaStatus == 'Received Package') {
                     if ($rma->status != 1) {
-                        echo 'Received Package';
+                        return '<p class="label-received_package">' . trans('rma::app.status.status-name.received_package') . '</p>';
                     } else {
-                        echo "Solved";
+                        return '<p class="label-solved">' . trans('rma::app.status.status-name.solved') . '</p>';
                     }
                 } else if ($rmaStatus == 'Declined') {
-                    echo $rmaStatus;
+                    return '<p class="label-cancelled">' . trans('rma::app.status.status-name.declined') . '</p>';
                 } else if($rmaStatus == 'Item Canceled') {
-                    echo "Item Canceled";
+                    return '<p class="label-cancelled">' . trans('rma::app.status.status-name.item_canceled') . '</p>';
                 } else if ($rmaStatus == 'Not Receive Package yet') {
-                    echo 'Not Receive Package yet';
+                    return '<p class="label-processing">' . trans('rma::app.status.status-name.not_received_package_yet') . '</p>';
                 } else if ($rmaStatus == 'Dispatched Package') {
-                    echo 'Dispatched Package';
+                    return '<p class="label-dispatched_package">' . trans('rma::app.status.status-name.dispatched_package') . '</p>';
                 } else if($rmaStatus == 'Accept') {
                     if ($rma->status != 1) {
-                        echo 'Accept';
+                        return '<p class="label-accept">' . trans('rma::app.status.status-name.accept') . '</p>';
                     } else {
-                        echo "Solved";
+                        return '<p class="label-completed">' . trans('rma::app.status.status-name.solved') . '</p>';
                     }
                 }
             }
@@ -157,19 +181,26 @@ class RMAList extends DataGrid
         $this->addColumn([
             'index' => 'created_at',
             'label' => trans('rma::app.shop.customer-index-field.date'),
-            'type' => 'datetime',
+            'type' => 'date_range',
             'sortable' => true,
-            'searchable' => false,
+            'searchable' => true,
             'filterable' => true
         ]);
     }
-
+    /**
+     * Prepare actions.
+     */
     public function prepareActions()
     {
+        if (bouncer()->hasPermission('admin.rma.index')) {
         $routeName = request()->route()->getName();
+
+        $iconClass = 'icon-eye';
 
         if ($routeName == 'admin.rma.index' && auth()->guard('admin')->user()) {
             $route = 'admin.rma.view';
+            $iconClass = 'icon-view';
+
         } else if ($routeName == 'rma.customers.allrma' && auth()->guard('customer')->user()) {
            $route = 'rma.customer.view';
         } else {
@@ -179,9 +210,12 @@ class RMAList extends DataGrid
         $this->addAction([
             'title' => trans('rma::app.shop.customer-rma-index.view'),
             'type' => 'View',
+            'icon' => $iconClass,
             'method' => 'GET',
-            'route' => $route,
-            'icon' => 'icon eye-icon'
-        ],true);
+            'url'    => function ($row) use ($route) {
+                return route($route, $row->id);
+            },
+        ]);
+    }
     }
 }

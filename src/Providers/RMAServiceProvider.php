@@ -40,29 +40,23 @@ class RMAServiceProvider extends ServiceProvider
             __DIR__ . '/../Resources/views/shop/velocity/UI/header.blade.php'
             => resource_path('themes/velocity/views/UI/header.blade.php'),
 
-            __DIR__ . '/../Resources/views/admin/sales/shipments/create.blade.php'
+            __DIR__ . '/../Resources/views/admin/sales/shipments/create.blade.php' 
             => resource_path('/views/vendor/admin/sales/shipments/create.blade.php'),
 
-            __DIR__ . '/../Resources/views/admin/sales/orders/view.blade.php'
+            __DIR__ . '/../Resources/views/admin/sales/orders/view.blade.php' 
             => resource_path('/views/vendor/admin/sales/orders/view.blade.php'),
 
-            __DIR__ . '/../Resources/views/admin/sales/invoices/create.blade.php'
+            __DIR__ . '/../Resources/views/admin/sales/invoices/create.blade.php' 
             => resource_path('/views/vendor/admin/sales/invoices/create.blade.php'),
         ]);
 
         Event::listen('bagisto.shop.layout.head', function ($viewRenderEventManager) {
-            $viewRenderEventManager->addTemplate('rma::shop.layouts.style');
+            // $viewRenderEventManager->addTemplate('rma::shop.layouts.style');
         });
 
         $this->app->register(RepositoryServiceProvider::class);
 
         $router->aliasMiddleware('rma', Rma::class);
-
-        if ($this->app->runningInConsole()) {
-            $this->commands([
-                Install::class
-            ]);
-        }
     }
 
     /**
@@ -73,6 +67,9 @@ class RMAServiceProvider extends ServiceProvider
     public function register()
     {
         $this->registerConfig();
+        $this->commands([
+            Install::class
+        ]);
     }
 
     /**

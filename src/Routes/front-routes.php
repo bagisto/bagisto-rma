@@ -11,33 +11,37 @@ Route::group(['middleware' => ['web', 'theme', 'locale', 'currency','rma']], fun
 
             Route::get('/login', [CustomerController::class, 'guestLogin'])
                 ->name('rma.guest.login')
+                ->middleware('guest-rma')
                 ->defaults('_config',[
                     'view' => 'rma::shop.guest.account.login',
             ]);
 
             Route::post('/createlogin', [CustomerController::class, 'guestLoginCreate'])
                 ->name('rma.guest.logincreate')
+                ->middleware('guest-rma')
                 ->defaults('_config',[
                     'redirect' => 'rma::shop.customers.rma.allrma',
             ]);
 
             Route::get('/newrma', [CustomerController::class, 'guestRMACreate'])
                 ->name('rma.customers.guestcreaterma')
+                ->middleware('guest-rma')
                 ->defaults('_config', [
-                    'view' => 'rma::shop.guest.account.create',
+                    'view' => 'rma::shop.customers.rma.create',
             ]);
 
             Route::get('rma/id/{id}', [CustomerController::class, 'view'])
                 ->name('rma.customer.guestview')
                 ->middleware('guest')
                 ->defaults('_config', [
-                    'view' => 'rma::shop.guest.account.view',
+                    'view' => 'rma::shop.customers.rma.view',
             ]);
 
             Route::get('/allrma', [CustomerController::class, 'index'])
-                ->name('rma.customers.allrma')
+                ->name('rma.customers.guestallrma')
+                ->middleware('guest-rma')
                 ->defaults('_config', [
-                    'view' => 'rma::shop.guest.account.index',
+                    'view' => 'rma::shop.customers.rma.index',
             ]);
             
             Route::get('/get-products/{orderId?}/{resolutionId?}', [CustomerController::class, 'getProducts'])
@@ -46,8 +50,9 @@ Route::group(['middleware' => ['web', 'theme', 'locale', 'currency','rma']], fun
                     'redirect' => 'account.RMA'
             ]);
             
-            Route::get('/create', [CustomerController::class, 'create'])
+            Route::get('/create', [CustomerController::class, 'guestRMACreate'])
                 ->name('rma.customers.create')
+                ->middleware('guest-rma')
                 ->defaults('_config', [
                     'view' => 'rma::shop.customers.rma.create',
             ]);
@@ -58,13 +63,13 @@ Route::group(['middleware' => ['web', 'theme', 'locale', 'currency','rma']], fun
                     'redirect' => 'rma.customers.allrma'
             ]);
             
-            Route::post('/savecustomerrmamessage', [CustomerController::class, 'sendmessage'])
+            Route::post('/savecustomerrmamessage', [CustomerController::class, 'sendMessage'])
                 ->name('rma.customer.sendmessage')
                 ->defaults('_config',[
                     'redirect' => 'account.RMA'
             ]);
 
-            Route::post('/savermastatus', [CustomerController::class, 'savestatus'])
+            Route::post('/savermastatus', [CustomerController::class, 'saveStatus'])
                 ->name('rma.customer.save.rma-status')
                 ->defaults('_config',[
                     'redirect' => 'account.RMA'
@@ -73,10 +78,10 @@ Route::group(['middleware' => ['web', 'theme', 'locale', 'currency','rma']], fun
             Route::get('/search-order/{orderId?}', [CustomerController::class, 'searchOrder'])
             ->name('rma.customer.search.order');
             
-            Route::get('/customer/reopen/{id}', [CustomerController::class, 'reopenRMA'])
+            Route::get('/guest/reopen/{id}', [CustomerController::class, 'reopenRMA'])
                 ->name('rma.guest.reopen.rma-status')
                 ->defaults('_config',[
-                    'redirect' => 'rma.customers.allrma'
+                    'redirect' => 'rma.customers.guestallrma'
             ]);
 
         });
@@ -99,18 +104,24 @@ Route::group(['middleware' => ['web', 'theme', 'locale', 'currency','rma']], fun
                     ->name('rma.customers.getproductbyseller')
                     ->defaults('_config', [
                         'redirect' => 'account.RMA'
-                ]);
+                    ]);
 
                 Route::get('view/{id}',[CustomerController::class, 'view'] )
                     ->name('rma.customer.view')
                     ->defaults('_config', [
                         'view' => 'rma::shop.customers.rma.view',
-                ]);
+                    ]);
 
                 Route::get('/reopen/{id}',[CustomerController::class, 'reopenRMA'])
                     ->name('rma.customer.reopen.rma-status')
                     ->defaults('_config',[
                         'redirect' => 'rma.customers.allrma'
+                    ]);
+                
+                Route::get('/newrma', [CustomerController::class, 'customerRMACreate'])
+                ->name('rma.customers.customercreaterma')
+                ->defaults('_config', [
+                    'view' => 'rma::shop.customers.rma.create',
                 ]);
 
                 Route::post('/add-new-rma-reason/{orderId?}', [CustomerController::class, 'addReason'])

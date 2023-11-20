@@ -2,123 +2,85 @@
 
 namespace Webkul\RMA\Http\Controllers\Admin;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Mail;
-use Webkul\RMA\Repositories\RMARepository;
-use Webkul\RMA\Mail\CustomerRMAStatusEmail;
-use Webkul\RMA\Mail\AdminConversationEmail;
-use Webkul\RMA\Http\Controllers\Controller;
-use Webkul\Sales\Repositories\OrderRepository;
-use Webkul\RMA\Repositories\RMAItemsRepository;
-use Webkul\RMA\Repositories\RMAImagesRepository;
-use Webkul\RMA\Repositories\RMAReasonsRepository;
-use Webkul\RMA\Repositories\RMAMessagesRepository;
-use Webkul\Sales\Repositories\OrderItemRepository;
+use Webkul\RMA\Repositories\{RMARepository, RMAItemsRepository, RMAReasonsRepository, RMAImagesRepository, RMAMessagesRepository};
+use Webkul\RMA\Mail\{CustomerRMAStatusEmail, AdminConversationEmail, CustomerRmaCreationEmail};
+use Webkul\Sales\Repositories\{OrderRepository, OrderItemRepository, RefundRepository};
 use Webkul\Customer\Repositories\CustomerRepository;
-use Webkul\Sales\Repositories\RefundRepository;
+use Webkul\RMA\DataGrids\RMAList;
+use Webkul\RMA\Http\Controllers\Controller;
+use Webkul\RMA\Http\Controllers\massUpdateRequest;
+use Webkul\RMA\DataGrids\Admin\Reasons;
+use Cookie;
+use Webkul\RMA\Models\RMAReasons;
 
 class AdminController extends Controller
-{
+{   
     /**
-     * OrderRepository object
+     * Is Guest User
      *
-     * @var array
+     * @var bool  
      */
-    protected $orderRepository;
+    protected $isGuest;
 
     /**
-     * RMARepository object
+     * For view file
      *
-     * @var object
+     * @var string
      */
-    protected $rmaRepository;
-
+    protected $_config;
     /**
-     * RMAItemsRepository object
+     * Constructor
      *
-     * @var object
+     * @param RMARepository $rmaRepository
+     * @param OrderRepository $orderRepository
+     * @param RMAItemsRepository $rmaItemsRepository
+     * @param RMAImagesRepository $rmaImagesRepository
+     * @param RMAReasonsRepository $rmaReasonRepository
+     * @param RMAMessagesRepository $rmaMessagesRepository
+     * @param CustomerRepository $customerRepository
+     * @param OrderItemRepository $orderItemRepository
+     * @param RefundRepository $refundRepository
      */
-    protected $rmaItemsRepository;
-
-    /**
-     * RMAReasonsRepository object
-     *
-     * @var object
-     */
-    protected $rmaReasonRepository;
-
-    /**
-     * OrderItemRepository object
-     *
-     * @var object
-     */
-    protected $orderItemRepository;
-
-    /**
-     * RefundRepository object
-     *
-     * @var object
-     */
-    protected $refundRepository;
-
-    /**
-     * RMAMessagesRepository object
-     *
-     * @var object
-     */
-    protected $rmaMessagesRepository;
-
-    /**
-     * RMAImagesRepository object
-     *
-     * @var object
-     */
-    protected $rmaImagesRepository;
-
-    /**
-     * CustomerRepository object
-     *
-     * @var object
-     */
-    protected $customerRepository;
-
     public function __construct(
-        RMARepository $rmaRepository,
-        OrderRepository $orderRepository,
-        RMAItemsRepository $rmaItemsRepository,
-        CustomerRepository $customerRepository,
-        OrderItemRepository $orderItemRepository,
-        RMAImagesRepository $rmaImagesRepository,
-        RMAReasonsRepository $rmaReasonRepository,
-        RMAMessagesRepository $rmaMessagesRepository,
-        RefundRepository $refundRepository
-    ) {
-        $this->isGuest = 1;
-
+        protected RMARepository $rmaRepository,
+        protected OrderRepository $orderRepository,
+        protected RMAItemsRepository $rmaItemsRepository,
+        protected RMAImagesRepository $rmaImagesRepository,
+        protected RMAReasonsRepository $rmaReasonRepository,
+        protected RMAMessagesRepository $rmaMessagesRepository,
+        protected CustomerRepository $customerRepository,
+        protected OrderItemRepository $orderItemRepository,
+        protected RefundRepository $refundRepository
+    )
+    {
         if (auth()->guard('customer')->user()) {
             $this->isGuest = 0;
             $this->middleware('customer');
         }
 
         $this->_config = request('_config');
-
-        $this->rmaRepository = $rmaRepository;
-        $this->orderRepository = $orderRepository;
-        $this->customerRepository = $customerRepository;
-        $this->rmaItemsRepository = $rmaItemsRepository;
-        $this->rmaReasonRepository = $rmaReasonRepository;
-        $this->orderItemRepository = $orderItemRepository;
-        $this->rmaImagesRepository = $rmaImagesRepository;
-        $this->rmaMessagesRepository = $rmaMessagesRepository;
-        $this->refundRepository = $refundRepository;
     }
 
+    /**
+     * RMA list
+     */
     public function index()
     {
+        $path = request()->path();
+
+        if (request()->ajax() && $path == "admin/rma/requests") {
+            return app(RMAList::class)->toJson();
+        } else if (request()->ajax() && $path == "admin/rma/reasons") {
+            return app(Reasons::class)->toJson();
+        }
+
         return view($this->_config['view']);
     }
 
     /**
-     * store reason
+     * Store reason
      */
     public function store()
     {
@@ -146,8 +108,9 @@ class AdminController extends Controller
      */
     public function update()
     {
+      
        $data = request()->except('_token');
-
+      
        $this->rmaReasonRepository->find($data['id'])->update($data);
 
        session()->flash('success', trans('rma::app.response.update-success', ['name' => 'Reasons']));
@@ -408,25 +371,22 @@ class AdminController extends Controller
     {
         $data = request()->all();
 
-        if (! isset($data['massaction-type']) || !$data['massaction-type'] == 'update') {
-            return redirect()->back();
-        }
-
-        $reasonIds = explode(',', $data['indexes']);
-
+        $reasonIds = $data['indices'];
+       
         foreach ($reasonIds as $reasonId) {
+            
             $rmaReason = $this->rmaReasonRepository->find($reasonId);
 
-            if ($rmaReason) {
                 $rmaReason->update([
-                    'status' => $data['update-options']
+                    'status' => $data['value']
                 ]);
-            }
         }
 
-        session()->flash('success', trans('rma::app.response.update-success', ['name' => 'Reasons']));
+        return new JsonResponse([
+            'message' => trans('rma::app.response.mass-update-success'),
+        ]);
 
-        return redirect()->route($this->_config['redirect']);
+        return redirect(route('admin.rma.reason.index'));
     }
 
     /**
@@ -437,9 +397,8 @@ class AdminController extends Controller
         $suppressFlash = false;
 
         if (request()->all(['massaction-type'])) {
-            $indexes = explode(',', request()->input('indexes'));
 
-            foreach ($indexes as $key => $value) {
+            foreach (request()->input('indices') as $key => $value) {
                 try {
                     $this->rmaReasonRepository->delete($value);
                 } catch (\Exception $e) {
@@ -449,12 +408,14 @@ class AdminController extends Controller
                 }
             }
 
-            if (! $suppressFlash)
-                session()->flash('success', trans('rma::app.response.delete-success', ['name' => 'Reason']));
-            else
-                session()->flash('error', trans( 'rma::app.response.attribute-reason-error', ['name' => 'Reason']));
+        if (! $suppressFlash)
 
-            return redirect()->back();
+            return new JsonResponse([
+                
+                'message' => trans('rma::app.response.mass-delete-success'),
+
+            ]);
+
         } else {
             session()->flash('error', trans( 'rma::app.response.attribute-reason-error', ['name' => 'Reason']));
 
@@ -467,17 +428,11 @@ class AdminController extends Controller
     */
     public function delete($id)
     {
-        try {
+        $this->rmaReasonRepository->delete($id);
 
-            $this->rmaReasonRepository->delete($id);
+        session()->flash('success', trans('rma::app.response.delete-success'));
 
-            session()->flash('success', trans('rma::app.response.delete-success', ['name' => 'Reason']));
+        return redirect(route('admin.rma.reason.index'));
 
-        } catch (\Exception $e) {
-
-            session()->flash('error', trans( 'rma::app.response.attribute-reason-error', ['name' => 'Reason']));
-        }
-
-        return redirect()->back();
     }
 }
