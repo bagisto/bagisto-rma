@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'icomoon';
+  src:  url('../fonts/icomoon.eot?qn8hke');
+  src:  url('../fonts/icomoon.eot?qn8hke#iefix') format('embedded-opentype'),
+    url('../fonts/icomoon.ttf?qn8hke') format('truetype'),
+    url('../fonts/icomoon.woff?qn8hke') format('woff'),
+    url('../fonts/icomoon.svg?qn8hke#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+  
+[class^="rma-"], [class*=" rma-"] {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'icomoon' !important;
+    speak: never;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    color: #6b7280;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+    
+html.dark [class^="rma-"],
+html.dark [class*=" rma-"]{
+    color: #d1d5db;
+}
+
+.rma-icon-icon:before {
+    content: "\a102";
+}  
+
+.text-white {
+    --tw-text-opacity: 1 !important;
+    color: rgb(255 255 255 / var(--tw-text-opacity)) !important;
+}
+
+.primary-button {
+    @apply flex gap-x-1 items-center px-3 py-1.5 bg-blue-600 border border-blue-700 rounded-md text-gray-50 font-semibold cursor-pointer transition-all hover:opacity-[0.9] focus:opacity-[0.9];
+}
+
+.secondary-button {
+    @apply flex gap-x-1 items-center px-3 py-1.5 bg-white border-2 border-blue-600 rounded-md text-blue-600 font-semibold whitespace-nowrap cursor-pointer transition-all hover:bg-[#eff6ff61] focus:bg-[#eff6ff61] dark:border-gray-400 dark:bg-gray-800 dark:text-white dark:hover:opacity-80;
+}
+
+.transparent-button {
+    @apply flex gap-x-1 items-center px-3 py-1.5 border-2 border-transparent rounded-md text-gray-600 font-semibold whitespace-nowrap cursor-pointer marker:shadow appearance-none transition-all hover:bg-gray-100 dark:hover:bg-gray-950  focus:bg-gray-100;
+}
+
+.bg-opacity-50 {
+    --tw-bg-opacity: .5 !important;
+}
