@@ -16,7 +16,8 @@ class CreateRmaReasonsTable extends Migration
         Schema::create('rma_reasons', function (Blueprint $table) {
             $table->increments('id');
             $table->string('title');
-            $table->string('status')->nullable();
+            $table->boolean('status')->nullable();
+            $table->integer('position')->default(0);
             $table->timestamps();
         });
     }

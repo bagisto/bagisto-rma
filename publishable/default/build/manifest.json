@@ -1,0 +1,28 @@
+{
+  "src/Resources/assets/css/admin.css": {
+    "file": "assets/admin-32d3e290.css",
+    "isEntry": true,
+    "src": "src/Resources/assets/css/admin.css"
+  },
+  "src/Resources/assets/css/app.css": {
+    "file": "assets/app-7efca5f8.css",
+    "isEntry": true,
+    "src": "src/Resources/assets/css/app.css"
+  },
+  "src/Resources/assets/fonts/icomoon.eot": {
+    "file": "assets/icomoon-7e26caeb.eot",
+    "src": "src/Resources/assets/fonts/icomoon.eot"
+  },
+  "src/Resources/assets/fonts/icomoon.svg": {
+    "file": "assets/icomoon-0c5824b0.svg",
+    "src": "src/Resources/assets/fonts/icomoon.svg"
+  },
+  "src/Resources/assets/fonts/icomoon.ttf": {
+    "file": "assets/icomoon-b342fad0.ttf",
+    "src": "src/Resources/assets/fonts/icomoon.ttf"
+  },
+  "src/Resources/assets/fonts/icomoon.woff": {
+    "file": "assets/icomoon-783127a5.woff",
+    "src": "src/Resources/assets/fonts/icomoon.woff"
+  }
+}

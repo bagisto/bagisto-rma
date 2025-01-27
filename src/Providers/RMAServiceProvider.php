@@ -2,14 +2,12 @@
 
 namespace Webkul\RMA\Providers;
 
-use Webkul\Core\Tree;
 use Illuminate\Routing\Router;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Foundation\AliasLoader;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
-
+use Webkul\RMA\Console\Commands\InstallRMA;
+use Webkul\RMA\Http\Middleware\Guest;
 use Webkul\RMA\Http\Middleware\Rma;
-use Webkul\RMA\Console\Commands\Install;
 
 class RMAServiceProvider extends ServiceProvider
 {
@@ -20,49 +18,90 @@ class RMAServiceProvider extends ServiceProvider
      */
     public function boot(Router $router)
     {
-        include __DIR__ . '/../Http/front-routes.php';
-        include __DIR__ . '/../Http/admin-routes.php';
+        /**
+         * Load Route
+         */
+        $this->loadRoutesFrom(__DIR__ . '/../Routes/web.php');
 
+        /**
+         * Load View files
+         */
         $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'rma');
+
+        /**
+         * Migrations
+         */
         $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+
+        /**
+         * Translations file
+         */
         $this->loadTranslationsFrom(__DIR__ . '/../Resources/lang', 'rma');
 
-        $this->publishes([
-            __DIR__ . '/../Resources/views/shop/velocity/customers/account/index.blade.php'
-            => resource_path('themes/velocity/views/customers/account/index.blade.php'),
+        /**
+         * Component*
+         */
+        Blade::anonymousComponentPath(__DIR__ . '/../Resources/views/components', 'rma');
 
-            __DIR__ . '/../Resources/views/shop/velocity/customers/account/partials/sidemenu.blade.php'
-            => resource_path('themes/velocity/views/customers/account/partials/sidemenu.blade.php'),
+        /**
+         * Set Middlewares
+         */
+        $router->aliasMiddleware('rma', RMA::class);
 
-            __DIR__ . '/../Resources/views/shop/default/customers/account/partials/sidemenu.blade.php'
-            => resource_path('themes/default/views/customers/account/partials/sidemenu.blade.php'),
+        $router->aliasMiddleware('guest-rma', Guest::class);
 
-            __DIR__ . '/../Resources/views/shop/velocity/UI/header.blade.php'
-            => resource_path('themes/velocity/views/UI/header.blade.php'),
+        /**
+         * Breadcrumbs
+         */
+        $this->loadRoutesFrom(__DIR__ . '/../Routes/breadcrumbs.php');
 
-            __DIR__ . '/../Resources/views/admin/sales/shipments/create.blade.php'
-            => resource_path('/views/vendor/admin/sales/shipments/create.blade.php'),
+        /**
+         * Class Register
+         */
+        $this->app->register(ModuleServiceProvider::class);
 
-            __DIR__ . '/../Resources/views/admin/sales/orders/view.blade.php'
-            => resource_path('/views/vendor/admin/sales/orders/view.blade.php'),
+        $this->app->register(EventServiceProvider::class);
 
-            __DIR__ . '/../Resources/views/admin/sales/invoices/create.blade.php'
-            => resource_path('/views/vendor/admin/sales/invoices/create.blade.php'),
-        ]);
-
-        Event::listen('bagisto.shop.layout.head', function ($viewRenderEventManager) {
-            $viewRenderEventManager->addTemplate('rma::shop.layouts.style');
-        });
-
-        $this->app->register(RepositoryServiceProvider::class);
-
-        $router->aliasMiddleware('rma', Rma::class);
-
+        /**
+         * Install Command
+         */
         if ($this->app->runningInConsole()) {
             $this->commands([
-                Install::class
+                InstallRMA::class,
             ]);
         }
+
+        /**
+         * Configure
+         */
+        if (core()->getConfigData('sales.rma.setting.enable_rma')) {
+            $this->mergeConfigFrom(
+                dirname(__DIR__) . '/Config/admin-acl.php',
+                'acl'
+            );
+
+            $this->mergeConfigFrom(
+                dirname(__DIR__) . '/Config/admin-menu.php',
+                'menu.admin'
+            );
+
+            $this->mergeConfigFrom(
+                dirname(__DIR__) . '/Config/shop-menu.php',
+                'menu.customer'
+            );
+
+            // Register vite configuration 
+            $this->mergeConfigFrom(
+                dirname(__DIR__) . '/Config/bagisto-vite.php',
+                'bagisto-vite.viters'
+            );
+        }
+
+        // Publish Files
+        $this->publishFiles();
+        
+        // Publish Assets
+        $this->publishAssets();
     }
 
     /**
@@ -72,26 +111,85 @@ class RMAServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->registerConfig();
+        $this->mergeConfigFrom(
+            dirname(__DIR__) . '/Config/admin-system.php',
+            'core'
+        );
     }
 
     /**
-     * Register package config.
+     * Publish files.
      *
      * @return void
      */
-    protected function registerConfig()
+    public function publishFiles()
     {
-        $this->mergeConfigFrom(
-            dirname(__DIR__) . '/Config/system.php', 'core'
-        );
+        /**
+         * create shipments order
+         */
+        $this->publishes([
+            __DIR__ . '/../Resources/views/admin/sales/shipments/create.blade.php'
+            => resource_path('/views/vendor/admin/sales/shipments/create.blade.php'),
+        ]);
 
-        $this->mergeConfigFrom(
-            dirname(__DIR__) . '/Config/menu.php', 'menu.customer'
-        );
+        /**
+         * create invoices order
+         */
+        $this->publishes([
+            __DIR__ . '/../Resources/views/admin/sales/invoices/create.blade.php'
+            => resource_path('/views/vendor/admin/sales/invoices/create.blade.php'),
+        ]);
 
-        $this->mergeConfigFrom(
-            dirname(__DIR__) . '/Config/admin-menu.php', 'menu.admin'
-        );
+        /**
+         * create refund order
+         */
+        $this->publishes([
+            __DIR__ . '/../Resources/views/components/admin/sales/refunds/create.blade.php'
+            => resource_path('/views/vendor/admin/sales/refunds/create.blade.php'),
+        ]);
+
+        /**
+         * view order page
+         */
+        $this->publishes([
+            __DIR__ . '/../Resources/views/components/admin/sales/orders/view.blade.php'
+            => resource_path('/views/vendor/admin/sales/orders/view.blade.php'),
+        ]);
+
+        /**
+         * header mobile view
+         */
+        $this->publishes([
+            __DIR__ . '/../Resources/views/components/layouts/header/mobile/index.blade.php'
+            => resource_path('themes/default/views/components/layouts/header/mobile/index.blade.php'),
+        ]);
+        
+        /**
+         * user order view
+         */
+        $this->publishes([
+            __DIR__ . '/../Resources/views/components/shop/customers/account/orders/view.blade.php'
+            => resource_path('themes/default/views/customers/account/orders/view.blade.php'),
+        ]);
+
+        /**
+         * header mobile view
+         */
+        $this->publishes([
+            __DIR__ . '/../Resources/views/components/admin/configuration/field-type.blade.php'
+            => resource_path('/views/vendor/admin/configuration/field-type.blade.php'),
+        ]);
+    }
+
+    /**
+     * Publish the assets.
+     *
+     * @return void
+     */
+    protected function publishAssets()
+    {
+        $this->publishes([
+            __DIR__ .'/../../publishable' => public_path('themes/rma')
+        ], 'public');
     }
 }

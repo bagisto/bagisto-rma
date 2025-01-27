@@ -15,11 +15,12 @@ class CreateRmaItemsTable extends Migration
     {
         Schema::create('rma_items', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('resolution')->nullable();
             $table->integer('rma_id')->unsigned();
             $table->foreign('rma_id')->references('id')->on('rma')->onDelete('cascade');
             $table->integer('order_item_id')->unsigned();
             $table->integer('quantity')->unsigned();
-            $table->foreign('rma_reason_id')->references('id')->on('rma_reasons')->onDelete('restrict');
+            $table->foreign('rma_reason_id')->references('id')->on('rma_reasons')->onDelete('cascade');
             $table->integer('rma_reason_id')->unsigned();
             $table->timestamps();
         });

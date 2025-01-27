@@ -19,6 +19,8 @@ class CreateRmaMessagesTable extends Migration
             $table->foreign('rma_id')->references('id')->on('rma')->onDelete('cascade');
             $table->integer('rma_id')->unsigned();
             $table->boolean('is_admin')->nullable();
+            $table->longText('attachment_path')->nullable();
+            $table->longText('attachment')->nullable();
             $table->timestamps();
         });
     }

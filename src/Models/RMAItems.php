@@ -3,46 +3,68 @@
 namespace Webkul\RMA\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Webkul\Sales\Models\OrderItemProxy;
+use Webkul\Product\Models\ProductProxy;
+use Webkul\Product\Models\Product;
 use Webkul\RMA\Contracts\RMAItems as RMAItemsContract;
-use \Webkul\Sales\Models\OrderItemProxy as SalesOrderItems;
 
 class RMAItems extends Model implements RMAItemsContract
 {
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
     protected $table = 'rma_items';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
         'rma_id',
         'quantity',
         'order_item_id',
+        'resolution',
         'rma_reason_id',
+        'variant_id',
     ];
 
-    public function orderRMA()
+    /**
+     * Get Product Details
+     *
+     * @return object
+     */
+    public function getProduct()
     {
-        return $this->belongsTo(OrderItem::modelClass(), 'id');
+        return $this->hasOne(Product::class, 'id', 'variant_id');
     }
 
     /**
-     * get order items name by rma_id
+     * Get the order item related to the rma item.
      */
-
-    public function getOrderItem()
+    public function getOrderItem(): HasMany
     {
-        return $this->hasMany(SalesOrderItems::modelClass(), 'id','order_item_id');
+        return $this->hasMany(OrderItemProxy::modelClass(), 'id', 'order_item_id');
     }
 
     /**
-     * get reasons
+     * Get the reasons related to the rma item.
      */
-    public function getReasons()
+    public function getReasons(): HasOne
     {
-        return $this->hasOne('\Webkul\RMA\Models\RMAReasons','id','rma_reason_id');
+        return $this->hasOne(RMAReasonsProxy::modelClass(), 'id', 'rma_reason_id');
     }
 
     /**
-     * get the product by $order_id
+     * Get the product related to the order item.
      */
-    public function getItemSellerName()
+    public function getItemSellerName(): BelongsToMany
     {
-        return $this->belongsToMany('\Webkul\Models\Product','product_id','product_id');
+        return $this->belongsToMany(ProductProxy::modelClass(), 'product_id', 'product_id');
     }
 }

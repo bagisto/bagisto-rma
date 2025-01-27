@@ -17,7 +17,7 @@ class CreateRmaImagesTable extends Migration
             $table->increments('id');
             $table->integer('rma_id')->unsigned();
             $table->foreign('rma_id')->references('id')->on('rma')->onDelete('cascade');
-            
+
             $table->string('path')->nullable();
             $table->timestamps();
         });

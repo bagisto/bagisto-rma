@@ -21,6 +21,7 @@ class CreateRmaTable extends Migration
             $table->string('rma_status')->nullable();
             $table->integer('order_id')->unsigned();
             $table->boolean('status')->nullable();
+            $table->string('package_condition')->nullable();
             $table->timestamps();
         });
     }

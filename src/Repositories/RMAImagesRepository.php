@@ -2,47 +2,38 @@
 
 namespace Webkul\RMA\Repositories;
 
-use Storage;
-use Illuminate\Container\Container;
+use Illuminate\Support\Facades\Storage;
 use Webkul\Core\Eloquent\Repository;
+use Webkul\RMA\Contracts\RMAImages;
 
 class RMAImagesRepository extends Repository
 {
     /**
-     * Specify Model class name
-     *
-     * @return string
+     * Specify model class name
      */
-    function model()
+    public function model(): string
     {
-        return 'Webkul\RMA\Contracts\RMAImages';
-    }
-
-    public function __construct(
-        Container $container
-    ) {
-        parent::__construct($container);
+        return RMAImages::class;
     }
 
     /**
-     * upload images
+     * Upload images
      */
-    public function uploadImages($data, $rma)
+    public function uploadImages(array $requestData, object $rma): void
     {
         $previousImageIds = $rma->images()->pluck('id');
 
-        if (isset($data['images'])) {
-            foreach ($data['images'] as $imageId => $image) {
+        if (! empty($requestData['images'])) {
+            foreach ($requestData['images'] as $imageId => $image) {
                 $file = 'images.' . $imageId;
                 $dir = 'rma/' . $rma->id;
 
-                if (str_contains($imageId, 'image_')) {
+                if (str_contains($imageId, '')) {
                     if (request()->hasFile($file)) {
-
                         $this->create([
-                                'path' => request()->file($file)->store($dir),
-                                'rma_id' => $rma->id
-                            ]);
+                            'path'   => request()->file($file)->store($dir),
+                            'rma_id' => $rma->id,
+                        ]);
                     }
                 } else {
                     if (is_numeric($index = $previousImageIds->search($imageId))) {
@@ -55,8 +46,8 @@ class RMAImagesRepository extends Repository
                         }
 
                         $this->update([
-                                'path' => request()->file($file)->store($dir)
-                            ], $imageId);
+                            'path' => request()->file($file)->store($dir),
+                        ], $imageId);
                     }
                 }
             }
