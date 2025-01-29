@@ -72,7 +72,7 @@ class Helper
         }, 0);
 
         return [
-            'qty'     => ($orderItem->qty_ordered - $rmaQty) ?: $orderItem->qty_ordered,
+            'qty'     => $rmaQty ? ($orderItem->qty_ordered - $rmaQty) : $orderItem->qty_ordered,
             'message' => $rmaQty ? trans('rma::app.admin.sales.invoice.create.rma-created-message', ['qty' => $rmaQty]) : '',
         ];
     }
