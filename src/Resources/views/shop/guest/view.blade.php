@@ -19,6 +19,9 @@
             $rmaData['rma_status'] == 'Item Canceled'
             || $rmaData['rma_status'] == 'Declined'
             || $rmaData['rma_status'] == 'Canceled'
+            || $rmaData['order']['status'] == 'canceled' 
+            || $rmaData['order']['status'] == 'closed'
+                            
         ) {
             $show = false;
         }
@@ -330,6 +333,15 @@
                                         <span class="label-active py-1">
                                             @lang('rma::app.status.status-name.solved')
                                         </span>
+                                    @elseif(
+                                            $rmaData['order']['status'] == 'canceled' 
+                                            || $rmaData['order']['status'] == 'closed'
+                                        )
+                                            <span 
+                                                class="label-canceled py-1 text-xs" 
+                                            >
+                                                @lang('rma::app.status.status-name.item-canceled')
+                                            </span>
                                     @else
                                         <span 
                                             class="label-active py-1 text-xs" 
@@ -357,12 +369,22 @@
                                 <p
                                     @if ($rmaData['order_status'] == '1') 
                                         class="label-active pt-1"
+                                    @elseif (
+                                            $rmaData['order']['status'] == 'canceled' 
+                                            || $rmaData['order']['status'] == 'closed'
+                                        )
+                                        class="label-{{$rmaData['order']['status']}} pt-1"
                                     @else 
                                         class="label-info pt-1"
                                     @endif
                                 >
                                     @if ($rmaData['order_status'] == '1')
                                         @lang('rma::app.shop.customer.delivered')
+                                    @elseif (
+                                        $rmaData['order']['status'] == 'canceled' 
+                                        || $rmaData['order']['status'] == 'closed'
+                                    )
+                                        @lang('rma::app.shop.customer.'. $rmaData['order']['status'])
                                     @else
                                         @lang('rma::app.shop.customer.undelivered')
                                     @endif

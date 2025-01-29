@@ -18,6 +18,16 @@ class CustomerRmaDataGrid extends DataGrid
     /**
      * @var string
      */
+    public const CLOSED = 'closed';
+
+    /**
+     * @var string
+     */
+    public const CANCELED = 'canceled';
+
+    /**
+     * @var string
+     */
     public const PENDINGSTATUS = 'Pending';
     
     /**
@@ -58,6 +68,7 @@ class CustomerRmaDataGrid extends DataGrid
                 'rma.rma_status as rmaStatus',
                 'rma.created_at',
                 'orders.customer_email',
+                'orders.status as order_status',
                 DB::raw('SUM(rma_items.quantity) as total_quantity'),
             )->groupBy('rma.id');
 
@@ -121,6 +132,13 @@ class CustomerRmaDataGrid extends DataGrid
                 $rmaStatusData = app('Webkul\RMA\Repositories\RMAStatusRepository')
                     ->where('title', $row->rma_status)
                     ->first();
+                    
+                if (
+                    $row->order_status == self::CANCELED 
+                    || $row->order_status == self::CLOSED
+                ) {
+                    return '<p class="label-canceled">' . trans('rma::app.status.status-name.item-canceled') . '</p>';
+                }
                     
                 return '<p class="label-active" style="background:' . $rmaStatusData?->color . ';">' . $row->rma_status . '</p>';      
             },

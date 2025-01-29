@@ -95,7 +95,7 @@ class RmaController extends Controller
      */
     public function view(int $rmaId): View
     {
-        $rma = $this->rmaRepository->with('orderItem')->find($rmaId);
+        $rma = $this->rmaRepository->with(['orderItem', 'order'])->find($rmaId);
 
         $rmaActiveStatus = $this->rmaStatusRepository->where('status', 1)->pluck('title');
 
@@ -269,7 +269,7 @@ class RmaController extends Controller
             }
 
             if ($qtyCanceled == 1) {
-                $this->orderRepository->updateOrderStatus($order);
+                $this->updateOrderStatus($order);
 
                 Event::dispatch('sales.order.cancel.after', $order);
             }
@@ -370,5 +370,35 @@ class RmaController extends Controller
         session()->flash('error', trans('shop::app.customer.signup-form.failed'));
 
         return redirect()->back();
+    }
+
+     /**
+     * Update order status.
+     */
+    public function updateOrderStatus(\Webkul\Sales\Contracts\Order $order, string $orderState = null): void
+    {
+        Event::dispatch('sales.order.update-status.before', $order);
+
+        if (! empty($orderState)) {
+            $status = $orderState;
+        } else {
+            if ($this->orderRepository->isInCompletedState($order)) {
+                $status = 'completed';
+            }
+
+            if ($this->orderRepository->isInCanceledState($order)) {
+                $status = 'canceled';
+            } elseif ($this->orderRepository->isInClosedState($order)) {
+                $status = 'closed';
+            }
+        }
+
+        if (! empty($status)) {
+            $order->status = $status;
+        }
+
+        $order->save();
+
+        Event::dispatch('sales.order.update-status.after', $order);
     }
 }

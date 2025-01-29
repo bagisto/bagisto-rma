@@ -1,12 +1,12 @@
-# CHANGELOG for v2.1.2
+# CHANGELOG for v2.2.3
 
-## **v2.2.3** (2024)- _Release_
+## **v2.2.3** (29th January 2025)- _Release_
 
-- [compatibility] compatible with bagisto v2.2.3
++ compatible with bagisto v2.2.3
 
-- [fixed] After an RMA is created by the user, the admin should be restricted from generating the invoice, shipment, or refund.
++ After an RMA is created by the user, the admin should be restricted from generating the invoice, shipment, or refund.
 
-- [fixed] Encountering an RMA issue with configurable products.
++ Encountering an RMA issue with configurable products.
 
 ## **v2.1.2** (22nd November 2024)- _Release_
 

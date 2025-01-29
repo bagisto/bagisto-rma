@@ -439,10 +439,20 @@
                                     </p>
 
                                     <p class="font-semibold transition-all">
-                                        <span @if ($rmaData['status'] == 1) class="hidden" @endif>
+                                        <span @if ($rmaData['status'] == 1) class="hidden" @endif>                                            
                                             @if ($rmaData['rma_status'] == 'solved')
                                                 <span class="label-active py-1">
                                                     @lang('rma::app.status.status-name.solved')
+                                                </span>
+
+                                            @elseif(
+                                                    $orderDetails['status'] == 'canceled' 
+                                                    || $orderDetails['status'] == 'closed'
+                                                )
+                                                <span 
+                                                    class="label-canceled py-1 text-xs" 
+                                                >
+                                                    @lang('rma::app.status.status-name.item-canceled')
                                                 </span>
                                             @else
                                                 <span 
@@ -471,14 +481,25 @@
 
                                     <p class="text-gray-600 dark:text-gray-300">
                                         <span
-                                            @if ($rmaData['order_status'] == '1') 
+                                            @if (
+                                                $rmaData['order_status'] == '1'
+                                            ) 
                                                 class="label-active py-1"
-                                            @else 
-                                                class="label-info py-1"
+
+                                            @elsif ( $orderDetails['status'] == 'canceled' 
+                                                || $orderDetails['status'] == 'closed')
+                                                    class="label-active py-1"
+                                            @else
+                                                class="label-{{$orderDetails['status']}} py-1"
                                             @endif
                                         >
                                             @if ($rmaData['order_status'] == '1')
                                                 @lang('rma::app.shop.customer.delivered')
+                                            @elseif (
+                                                $orderDetails['status'] == 'canceled' 
+                                                || $orderDetails['status'] == 'closed'
+                                            )
+                                                @lang('rma::app.shop.customer.'. $orderDetails['status'])
                                             @else
                                                 @lang('rma::app.shop.customer.undelivered')
                                             @endif
@@ -492,6 +513,8 @@
                         @if (
                             $rmaData['rma_status'] != 'Solved' 
                             && $rmaData['status'] != 1
+                            && $rmaData['order']['status'] != 'canceled' 
+                            && $rmaData['order']['status'] != 'closed'
                         )
                             <x-admin::accordion>
                                 @if ($rmaData['rma_status'] == 'Item Canceled')
@@ -525,6 +548,7 @@
                                     ! empty($flag)
                                     && $flag == 1
                                     && $rmaData['status'] == 0
+                                    && $orderDetails['status'] != 'closed'
                                 )
                                     <x-slot:header>
                                         <p class="p-3 text-base font-semibold text-gray-600 dark:text-gray-300 required">
@@ -1125,7 +1149,10 @@
 
                                     <div class="text-sm dark:text-gray-300">
                                         <span
-                                            @if ($rmaData['order_status'] == '1') 
+                                            @if (
+                                                $rmaData['order_status'] == '1'
+                                                || $orderDetails['status'] != 'closed'
+                                            ) 
                                                 class="text-xs font-semibold rounded-xl px-1.5 py-0.5" 
                                                 style="border-radius:35px;"
                                             @else 
@@ -1133,7 +1160,9 @@
                                                 style="border-radius:35px;"
                                             @endif
                                         >
-                                            @if ($rmaData['order_status'] == '1')
+                                            @if ($orderDetails['status'] == 'canceled')
+                                                @lang('rma::app.shop.customer.closed')
+                                            @elseif ($rmaData['order_status'] == '1')
                                                 @lang('rma::app.shop.customer.delivered')
                                             @else
                                                 @lang('rma::app.shop.customer.undelivered')

@@ -3,7 +3,9 @@
 namespace Webkul\RMA\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Webkul\Sales\Models\OrderProxy;
 use Webkul\RMA\Contracts\RMA as RMAContract;
 
 class RMA extends Model implements RMAContract
@@ -101,5 +103,10 @@ class RMA extends Model implements RMAContract
     public function images(): HasMany
     {
         return $this->hasMany(RMAImagesProxy::modelClass(), 'rma_id');
+    }
+
+    public function order(): BelongsTo
+    {
+        return $this->belongsTo(OrderProxy::modelClass(), 'order_id');
     }
 }

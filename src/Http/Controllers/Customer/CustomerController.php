@@ -719,7 +719,7 @@ class CustomerController extends Controller
         $isGuest = empty($customer) ? 1 : 0;
 
         // Fetch RMA data
-        $rmaData = $this->rmaRepository->with('orderItem')->findOneWhere(['id' => $id]);
+        $rmaData = $this->rmaRepository->with(['orderItem', 'order'])->findOneWhere(['id' => $id]);
         
         if (! $rmaData) {
             return redirect()->route('shop.customer.session.index');

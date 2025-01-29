@@ -17,6 +17,16 @@ class RmaDataGrid extends DataGrid
     /**
      * @var string
      */
+    public const CLOSED = 'closed';
+
+    /**
+     * @var string
+     */
+    public const CANCELED = 'canceled';
+
+    /**
+     * @var string
+     */
     public const PENDINGSTATUS = 'Pending';
 
     /**
@@ -55,8 +65,9 @@ class RmaDataGrid extends DataGrid
                 DB::raw('CONCAT(' . $table_prefix . 'orders.customer_first_name, " ", ' . $table_prefix . 'orders.customer_last_name) as customer_name'),
                 'rma.status',
                 'rma.rma_status',
-                'rma.order_status as order_status',
+                'rma.order_status as rma_order_status',
                 'rma.created_at',
+                'orders.status as order_status'
             )
             ->whereIn('order_id', DB::table('orders')->pluck('id')?->toArray());
                 
@@ -141,12 +152,19 @@ class RmaDataGrid extends DataGrid
                     ->where('title', $row->rma_status)
                     ->first();  
 
+                if (
+                    $row->order_status == self::CANCELED 
+                    || $row->order_status == self::CLOSED
+                ) {
+                    return '<p class="label-canceled">' . trans('rma::app.status.status-name.item-canceled') . '</p>';
+                }
+
                 return '<p class="label-active" style="background:' . $rmaStatusData?->color . ';">' . $row->rma_status . '</p>';      
             },
         ]);
 
         $this->addColumn([
-            'index'              => 'order_status',
+            'index'              => 'rma_order_status',
             'label'              => trans('rma::app.admin.sales.rma.all-rma.index.datagrid.order-status'),
             'type'               => 'string',
             'filterable_type'    => 'dropdown',
@@ -163,9 +181,14 @@ class RmaDataGrid extends DataGrid
                 ],
             ],
             'closure'            => function ($row) {
-                if ($row->order_status == self::ACTIVE) {
+                if (
+                    $row->order_status == 'canceled' 
+                    || $row->order_status == 'closed'
+                ) {
+                    return '<p class="label-'. $row->order_status .'">' . trans('rma::app.shop.customer.'. $row->order_status) . '</p>';
+                } elseif ($row->rma_order_status == self::ACTIVE) {
                    return '<p class="label-active">' . trans('rma::app.shop.customer.delivered') . '</p>';
-                }
+                } 
                 
                 return '<p class="label-info">' . trans('rma::app.shop.customer.undelivered') . '</p>';
             },
