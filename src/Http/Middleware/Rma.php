@@ -7,17 +7,17 @@ use Closure;
 class Rma
 {
     /**
-    * Handle an incoming request.
-    *
-    * @param  \Illuminate\Http\Request  $request
-    * @param  \Closure  $next
-    * @return mixed
-    */
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return mixed
+     */
     public function handle($request, Closure $next)
     {
-        if (! core()->getConfigData('rma.settings.general.enable_rma')) {
-            abort(404);
-        } 
+        /**
+         * Tenant Disabled
+         */
+        abort_if (! core()->getConfigData('sales.rma.setting.enable_rma'), 404);
 
         return $next($request);
     }

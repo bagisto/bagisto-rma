@@ -2,24 +2,16 @@
 
 namespace Webkul\RMA\Repositories;
 
-use Illuminate\Container\Container;
 use Webkul\Core\Eloquent\Repository;
+use Webkul\RMA\Contracts\RMAItems;
 
 class RMAItemsRepository extends Repository
 {
     /**
-     * Specify Model class name
-     *
-     * @return string
+     * Specify model class name
      */
-    function model()
+    public function model(): string
     {
-        return 'Webkul\RMA\Contracts\RMAItems';
-    }
-
-    public function __construct(
-        Container $container
-    ) {
-        parent::__construct($container);
+        return RMAItems::class;
     }
 }

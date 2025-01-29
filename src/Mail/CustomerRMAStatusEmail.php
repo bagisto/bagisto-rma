@@ -5,15 +5,26 @@ namespace Webkul\RMA\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
 class CustomerRMAStatusEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    /**
+     * The RMA status data.
+     *
+     * @var array
+     */
     public $rmaStatus;
 
-    public function __construct($rmaStatus) {
+    /**
+     * Create a new message instance.
+     *
+     * @param  array  $rmaStatus
+     * @return void
+     */
+    public function __construct($rmaStatus)
+    {
         $this->rmaStatus = $rmaStatus;
     }
 
@@ -26,7 +37,7 @@ class CustomerRMAStatusEmail extends Mailable
     {
         return $this->from(core()->getSenderEmailDetails()['email'], core()->getSenderEmailDetails()['name'])
             ->to($this->rmaStatus['email'])
-            ->subject('Status Updated')           
+            ->subject('Status Updated')
             ->view('rma::emails.customers.status')
             ->with($this->rmaStatus);
     }

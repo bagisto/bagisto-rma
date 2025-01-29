@@ -5,15 +5,26 @@ namespace Webkul\RMA\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
 class CustomerRmaCreationEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    /**
+     * The RMA data.
+     *
+     * @var array
+     */
     public $customerRmaData;
 
-    public function __construct($customerRmaData) {
+    /**
+     * Create a new message instance.
+     *
+     * @param  array  $customerRmaData
+     * @return void
+     */
+    public function __construct($customerRmaData)
+    {
         $this->customerRmaData = $customerRmaData;
     }
 
@@ -24,10 +35,11 @@ class CustomerRmaCreationEmail extends Mailable
      */
     public function build()
     {
-        return $this->from(core()->getSenderEmailDetails()['email'], core()->getSenderEmailDetails()['name'])
-            ->to($this->customerRmaData['email'])
+        return $this->to($this->customerRmaData['email'])
+            ->from(core()->getAdminEmailDetails()['email'])
             ->subject('New RMA Request')
-            ->view('rma::emails.customers.new-rma-request')
-            ->with($this->customerRmaData);      
+            ->view('rma::emails.customers.new-rma-request', [
+                'customerRmaData' => $this->customerRmaData,
+            ]);
     }
 }

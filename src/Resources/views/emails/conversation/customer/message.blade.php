@@ -1,49 +1,30 @@
-@component('shop::emails.layouts.master')
-<div style="text-align: center;">
-    <a href="{{ config('app.url') }}">
-        <img src="{{ bagisto_asset('images/logo.svg') }}">
-    </a>
-</div>
+@component('shop::emails.layout')
+    <!-- Title -->
+    <div style="margin-bottom: 34px;">
+        <span style="font-size: 22px;font-weight: 600;color: #121A26">
+            @lang('rma::app.mail.seller-conversation.title')
+        </span><br>
 
-
-<div style="padding: 30px;">
-    <div style="font-size: 20px;color: #242424;line-height: 30px;margin-bottom: 34px;">
-        <span style="font-weight: bold;">
-            {{ __('rma::app.mail.customer-conversation.heading',['name' => $conversation['adminName']]) }}
-        </span> <br>
+        <!-- Heading -->
         <p style="font-size: 16px;color: #5E5E5E;line-height: 24px;">
-            {{ __('rma::app.mail.customer-conversation.quotes') }}
-        </p>
-    </div>
+            @lang('rma::app.mail.customer-conversation.heading', ['name' => $conversation['adminName']]),👋
+        </p><br>
 
-    <div style="display: flex;flex-direction: row;margin-top: 20px;justify-content: space-between;margin-bottom: 20px;">
-        <div style="line-height: 25px;">
-            <div style="font-weight: bold;font-size: 16px;color: #242424;">
-                Message
+        <!-- conversation -->
+        <p class="text-base text-gray-600">
+            @lang('rma::app.mail.customer-conversation.quotes')
+        </p>
+
+        <div class="mb-20 mt-20 flex flex-row justify-between">
+            <div class="line-height-25">
+                <div class="text-base font-bold text-gray-800">
+                    @lang('rma::app.mail.customer-conversation.message')
+                </div>
+
+                <div>
+                    {{ $conversation['message'] }}
+                </div>
             </div>
-
-            <div>
-                {{ $conversation['message'] }}
-            </div>
-        </div>
+        </div><br><br><br>
     </div>
-
-    <div
-        style="margin-top: 40px;font-size: 16px;color: #5E5E5E;line-height: 24px;display: block; width: 100%; float: left">
-
-        <p style="font-size: 16px;color: #5E5E5E;line-height: 24px;">
-            {!! __('shop::app.mail.order.help', [
-            'support_email' => '<a style="color:#0041FF" href="mailto:' . config('mail.from.address') . '">' .
-                config('mail.from.address'). '</a>'
-            ])
-            !!}
-        </p>
-
-        <p style="font-size: 16px;color: #5E5E5E;line-height: 24px;">
-            {{ __('rma::app.mail.customer-rma-create.thank-you') }}
-        </p>
-    </div>
-
-</div>
-
 @endcomponent

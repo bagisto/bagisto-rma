@@ -3,7 +3,6 @@
 namespace Webkul\RMA\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Webkul\Core\Models\CoreConfig;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,6 +13,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $this->call(DefaultReasons::class);
+
         $this->call(RMAConfiguration::class);
+
+        $this->call(RMAStatusDataSeed::class);
     }
 }
