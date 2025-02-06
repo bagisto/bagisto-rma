@@ -74,7 +74,10 @@ class RMAServiceProvider extends ServiceProvider
         /**
          * Configure
          */
-        if (core()->getConfigData('sales.rma.setting.enable_rma')) {
+        if (
+            ! $this->app->runningInConsole()  
+            && core()->getConfigData('sales.rma.setting.enable_rma')
+        ) {
             $this->mergeConfigFrom(
                 dirname(__DIR__) . '/Config/admin-acl.php',
                 'acl'

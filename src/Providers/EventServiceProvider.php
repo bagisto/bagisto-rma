@@ -14,7 +14,10 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if (core()->getConfigData('sales.rma.setting.enable_rma')) {
+        if (
+            ! $this->app->runningInConsole()  
+            && core()->getConfigData('sales.rma.setting.enable_rma')
+        ) {
             Event::listen('bagisto.shop.components.layouts.header.desktop.bottom.profile.after', function ($viewRenderEventManager) {
                 $viewRenderEventManager->addTemplate('rma::shop.layouts.desktop.header');
             });
