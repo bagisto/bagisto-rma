@@ -52,7 +52,7 @@ Bagisto RMA will help customers to request for return / cancel / exchange produc
 #### Run the following command
 
 ```bash
-    composer require bagisto/bagisto-rma dev-master
+    composer require bagisto/bagisto-rma
 ```
 
 #### Run these commands below to complete the setup
