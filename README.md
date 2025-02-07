@@ -52,19 +52,7 @@ Bagisto RMA will help customers to request for return / cancel / exchange produc
 #### Run the following command
 
 ```bash
-    composer require bagisto/bagisto-rma
-```
-
-#### Goto config/app.php file and add following line under 'providers'
-
-```php
-Webkul\RMA\Providers\RMAServiceProvider::class,
-```
-
-#### Goto composer.json file and add following line under 'psr-4'
-
-```json
-"Webkul\\RMA\\": "packages/Webkul/RMA/src"
+    composer require bagisto/bagisto-rma dev-master
 ```
 
 #### Run these commands below to complete the setup

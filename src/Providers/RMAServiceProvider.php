@@ -5,6 +5,7 @@ namespace Webkul\RMA\Providers;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Webkul\Core\Providers\CoreServiceProvider;
 use Webkul\RMA\Console\Commands\InstallRMA;
 use Webkul\RMA\Http\Middleware\Guest;
 use Webkul\RMA\Http\Middleware\Rma;
@@ -92,14 +93,8 @@ class RMAServiceProvider extends ServiceProvider
                 dirname(__DIR__) . '/Config/shop-menu.php',
                 'menu.customer'
             );
-
-            // Register vite configuration 
-            $this->mergeConfigFrom(
-                dirname(__DIR__) . '/Config/bagisto-vite.php',
-                'bagisto-vite.viters'
-            );
         }
-
+        
         // Publish Files
         $this->publishFiles();
         
@@ -114,9 +109,19 @@ class RMAServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->register(CoreServiceProvider::class);
+
+        $this->app->register(\Konekt\Concord\ConcordServiceProvider::class);
+
         $this->mergeConfigFrom(
             dirname(__DIR__) . '/Config/admin-system.php',
             'core'
+        );
+
+        // Register vite configuration 
+        $this->mergeConfigFrom(
+            dirname(__DIR__) . '/Config/bagisto-vite.php',
+            'bagisto-vite.viters'
         );
     }
 
