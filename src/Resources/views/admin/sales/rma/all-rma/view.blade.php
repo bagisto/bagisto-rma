@@ -486,7 +486,7 @@
                                             ) 
                                                 class="label-active py-1"
 
-                                            @elsif ( $orderDetails['status'] == 'canceled' 
+                                            @elseif ( $orderDetails['status'] == 'canceled' 
                                                 || $orderDetails['status'] == 'closed')
                                                     class="label-active py-1"
                                             @else
@@ -1449,7 +1449,9 @@
                         
                         // Sanitize the message input
                         const messageInput = formData.get('message');
+
                         const sanitizedMessage = this.sanitizeInput(messageInput);
+                        
                         formData.set('message', sanitizedMessage);
 
                         this.$axios.post("{{ route('admin.sales.rma.send-message') }}", formData)
@@ -1488,9 +1490,11 @@
 
                     downloadAttachment(messagePath) {
                         const imageUrl = `{{ config('app.url') }}/storage/${messagePath}`;
+
                         const link = document.createElement('a');
 
                         link.href = imageUrl;
+
                         link.download = imageUrl.split('/').pop();
 
                         document.body.appendChild(link);
