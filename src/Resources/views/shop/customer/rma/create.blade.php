@@ -534,7 +534,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                             ::name="'resolution_type[' + getProductId(product) + ']'" 
                                             rules="required"
                                             v-model="resolutionType[getProductId(product)]"
-                                            @change="getResolutionReason(getProductId(product))"
+                                            @change="$nextTick(() => getResolutionReason(getProductId(product)))"
                                             :label="trans('rma::app.admin.configuration.index.sales.rma.resolution-type')"
                                         >
                                             <option value="">
@@ -581,7 +581,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                             ::name="'resolution_type[' + getProductId(product) + ']'" 
                                             rules="required"
                                             v-model="resolutionType[getProductId(product)]"
-                                            @change="getResolutionReason(getProductId(product))"
+                                            @change="$nextTick(() => getResolutionReason(getProductId(product)))"
                                             :label="trans('rma::app.admin.configuration.index.sales.rma.resolution-type')"
                                         >
                                             <option value="">
