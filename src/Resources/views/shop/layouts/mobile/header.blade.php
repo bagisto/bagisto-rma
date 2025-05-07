@@ -1,16 +1,41 @@
-@if (core()->getConfigData('sales.rma.setting.enable_rma'))
-    @guest('customer')
-        @if (empty(session()->get('guestEmail')))
-            <div class="max-h-[30px]">
-                <a  href="{{ route('rma.guest.login') }}">
-                    <div class="relative flex items-center flex-nowrap">
-                        <span class="icon-compare inline-block cursor-pointer text-[24px]"></span>
-                        <span class="text-[6px] relative block mb-[24px] mr-2">
-                            @lang('rma::app.shop.customer.title')
-                        </span>
-                    </div>
-                </a>
+@guest('customer')
+    @if (empty(session()->get('guestEmail')))
+        <!-- Account Profile Hero Section -->
+        <div class="grid grid-cols-[auto_1fr] gap-4 items-center mb-4 p-2.5 border border-[#E9E9E9] rounded-xl">
+            <div class="">
+                <img
+                    src="{{ auth()->user()?->image_url ??  bagisto_asset('images/user-placeholder.png') }}"
+                    class="w-[60px] h-[60px] rounded-full"
+                >
             </div>
-        @endif
-    @endguest
-@endif
+
+            <a
+                href="{{ route('rma.guest.login') }}"
+                class="flex text-base font-medium"
+            >
+                @lang('rma::app.shop.customer.title')
+
+                <i class="icon-double-arrow text-2xl ltr:ml-2.5 rtl:mr-2.5"></i>
+            </a>
+        </div>
+    @else
+        <!-- Account Profile Hero Section -->
+        <div class="grid grid-cols-[auto_1fr] gap-4 items-center mb-4 p-2.5 border border-[#E9E9E9] rounded-xl">
+            <div class="">
+                <img
+                    src="{{ auth()->user()?->image_url ??  bagisto_asset('images/user-placeholder.png') }}"
+                    class="w-[60px] h-[60px] rounded-full"
+                >
+            </div>
+
+            <a
+                href="{{ route('rma.guest.logout') }}"
+                class="flex text-base font-medium"
+            >
+                @lang('rma::app.shop.guest-users.logout')
+
+                <i class="icon-double-arrow text-2xl ltr:ml-2.5 rtl:mr-2.5"></i>
+            </a>
+        </div>
+    @endif
+@endguest

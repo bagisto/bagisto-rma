@@ -22,6 +22,10 @@ class EventServiceProvider extends ServiceProvider
                 $viewRenderEventManager->addTemplate('rma::shop.layouts.desktop.header');
             });
 
+            Event::listen('bagisto.shop.components.layouts.header.mobile.drawer.categories.before', function ($viewRenderEventManager) {
+                $viewRenderEventManager->addTemplate(view('rma::shop.layouts.mobile.header')->render());
+            });
+
             Event::listen('bagisto.admin.catalog.product.edit.form.settings.after', function ($viewRenderEventManager) {
                 $viewRenderEventManager->addTemplate('rma::admin.product.edit-product');
             });
