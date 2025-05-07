@@ -57,7 +57,7 @@ class RmaDataGrid extends DataGrid
         $table_prefix = DB::getTablePrefix();
 
         $queryBuilder = DB::table('rma')
-            ->leftJoin('orders', 'orders.id', '=', 'rma.order_id')
+            ->join('orders', 'orders.id', '=', 'rma.order_id')
             ->addSelect(
                 'rma.id',
                 'rma.order_id',
@@ -68,8 +68,7 @@ class RmaDataGrid extends DataGrid
                 'rma.order_status as rma_order_status',
                 'rma.created_at',
                 'orders.status as order_status'
-            )
-            ->whereIn('order_id', DB::table('orders')->pluck('id')?->toArray());
+            );
                 
         $this->addFilter('id', 'rma.id');
         $this->addFilter('order_id', 'rma.order_id');
