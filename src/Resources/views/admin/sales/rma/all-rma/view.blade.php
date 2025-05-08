@@ -93,21 +93,21 @@
                 </div>
             </div>
 
-            <div class="mt-5 flex-wrap items-center justify-between gap-x-1 gap-y-2">
+            <div class="flex-wrap items-center justify-between mt-5 gap-x-1 gap-y-2">
                 <!-- Body content -->
-                <div class="flex flex-1 flex-col gap-2 max-xl:flex-auto">
+                <div class="flex flex-col flex-1 gap-2 max-xl:flex-auto">
                     <!-- Left sub-component -->
-                    <div class="flex flex-1 flex-col gap-2 max-xl:flex-auto">
+                    <div class="flex flex-col flex-1 gap-2 max-xl:flex-auto">
                         <!-- RMA details component -->
                         <div class="bg-white dark:bg-gray-900">
                             <!-- RMA Details -->
-                            <div class="box-shadow rounded-md mb-2 p-4">
-                                <div class="text-xl font-medium dark:text-gray-300 my-2">
+                            <div class="p-4 mb-2 rounded-md box-shadow">
+                                <div class="my-2 text-xl font-medium dark:text-gray-300">
                                     @lang('rma::app.shop.view-customer-rma.heading')
                                 </div>
 
                                 <!-- RMA ID -->
-                                <div class="mb-2 flex justify-between border-b-2 p-2">
+                                <div class="flex justify-between p-2 mb-2 border-b-2">
                                     <div class="text-sm font-medium dark:text-gray-300">
                                         @lang('rma::app.admin.sales.rma.all-rma.index.datagrid.id') :
                                     </div>
@@ -118,7 +118,7 @@
                                 </div>
 
                                 <!-- Created At -->
-                                <div class="mb-2 flex justify-between border-b-2 p-2">
+                                <div class="flex justify-between p-2 mb-2 border-b-2">
                                     <div class="text-sm font-medium dark:text-gray-300">
                                         @lang('rma::app.admin.sales.rma.all-rma.view.request-on')
                                     </div>
@@ -130,7 +130,7 @@
 
                                 <!-- Package Condition -->
                                 @if ($rmaData['package_condition'])
-                                    <div class="mb-2 flex justify-between border-b-2 p-2">
+                                    <div class="flex justify-between p-2 mb-2 border-b-2">
                                         <div class="text-sm font-medium dark:text-gray-300">
                                             @lang('rma::app.admin.configuration.index.sales.rma.package-condition'):
                                         </div>
@@ -144,7 +144,7 @@
                                 <!-- Additional Fields -->
                                 @if (! empty($rmaAdditionalFieldValues))
                                     @foreach ($rmaAdditionalFieldValues as $key => $rmaAdditionalFieldValue)
-                                        <div class="mb-2 flex justify-between border-b-2 p-2">
+                                        <div class="flex justify-between p-2 mb-2 border-b-2">
                                             <div class="text-sm font-medium dark:text-gray-300">
                                                 {{ $rmaAdditionalFieldValue }} : 
                                             </div>
@@ -157,7 +157,7 @@
                                 @endif
 
                                 <!-- Additional Information -->
-                                <div class="mb-2 flex justify-between border-b-2 p-2">
+                                <div class="flex justify-between p-2 mb-2 border-b-2">
                                     <div class="text-sm font-medium dark:text-gray-300">
                                         @lang('rma::app.admin.sales.rma.all-rma.view.additional-information')
                                     </div>
@@ -168,15 +168,15 @@
                                 </div>
 
                                 <!--RMA Image -->
-                                <div class="mb-2 flex gap-2 p-2">
+                                <div class="flex gap-2 p-2 mb-2">
                                     <div class="text-sm font-medium dark:text-gray-300 min-w-16">
                                         @lang('rma::app.admin.sales.rma.all-rma.view.images')
                                     </div>
 
-                                    <div class="flex justify-between flex-wrap gap-2">
+                                    <div class="flex flex-wrap justify-between gap-2">
                                         @foreach($rmaImages as $image)
                                             <img
-                                                class="w-24 max-w-20 relative h-20 max-h-20 rounded-md"
+                                                class="relative w-24 h-20 rounded-md max-w-20 max-h-20"
                                                 src="{{ Storage::url($image->path) }}"
                                             />
                                         @endforeach
@@ -185,13 +185,13 @@
                             </div>
 
                             <!-- Order Details -->
-                            <div class="box-shadow rounded-md mb-2 p-4">
-                                <div class="text-xl font-medium dark:text-gray-300 my-2">
+                            <div class="p-4 mb-2 rounded-md box-shadow">
+                                <div class="my-2 text-xl font-medium dark:text-gray-300">
                                     @lang('rma::app.shop.view-customer-rma-content.order-details')
                                 </div>
 
                                 <!-- Order Id -->
-                                <div class="mb-2 flex justify-between border-b-2 p-2">
+                                <div class="flex justify-between p-2 mb-2 border-b-2">
                                     <div class="text-sm font-medium dark:text-gray-300">
                                         @lang('rma::app.admin.sales.rma.all-rma.view.order-id')
                                     </div>
@@ -200,7 +200,7 @@
                                         <a
                                             href="{{ route('admin.sales.orders.view',$rmaData['order_id']) }}"
                                             target="_blank"
-                                            class="cursor-pointer text-blue-600 transition-all hover:underline"
+                                            class="text-blue-600 transition-all cursor-pointer hover:underline"
                                         >
                                             {{ '#'.$rmaData['order_id'] }}
                                         </a>
@@ -208,7 +208,7 @@
                                 </div>
 
                                 <!-- Order Total -->
-                                <div class="mb-2 flex justify-between border-b-2 p-2">
+                                <div class="flex justify-between p-2 mb-2 border-b-2">
                                     <div class="text-sm font-medium dark:text-gray-300">
                                         @lang('rma::app.admin.sales.rma.all-rma.view.order-total')
                                     </div>
@@ -219,7 +219,7 @@
                                 </div>
 
                                 <!-- Order Date -->
-                                <div class="mb-2 flex justify-between border-b-2 p-2">
+                                <div class="flex justify-between p-2 mb-2 border-b-2">
                                     <div class="text-sm font-medium dark:text-gray-300">
                                         @lang('rma::app.admin.sales.rma.all-rma.view.order-date')
                                     </div>
@@ -230,7 +230,7 @@
                                 </div>
                                 
                                 <!-- Payment Method -->
-                                <div class="mb-2 flex justify-between border-b-2 p-2">
+                                <div class="flex justify-between p-2 mb-2 border-b-2">
                                     <div class="text-sm font-medium dark:text-gray-300">
                                         @lang('admin::app.sales.orders.view.payment-method') : 
                                     </div>
@@ -242,13 +242,13 @@
                             </div>
 
                             <!-- Customer Info -->
-                            <div class="box-shadow rounded-md mb-2 p-4">
-                                <div class="text-xl font-medium dark:text-gray-300 my-2">
+                            <div class="p-4 mb-2 rounded-md box-shadow">
+                                <div class="my-2 text-xl font-medium dark:text-gray-300">
                                     @lang('rma::app.admin.sales.rma.all-rma.view.customer-details')
                                 </div>
 
                                 <!-- Customer Name -->
-                                <div class="mb-2 flex justify-between border-b-2 p-2">
+                                <div class="flex justify-between p-2 mb-2 border-b-2">
                                     <div class="text-sm font-medium dark:text-gray-300">
                                         @lang('rma::app.admin.sales.rma.all-rma.view.customer')
                                     </div>
@@ -267,7 +267,7 @@
                                 </div>
 
                                 <!-- Customer Email -->
-                                <div class="mb-2 flex justify-between border-b-2 p-2">
+                                <div class="flex justify-between p-2 mb-2 border-b-2">
                                     <div class="text-sm font-medium dark:text-gray-300">
                                         @lang('rma::app.admin.sales.rma.all-rma.view.customer-email')
                                     </div>
@@ -280,7 +280,7 @@
                         </div>
 
                         <!-- Order details component -->
-                        <div class="box-shadow mt-6 rounded bg-white p-4 dark:bg-gray-900">
+                        <div class="p-4 mt-6 bg-white rounded box-shadow dark:bg-gray-900">
                             <div class="flex justify-between">
                                 <p class="pb-0 text-base font-semibold text-gray-800 dark:text-white">
                                     @lang('rma::app.admin.sales.rma.all-rma.view.order-details')
@@ -433,7 +433,7 @@
                             <!-- RMA status -->
                             <x-slot:content>
                                 <!-- RMA status -->
-                                <div class="flex w-full text-white justify-between gap-1">
+                                <div class="flex justify-between w-full gap-1 text-white">
                                     <p class="text-gray-600 dark:text-gray-300">
                                         @lang('rma::app.admin.sales.rma.all-rma.view.rma-status')
                                     </p>
@@ -441,7 +441,7 @@
                                     <p class="font-semibold transition-all">
                                         <span @if ($rmaData['status'] == 1) class="hidden" @endif>                                            
                                             @if ($rmaData['rma_status'] == 'solved')
-                                                <span class="label-active py-1">
+                                                <span class="py-1 label-active">
                                                     @lang('rma::app.status.status-name.solved')
                                                 </span>
 
@@ -450,13 +450,13 @@
                                                     || $orderDetails['status'] == 'closed'
                                                 )
                                                 <span 
-                                                    class="label-canceled py-1 text-xs" 
+                                                    class="py-1 text-xs label-canceled" 
                                                 >
                                                     @lang('rma::app.status.status-name.item-canceled')
                                                 </span>
                                             @else
                                                 <span 
-                                                    class="label-active py-1 text-xs" 
+                                                    class="py-1 text-xs label-active" 
                                                     style="background: {{ $rmaStatusColor }}"
                                                 >
                                                     {{ $rmaData['rma_status'] }}
@@ -484,11 +484,11 @@
                                             @if (
                                                 $rmaData['order_status'] == '1'
                                             ) 
-                                                class="label-active py-1"
+                                                class="py-1 label-active"
 
                                             @elseif ( $orderDetails['status'] == 'canceled' 
                                                 || $orderDetails['status'] == 'closed')
-                                                    class="label-active py-1"
+                                                    class="py-1 label-active"
                                             @else
                                                 class="label-{{$orderDetails['status']}} py-1"
                                             @endif
@@ -567,7 +567,7 @@
                                                 value="{{ $rmaData['id'] }}"
                                             >
 
-                                            <x-admin::form.control-group class="mb-2 w-full">
+                                            <x-admin::form.control-group class="w-full mb-2">
                                                 <x-admin::form.control-group.control
                                                     type="select"
                                                     name="rma_status"
@@ -668,7 +668,7 @@
                             core()->getConfigData('sales.rma.setting.allowed-new-rma-request-for-declined-request') == 'yes' 
                             && $rmaData['rma_status'] == 'Declined'
                         )
-                            <div class="relative mt-3 overflow-x-auto rounded-xl border px-8 py-4">
+                            <div class="relative px-8 py-4 mt-3 overflow-x-auto border rounded-xl">
                                 <!-- Close rma if solved -->
                                 <div class="mt-2">
                                     <p class="text-xl font-medium">
@@ -704,7 +704,7 @@
 
                                                 <label
                                                     for="close_rma"
-                                                    class="required text-xs font-medium"
+                                                    class="text-xs font-medium required"
                                                 >
                                                     @lang('rma::app.shop.view-customer-rma.status-reopen')
                                                 </label>
@@ -721,7 +721,7 @@
 
                                             <button
                                                 type="submit"
-                                                class="primary-button m-0 block w-max rounded-2xl px-11 py-3 text-center text-base"
+                                                class="block py-3 m-0 text-base text-center primary-button w-max rounded-2xl px-11"
                                                 v-if="closeRmaChecked"
                                             >
                                                 @lang('rma::app.shop.view-customer-rma.save-btn')
@@ -741,7 +741,7 @@
                             </x-slot:header>
 
                             <x-slot:content>
-                                <div class="mb-3 border rounded-lg p-3">
+                                <div class="p-3 mb-3 border rounded-lg">
                                     <x-admin::form
                                         v-slot="{ meta, errors, handleSubmit }"
                                         as="div"
@@ -769,7 +769,7 @@
                                             >
 
                                             <x-admin::form.control-group>
-                                                <x-shop::form.control-group.label class="required flex dark:text-gray-300">
+                                                <x-shop::form.control-group.label class="flex required dark:text-gray-300">
                                                     @lang('rma::app.admin.sales.rma.all-rma.view.send-message')
                                                 </x-shop::form.control-group.label>
 
@@ -794,14 +794,14 @@
                                                 <button 
                                                     type="button" 
                                                     id="newFileInput"
-                                                    class="transparent-button text-sm hover:bg-gray-200 dark:text-white dark:hover:bg-gray-800"
+                                                    class="text-sm transparent-button hover:bg-gray-200 dark:text-white dark:hover:bg-gray-800"
                                                 >
                                                     + @lang('rma::app.admin.sales.rma.all-rma.view.add-attachments')
 
                                                     <input 
                                                         type="file" 
                                                         id="file"
-                                                        class="opacity-0 absolute w-fit cursor-pointer" 
+                                                        class="absolute opacity-0 cursor-pointer w-fit" 
                                                         name="file" 
                                                         @change="handleFileSelect($event)" 
                                                     />
@@ -837,9 +837,9 @@
                                     </x-shop::form>
                                 </div>
 
-                                <div class="border rounded-lg p-3">
+                                <div class="p-3 border rounded-lg">
                                     <div
-                                        class="mb-3 overflow-x-auto p-5"
+                                        class="p-5 mb-3 overflow-x-auto"
                                         style="height: 300px;"
                                         @wheel="getNewMessage()"
                                         :class="! messages.length ? 'flex justify-center items-center' : ''"
@@ -848,8 +848,7 @@
                                             v-if="messages.length"
                                             v-for="message in messages"
                                             :style="message.is_admin != 1 ? 'text-align:left; background-color: #a7a7a7' : 'text-align:right; background-color: #F0F0F0'"
-                                            style="word-break: break-all;"
-                                            class="mb-3 rounded-md p-4"
+                                            class="p-4 mb-3 rounded-md"
                                         >
                                             <div class="title">
                                                 @lang('rma::app.shop.conversation-texts.by')
@@ -865,8 +864,7 @@
                                             </div>
 
                                             <div
-                                                class="value dark:text-black-300 text-base font-medium"
-                                                style="margin-top:10px; word-break: break-all;"
+                                                class="mt-4 text-base font-medium value dark:text-black-300"
                                                 v-html="message.message"
                                             >
                                             </div>
@@ -877,9 +875,9 @@
                                                 @click="viewAttachmentModal(message.attachment_path)"
                                                 v-if="message.attachment"
                                                 :style="message.is_admin != 1 ? 'color: black;' : 'color: black;'"
-                                                class="icon-attribute dark:text-black-300 text-base font-normal cursor-pointer"
+                                                class="text-base font-normal cursor-pointer icon-attribute dark:text-black-300"
                                             >
-                                                <span class="text-base hover:underline ml-2">
+                                                <span class="ml-2 text-base hover:underline">
                                                     @{{ message.attachment }}
                                                 </span>
                                             </a>
@@ -981,17 +979,17 @@
             <div class="hidden" ref="printContent">
                 <div class="mt-3.5 flex gap-2.5 max-xl:flex-wrap">
                     <!-- Left sub-component -->
-                    <div class="flex flex-1 flex-col gap-2 max-xl:flex-auto"  style="max-width: 800px;">
+                    <div class="flex flex-col flex-1 gap-2 max-xl:flex-auto"  style="max-width: 800px;">
                         <!-- RMA details component -->
                         <div class="bg-white dark:bg-gray-900">
                             <!-- RMA Details -->
-                            <div class="box-shadow rounded-md mb-2 p-4">
-                                <div class="text-xl font-medium dark:text-gray-300 my-2">
+                            <div class="p-4 mb-2 rounded-md box-shadow">
+                                <div class="my-2 text-xl font-medium dark:text-gray-300">
                                     @lang('rma::app.admin.sales.rma.all-rma.view.view-title')
                                 </div>
 
                                 <!-- RMA ID -->
-                                <div class="mb-2 flex justify-between border-b-2 p-2">
+                                <div class="flex justify-between p-2 mb-2 border-b-2">
                                     <div class="text-sm font-medium dark:text-gray-300">
                                         @lang('rma::app.admin.sales.rma.all-rma.view.view-title')
                                     </div>
@@ -1002,7 +1000,7 @@
                                 </div>
 
                                 <!-- Created At -->
-                                <div class="mb-2 flex justify-between border-b-2 p-2">
+                                <div class="flex justify-between p-2 mb-2 border-b-2">
                                     <div class="text-sm font-medium dark:text-gray-300">
                                         @lang('rma::app.admin.sales.rma.all-rma.view.request-on')
                                     </div>
@@ -1014,7 +1012,7 @@
 
                                 <!-- Package Condition -->
                                 @if ($rmaData['package_condition'])
-                                    <div class="mb-2 flex justify-between border-b-2 p-2">
+                                    <div class="flex justify-between p-2 mb-2 border-b-2">
                                         <div class="text-sm font-medium dark:text-gray-300">
                                             @lang('rma::app.admin.configuration.index.sales.rma.package-condition'):
                                         </div>
@@ -1026,7 +1024,7 @@
                                 @endif
 
                                 <!-- RMA Status -->
-                                <div class="mb-2 flex justify-between border-b-2 p-2">
+                                <div class="flex justify-between p-2 mb-2 border-b-2">
                                     <div class="text-sm font-medium dark:text-gray-300">
                                         @lang('rma::app.admin.sales.rma.all-rma.view.rma-status')
                                     </div>
@@ -1035,12 +1033,12 @@
                                         <span @if ($rmaData['status'] == 1) class="hidden" @endif>
 
                                             @if ($rmaData['rma_status'] == 'solved')
-                                                <span class="label-active py-1">
+                                                <span class="py-1 label-active">
                                                     @lang('rma::app.status.status-name.solved')
                                                 </span>
                                             @else
                                                 <span 
-                                                    class="label-active py-1 text-xs" 
+                                                    class="py-1 text-xs label-active" 
                                                     style="background: {{ $rmaStatusColor }}"
                                                 >
                                                     {{ $rmaData['rma_status'] }}
@@ -1058,7 +1056,7 @@
                                 </div>
 
                                 <!-- Additional Information -->
-                                <div class="mb-2 flex justify-between border-b-2 p-2">
+                                <div class="flex justify-between p-2 mb-2 border-b-2">
                                     <div class="text-sm font-medium dark:text-gray-300">
                                         @lang('rma::app.admin.sales.rma.all-rma.view.additional-information')
                                     </div>
@@ -1069,15 +1067,15 @@
                                 </div>
 
                                 <!--RMA Image -->
-                                <div class="mb-2 flex gap-2 p-2">
+                                <div class="flex gap-2 p-2 mb-2">
                                     <div class="text-sm font-medium dark:text-gray-300 min-w-16">
                                         @lang('rma::app.admin.sales.rma.all-rma.view.images')
                                     </div>
 
-                                    <div class="flex justify-between flex-wrap gap-2">
+                                    <div class="flex flex-wrap justify-between gap-2">
                                         @foreach($rmaImages as $image)
                                             <img  
-                                                class="w-24 max-w-20 relative h-20 max-h-20 rounded-md"
+                                                class="relative w-24 h-20 rounded-md max-w-20 max-h-20"
                                                 src="{{ Storage::url($image->path) }}"
                                             />
                                         @endforeach
@@ -1086,13 +1084,13 @@
                             </div>
 
                             <!-- Order Details -->
-                            <div class="box-shadow rounded-md mb-2 p-4">
-                                <div class="text-xl font-medium dark:text-gray-300 my-2">
+                            <div class="p-4 mb-2 rounded-md box-shadow">
+                                <div class="my-2 text-xl font-medium dark:text-gray-300">
                                     @lang('rma::app.shop.view-customer-rma-content.order-details')
                                 </div>
 
                                 <!-- Order Id -->
-                                <div class="mb-2 flex justify-between border-b-2 p-2">
+                                <div class="flex justify-between p-2 mb-2 border-b-2">
                                     <div class="text-sm font-medium dark:text-gray-300">
                                         @lang('rma::app.admin.sales.rma.all-rma.view.order-id')
                                     </div>
@@ -1101,7 +1099,7 @@
                                         <a
                                             href="{{ route('admin.sales.orders.view',$rmaData['order_id']) }}"
                                             target="_blank"
-                                            class="cursor-pointer text-blue-600 transition-all hover:underline"
+                                            class="text-blue-600 transition-all cursor-pointer hover:underline"
                                         >
                                             {{ '#'.$rmaData['order_id'] }}
                                         </a>
@@ -1109,7 +1107,7 @@
                                 </div>
 
                                 <!-- Order Total -->
-                                <div class="mb-2 flex justify-between border-b-2 p-2">
+                                <div class="flex justify-between p-2 mb-2 border-b-2">
                                     <div class="text-sm font-medium dark:text-gray-300">
                                         @lang('rma::app.admin.sales.rma.all-rma.view.order-total')
                                     </div>
@@ -1120,7 +1118,7 @@
                                 </div>
 
                                 <!-- Order Date -->
-                                <div class="mb-2 flex justify-between border-b-2 p-2">
+                                <div class="flex justify-between p-2 mb-2 border-b-2">
                                     <div class="text-sm font-medium dark:text-gray-300">
                                         @lang('rma::app.admin.sales.rma.all-rma.view.order-date')
                                     </div>
@@ -1131,7 +1129,7 @@
                                 </div>
                                 
                                 <!-- Payment Method -->
-                                <div class="mb-2 flex justify-between border-b-2 p-2">
+                                <div class="flex justify-between p-2 mb-2 border-b-2">
                                     <div class="text-sm font-medium dark:text-gray-300">
                                         @lang('admin::app.sales.orders.view.payment-method') : 
                                     </div>
@@ -1142,7 +1140,7 @@
                                 </div>
                                 
                                 <!-- Order Status -->
-                                <div class="mb-2 flex justify-between border-b-2 p-2">
+                                <div class="flex justify-between p-2 mb-2 border-b-2">
                                     <div class="text-sm font-medium dark:text-gray-300">
                                         @lang('rma::app.admin.sales.rma.all-rma.view.order-status')
                                     </div>
@@ -1173,13 +1171,13 @@
                             </div>
 
                             <!-- Customer Info -->
-                            <div class="box-shadow rounded-md mb-2 p-4">
-                                <div class="text-xl font-medium dark:text-gray-300 my-2">
+                            <div class="p-4 mb-2 rounded-md box-shadow">
+                                <div class="my-2 text-xl font-medium dark:text-gray-300">
                                     @lang('rma::app.admin.sales.rma.all-rma.view.customer-details')
                                 </div>
 
                                 <!-- Customer Name -->
-                                <div class="mb-2 flex justify-between border-b-2 p-2">
+                                <div class="flex justify-between p-2 mb-2 border-b-2">
                                     <div class="text-sm font-medium dark:text-gray-300">
                                         @lang('rma::app.admin.sales.rma.all-rma.view.customer')
                                     </div>
@@ -1190,7 +1188,7 @@
                                 </div>
 
                                 <!-- Customer Email -->
-                                <div class="mb-2 flex justify-between border-b-2 p-2">
+                                <div class="flex justify-between p-2 mb-2 border-b-2">
                                     <div class="text-sm font-medium dark:text-gray-300">
                                         @lang('rma::app.admin.sales.rma.all-rma.view.customer-email')
                                     </div>
@@ -1203,7 +1201,7 @@
                         </div>
 
                         <!-- Order details component -->
-                        <div class="box-shadow mt-6 rounded bg-white p-4 dark:bg-gray-900">
+                        <div class="p-4 mt-6 bg-white rounded box-shadow dark:bg-gray-900">
                             <div class="flex justify-between">
                                 <p class="pb-0 text-base font-semibold text-gray-800 dark:text-white">
                                     @lang('rma::app.admin.sales.rma.all-rma.view.order-details')
@@ -1335,8 +1333,8 @@
                             </div>
                         </div>
 
-                        <div class="border rounded-lg p-3">
-                            <div class="text-xl font-medium my-2">
+                        <div class="p-3 border rounded-lg">
+                            <div class="my-2 text-xl font-medium">
                                 @lang('rma::app.admin.sales.rma.all-rma.view.conversations')
                             </div>
                             <div
@@ -1347,7 +1345,6 @@
                                     v-if="messages.length"
                                     v-for="message in messages"
                                     :style="message.is_admin != 1 ? 'text-align:left; background-color: #a7a7a7' : 'text-align:right; background-color: #F0F0F0'"
-                                    style="word-break: break-all;"
                                     class="mb-3 rounded-md"
                                 >
                                     <div class="title">
@@ -1364,8 +1361,7 @@
                                     </div>
 
                                     <div
-                                        class="value dark:text-black-300 text-base font-medium"
-                                        style="margin-top:10px; word-break: break-all;"
+                                        class="mt-4 text-base font-medium value dark:text-black-300"
                                         v-html="message.message"
                                     >
                                     </div>
@@ -1374,9 +1370,9 @@
 
                                     <a 
                                         v-if="message.attachment"
-                                        class="icon-attribute dark:text-black-300 text-base font-normal cursor-pointer"
+                                        class="text-base font-normal cursor-pointer icon-attribute dark:text-black-300"
                                     >
-                                        <span class="text-base hover:underline ml-2">
+                                        <span class="ml-2 text-base hover:underline">
                                             @{{ message.attachment }}
                                         </span>
                                     </a>
