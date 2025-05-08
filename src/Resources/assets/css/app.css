@@ -45,11 +45,6 @@
     @apply font-medium rounded-[12px] bg-white text-navyBlue border border-navyBlue  px-[30px] py-[15px] max-w-max cursor-pointer transition-all hover:bg-[#050e3a0d];
 }
 
-.text-xs {
-    font-size: 0.75rem;
-    line-height: 1rem !important;
-}
-
 @media not all and (min-width: 1024px) {
     .max-lg\:hidden {
         display: none !important;
