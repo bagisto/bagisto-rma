@@ -114,7 +114,7 @@ class RMAServiceProvider extends ServiceProvider
         $this->app->register(\Konekt\Concord\ConcordServiceProvider::class);
 
         $this->mergeConfigFrom(
-            dirname(__DIR__) . '/Config/admin-system.php',
+            dirname(__DIR__) . '/Config/system.php',
             'core'
         );
 
