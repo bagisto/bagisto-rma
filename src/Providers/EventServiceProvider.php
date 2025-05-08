@@ -39,9 +39,5 @@ class EventServiceProvider extends ServiceProvider
         Event::listen('bagisto.admin.layout.head.before', function ($viewRenderEventManager) {
             $viewRenderEventManager->addTemplate('rma::style.index');
         });
-
-        Event::listen('bagisto.shop.layout.rma.guest.login.before', function ($viewRenderEventManager) {
-            $viewRenderEventManager->addTemplate('rma::style.index');
-        });
     }
 }
