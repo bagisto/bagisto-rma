@@ -951,7 +951,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
 
                 methods: {
                     formatPrice(price) {
-                        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(price);
+                        return this.$admin.formatPrice(price);
                     },
 
                     getProductId(product) {
