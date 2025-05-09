@@ -814,9 +814,9 @@ class CustomerController extends Controller
     public function store(): JsonResponse|RedirectResponse
     {
         if (! is_array(request()->input('order_item_id'))) {
-            session()->flash('warning', trans('Please select the item'));
-
-            return redirect()->route('shop.guest.create-rma');
+            return new JsonResponse([
+                'message' => trans('rma::app.response.please-select-the-item'),
+            ], 400);
         }
 
         $this->validate(request(), [
@@ -996,9 +996,9 @@ class CustomerController extends Controller
     public function storeGuest(): JsonResponse|RedirectResponse
     {
         if (! is_array(request()->input('order_item_id'))) {
-            session()->flash('warning', trans('Please select the item'));
-
-            return redirect()->route('shop.guest.create-rma');
+            return new JsonResponse([
+                'message' => trans('rma::app.response.please-select-the-item'),
+            ], 400);
         }
 
         $this->validate(request(), [
