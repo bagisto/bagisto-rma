@@ -597,5 +597,7 @@ return [
         'rma-disabled'      => 'تم تعطيل RMA لهذا المنتج',
         'send-message'      => 'تم إرسال :name بنجاح.',
         'update-success'    => 'تم تحديث :name بنجاح.',
+        'please-select-the-item' => 'يرجى اختيار العنصر',
+
     ],
 ];

@@ -597,5 +597,7 @@ return [
         'rma-disabled'      => 'Le RMA est désactivé pour ce produit',
         'send-message'      => ':name envoyé avec succès.',
         'update-success'    => ':name mis à jour avec succès.',
+        'please-select-the-item' => 'Veuillez sélectionner l’article',
+
     ],
 ];

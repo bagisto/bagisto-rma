@@ -597,5 +597,7 @@ return [
         'send-message'      => ':name נשלח בהצלחה.',
         'update-success'    => ':name עודכן בהצלחה.',
         'creation-error'    => 'לא ניתן לעדכן את סטטוס ה-RMA מכיוון שהחשבונית להזמנה זו לא נוצרה.', 
+        'please-select-the-item' => 'אנא בחר פריט',
+
     ],
 ];

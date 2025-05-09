@@ -597,5 +597,7 @@ return [
         'rma-disabled'      => 'この製品のRMAは無効です',
         'send-message'      => ':name が正常に送信されました。',
         'update-success'    => ':name が正常に更新されました。',
+        'please-select-the-item' => '商品を選択してください',
+
     ],
 ];

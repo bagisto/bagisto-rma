@@ -597,5 +597,7 @@ return [
         'send-message'      => ':name succesvol verzonden.',
         'update-success'    => ':name succesvol bijgewerkt.',
         'creation-error'    => 'De RMA-status kan niet worden bijgewerkt omdat de factuur voor deze bestelling niet is aangemaakt.',
+        'please-select-the-item' => 'Selecteer het artikel',
+
     ],
 ];
