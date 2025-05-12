@@ -14,6 +14,7 @@ use Webkul\Customer\Repositories\CustomerRepository;
 use Webkul\Product\Repositories\ProductRepository;
 use Webkul\Sales\Repositories\OrderItemRepository;
 use Webkul\Sales\Repositories\OrderRepository;
+use Webkul\Sales\Models\Order;
 use Webkul\Sales\Contracts\OrderItem;
 use Illuminate\Database\Eloquent\Collection;
 use Webkul\RMA\Contracts\RMAItems;
@@ -432,9 +433,12 @@ class CreateRmaRepository extends Repository
     /**
      * Get order details
      */
-    public function getOrderProduct(RMAItems|int $orderId): OrderItem|Collection
+    public function getOrderProduct(RMAItems|int $orderId): Collection
     {
         $allowedProductTypes = explode(',', core()->getConfigData('sales.rma.setting.select-allowed-product-type'));
+
+        $order = $this->orderRepository->find($orderId);
+        $defaultReturnWindowDays = intval(core()->getConfigData('sales.rma.setting.default_allow_days'));
 
         $orderItems = $this->orderItemRepository->where('order_id', $orderId)
             ->addSelect(
@@ -452,7 +456,6 @@ class CreateRmaRepository extends Repository
                 'order_items.additional',
                 'product_images.path as base_image',
                 'orders.status as order_status',
-                'orders.id as order_id',
                 'products.type as product_type',
                 'products.rma_rules',
                 'rma_rules.id as rule_id',
@@ -463,14 +466,14 @@ class CreateRmaRepository extends Repository
             ->leftJoin('product_flat', 'order_items.product_id', '=', 'product_flat.product_id')
             ->leftJoin('products', 'order_items.product_id', '=', 'products.id')
             ->leftJoin('rma_rules', 'products.rma_rules', '=', 'rma_rules.id')
-            ->leftJoin('products as parent_products', 'products.parent_id', '=', 'parent_products.id') 
+            ->leftJoin('products as parent_products', 'products.parent_id', '=', 'parent_products.id')
             ->leftJoin('product_images', 'product_flat.product_id', '=', 'product_images.product_id')
             ->leftJoin('orders', 'order_items.order_id', '=', 'orders.id')
             ->whereNull('order_items.parent_id')
             ->where(function ($query) use ($allowedProductTypes) {
                 $query->where(function ($subQuery) use ($allowedProductTypes) {
                     $subQuery->whereNull('products.parent_id')
-                             ->whereIn('products.type', $allowedProductTypes);
+                        ->whereIn('products.type', $allowedProductTypes);
                 })->orWhere(function ($subQuery) use ($allowedProductTypes) {
                     $subQuery->whereNotNull('products.parent_id')
                         ->whereIn('parent_products.type', $allowedProductTypes);
@@ -481,10 +484,8 @@ class CreateRmaRepository extends Repository
             ->get();
 
         foreach ($orderItems as $orderItem) {
-            $rma = $this->rmaRepository->where('order_id', $orderId)->first();
-
             $attributes = '';
-            
+
             if (! empty($orderItem->additional['attributes'])) {
                 $attributes = $orderItem->additional['attributes'];
             }
@@ -502,8 +503,33 @@ class CreateRmaRepository extends Repository
             $orderItem->rma_quantity = $rmaQuantity;
 
             $orderItem->attributes = $attributes;
-            
+
             $orderItem->currentQuantity = $orderItem->qty_ordered - $rmaQuantity;
+
+            $orderItem->formatted_price = core()->formatPrice($orderItem->price, $order->order_currency_code);
+
+            $orderItem->return_allowed = false;
+            $orderItem->exchange_allowed = false;
+            if($orderItem->order_status != Order::STATUS_PENDING) {
+                if($orderItem->rma_rules) {
+                    if($orderItem->rma_return_period) {
+                        $returnWindowDate = Carbon::parse($orderItem->created_at)->addDays($orderItem->rma_return_period);
+                        $orderItem->return_window_date = core()->formatDate($returnWindowDate, 'd M Y');
+                        $orderItem->return_allowed = $returnWindowDate->toDateString() >= Carbon::now()->toDateString();
+                    }
+                    if($orderItem->rma_exchange_period) {
+                        $exchangeWindowDate = Carbon::parse($orderItem->created_at)->addDays($orderItem->rma_exchange_period);
+                        $orderItem->exchange_window_date = core()->formatDate($exchangeWindowDate, 'd M Y');
+                        $orderItem->exchange_allowed = $exchangeWindowDate->toDateString() >= Carbon::now()->toDateString();
+                    }
+                } else {
+                    if ($defaultReturnWindowDays) {
+                        $returnWindowDate = Carbon::parse($orderItem->created_at)->addDays($defaultReturnWindowDays);
+                        $orderItem->exchange_window_date = $orderItem->return_window_date = core()->formatDate($returnWindowDate, 'd M Y');
+                        $orderItem->exchange_allowed = $orderItem->return_allowed = $returnWindowDate->toDateString() >= Carbon::now()->toDateString();
+                    }
+                }
+            }
         }
 
         return $orderItems;
