@@ -551,7 +551,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                         <x-shop::form.control-group.error ::name="'resolution_type[' + getProductId(product) + ']'" class="flex"/>
                                     </x-shop::form.control-group>
                                 </div>
-                            </p>
+                            </p>                            
                             
                             <!-- Reasons -->
                             <p class="w-full">
