@@ -571,9 +571,10 @@
                                                 <x-admin::form.control-group.control
                                                     type="select"
                                                     name="rma_status"
+                                                    id="orderItem"
                                                     rules="required"
                                                     :label="trans('rma::app.admin.sales.rma.all-rma.index.datagrid.rma-status')"
-                                                    id="orderItem"
+                                                    :value="$rmaData['rma_status']"
                                                 >
                                                     @foreach ($statusArr as $status)
                                                         <option value="{{ $status }}" {{ $rmaData['rma_status'] == $status ? 'selected' : '' }}>
