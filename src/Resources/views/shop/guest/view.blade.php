@@ -97,7 +97,7 @@
             <p class="text-sm font-medium text-[#6E6E6E]">
                 @if (!session()->get('guestEmail'))
                     <a
-                        href="{{ route('rma.customers.all-rma', $rmaData['order_id']) }}"
+                        href="{{ route('shop.customers.account.orders.view', $rmaData['order_id']) }}"
                         target="_blank"
                     >
                         {{ '#'.$rmaData['order_id'] }}

@@ -9,10 +9,10 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
     </x-slot>
 
     <div class="flex flex-wrap">
-        <div class="container mt-8 px-16 max-lg:px-4">
+        <div class="container px-16 mt-8 max-lg:px-4">
             <!-- Heading of the page -->
             <div class="flex items-center justify-between mb-4">
-                <h2 class="text-2xl max-lg:text-base font-medium">
+                <h2 class="text-2xl font-medium max-lg:text-base">
                     @lang('rma::app.shop.guest.create.heading')
                 </h2>
 
@@ -34,7 +34,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
 
     @pushOnce('scripts')
         <script type="text/x-template" id="rma-request-template">
-            <div class="md:border-2 bg-white box-shadow rounded-md mb-2 p-4">
+            <div class="p-4 mb-2 bg-white rounded-md md:border-2 box-shadow">
                 <!-- Desktop view -->
                 <div class="max-md:hidden">
                     <x-shop::datagrid :src="route('shop.guest.create-rma')" >
@@ -126,7 +126,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
 
                                         <!--  Grand Total, Method Title -->
                                         <p 
-                                            class="text-base text-gray-800 font-semibold"
+                                            class="text-base font-semibold text-gray-800"
                                             v-html="record.grand_total"
                                         >
                                         </p>
@@ -142,7 +142,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                         <p class="flex justify-end">
                                             <!-- Arrow -->
                                             <a
-                                                class="icon-edit text-2xl"
+                                                class="text-2xl icon-edit"
                                                 @click="productAvail(record)"
                                             >
                                             </a>
@@ -224,7 +224,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                     style="grid-template-columns: repeat(2, minmax(0, 1fr));"
                                     v-for="record in available.records"
                                 >
-                                    <div class="flex gap-x-4 justify-between items-center">
+                                    <div class="flex items-center justify-between gap-x-4">
                                         <div class="flex flex-col gap-1.5">
                                             <p
                                                 class="text-gray-600"
@@ -246,7 +246,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                         </div>
                                     </div>
                                     
-                                    <div class="flex gap-x-4 justify-between items-center">
+                                    <div class="flex items-center justify-between gap-x-4">
                                         <div class="flex flex-col gap-1.5">
 
                                         <p 
@@ -260,7 +260,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                         <p class="flex justify-end">
                                             <!-- Arrow -->
                                             <a
-                                                class="icon-edit text-2xl"
+                                                class="text-2xl icon-edit"
                                                 @click="productAvail(record)"
                                             >
                                             </a>
@@ -290,7 +290,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                             </x-slot>
 
                             <!-- Modal Content -->
-                            <x-slot:content class="bg-white p-4 max-sm:p-3">
+                            <x-slot:content class="p-4 bg-white max-sm:p-3">
                                 <div class="overflow-auto" style="min-height: 400px; max-height: 400px;">
                                     <v-order-items-list :key="refreshComponent" :order-id="isSelect"></v-order-items-list>
                                 </div>
@@ -327,7 +327,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                     <div class="flex-row gap-2.5 border-b mt-2 mb-2">
                         <div class="flex gap-2.5 mb-3">
                             <!-- Checkbox -->
-                            <p>
+                            <div>
                                 <div v-if="product.currentQuantity > '0'">
                                     <input 
                                         type="checkbox" 
@@ -361,10 +361,10 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                         />
                                     </x-shop::form.control-group>
                                 </div>
-                            </p>
+                            </div>
 
                             <!-- Image -->
-                            <p>
+                            <div>
                                 <template v-if="product.base_image">
                                     <img
                                         class="min-h-[80px] max-h-[80px] min-w-[80px] max-w-[80px] rounded"
@@ -380,14 +380,14 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                         alt="medium-product-placeholder.webp"
                                     >
                                 </template>
-                            </p>
+                            </div>
 
-                            <p style="width: 100px; max-width: 100px;">
+                            <div>
                                 <div v-if="product.url_key && product.visible_individually">
                                     <a 
                                         :href="`{{ route('shop.product_or_category.index', '') }}/${product.url_key}`" 
                                         target='_blank' 
-                                        class="text-blue-500 text-xs"
+                                        class="text-xs text-blue-500"
                                     > 
                                         @{{ product.name }} 
 
@@ -406,19 +406,19 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                         <b>@{{ attribute.attribute_name }} : </b>@{{ attribute.option_label }}<br>
                                     </span>
                                 </div>
-                            </p>
+                            </div>
 
                             <!-- Sku, Price, Return Window -->
-                            <p class="w-full">
-                                <p class="flex text-sm justify-between whitespace-nowrap">
+                            <div class="w-full">
+                                <p class="flex justify-between text-sm whitespace-nowrap">
                                     <span>
                                         @lang('admin::app.catalog.products.index.create.sku'):
                                     </span>
                                     
-                                    <span style="width: 300px; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">@{{ product.sku }}</span>
+                                    <span>@{{ product.sku }}</span>
                                 </p>
 
-                                <p class="flex text-sm justify-between whitespace-nowrap">
+                                <p class="flex justify-between text-sm whitespace-nowrap">
                                     <span>
                                         @lang('admin::app.catalog.attributes.create.price'):  
                                     </span>
@@ -426,7 +426,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                     <span>@{{ formatPrice(product.price) }}</span>
                                 </p>
 
-                                <p class="flex text-sm justify-between whitespace-nowrap">
+                                <p class="flex justify-between text-sm whitespace-nowrap">
                                     <span>
                                         @lang('rma::app.admin.configuration.index.sales.rma.current-order-quantity'):
                                     </span>
@@ -436,10 +436,10 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                     </span>
                                 </p>
 
-                                <span v-if="product.rma_rules && products['0'].order_status != 'pending'">
+                                <div v-if="product.rma_rules && products['0'].order_status != 'pending'">
                                     <p 
                                         v-if="resolutionType[getProductId(product)] == 'return'" 
-                                        class="flex text-sm justify-between gap-3 whitespace-nowrap"
+                                        class="flex justify-between gap-3 text-sm whitespace-nowrap"
                                     >
                                         <span>
                                             @lang('rma::app.shop.customer.create.return-window'): 
@@ -452,7 +452,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
 
                                     <p 
                                         v-if="resolutionType[getProductId(product)] == 'exchange'" 
-                                        class="flex text-sm justify-between gap-3 whitespace-nowrap"
+                                        class="justify-between gap-3 text-sm fflex whitespace-nowrap"
                                     >
                                         <span>
                                             @lang('rma::app.shop.customer.create.exchange-window'): 
@@ -462,13 +462,10 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                             @{{ calculateDeliveredReturnWindow(product.created_at, product.rma_exchange_period) }}
                                         </span>
                                     </p>
-                                </span>
+                                </div>
 
-                                <p 
-                                    v-else 
-                                    class="flex text-sm justify-between gap-3 whitespace-nowrap"
-                                >
-                                    <span v-if="! product.rma_exchange_period && ! product.rma_return_period">
+                                <div  v-else>
+                                    <p v-if="! product.rma_exchange_period && ! product.rma_return_period"  class="flex justify-between text-sm whitespace-nowrap">
                                         <span>
                                             @lang('rma::app.shop.customer.create.return-window'): 
                                         </span>
@@ -476,17 +473,17 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                         <span>
                                             @{{ calculateReturnWindow(product.created_at) }}
                                         </span>
-                                    </span>
-                                </p>
-                            </p>
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                         
                         <!-- RMA QTY -->
-                        <p class="w-full" v-if="! notAllowed">
+                        <div class="w-full" v-if="! notAllowed">
                             <div v-if="isChecked[getProductId(product)] && product.currentQuantity > '0'">
                                 <!-- RMA Quantity -->
                                 <x-shop::form.control-group>
-                                    <x-shop::form.control-group.label class="required text-sm flex">
+                                    <x-shop::form.control-group.label class="flex text-sm required">
                                         @lang('rma::app.shop.customer.rma-qty')
                                     </x-shop::form.control-group.label>
 
@@ -505,18 +502,18 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
 
                             <div 
                                 v-if="product.currentQuantity <= '0'" 
-                                class="text-sm text-red-600 flex mb-2"
+                                class="flex mb-2 text-sm text-red-600"
                             >
                                 @lang('rma::app.admin.configuration.index.sales.rma.product-already-raw')
                             </div>
-                        </p>
+                        </div>
 
                         <div class="flex gap-3" v-if="! notAllowed">
                             <!-- Resolution Type for rules product -->
-                            <p class="w-full" v-if="product.rma_exchange_period || product.rma_return_period">
+                            <div class="w-full" v-if="product.rma_exchange_period || product.rma_return_period">
                                 <div v-if="isChecked[getProductId(product)] && product.currentQuantity > '0'">
                                     <x-shop::form.control-group>
-                                        <x-shop::form.control-group.label class="required text-sm flex">
+                                        <x-shop::form.control-group.label class="flex text-sm required">
                                             @lang('rma::app.admin.configuration.index.sales.rma.resolution-type')
                                         </x-shop::form.control-group.label>
 
@@ -525,7 +522,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                             ::name="'resolution_type[' + getProductId(product) + ']'" 
                                             rules="required"
                                             v-model="resolutionType[getProductId(product)]"
-                                            @change="$nextTick(() => getResolutionReason(getProductId(product)))"
+                                            @change="getResolutionReason(getProductId(product))"
                                             :label="trans('rma::app.admin.configuration.index.sales.rma.resolution-type')"
                                         >
                                             <option value="">
@@ -557,13 +554,13 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                         <x-shop::form.control-group.error ::name="'resolution_type[' + getProductId(product) + ']'" class="flex"/>
                                     </x-shop::form.control-group>
                                 </div>
-                            </p>
+                            </div>
 
                             <!-- Resolution Type -->
-                            <p class="w-full" v-else>
+                            <div class="w-full" v-else>
                                 <div v-if="isChecked[getProductId(product)] && product.currentQuantity > '0'">
                                     <x-shop::form.control-group>
-                                        <x-shop::form.control-group.label class="required text-sm flex">
+                                        <x-shop::form.control-group.label class="flex text-sm required">
                                             @lang('rma::app.admin.configuration.index.sales.rma.resolution-type')
                                         </x-shop::form.control-group.label>
 
@@ -572,7 +569,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                             ::name="'resolution_type[' + getProductId(product) + ']'" 
                                             rules="required"
                                             v-model="resolutionType[getProductId(product)]"
-                                            @change="$nextTick(() => getResolutionReason(getProductId(product)))"
+                                            @change="getResolutionReason(getProductId(product))"
                                             :label="trans('rma::app.admin.configuration.index.sales.rma.resolution-type')"
                                         >
                                             <option value="">
@@ -604,10 +601,10 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                         <x-shop::form.control-group.error ::name="'resolution_type[' + getProductId(product) + ']'" class="flex"/>
                                     </x-shop::form.control-group>
                                 </div>
-                            </p>
+                            </div>
 
                             <!-- Reasons -->
-                            <p class="w-full">
+                            <div class="w-full">
                                 <div 
                                     v-if="isChecked[getProductId(product)] 
                                         && product.currentQuantity > '0'
@@ -616,7 +613,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                         && resolutionReason[getProductId(product)].length"
                                 >
                                     <x-shop::form.control-group>
-                                        <x-shop::form.control-group.label class="required text-sm flex">
+                                        <x-shop::form.control-group.label class="flex text-sm required">
                                             @lang('rma::app.shop.customer.create.reason')
                                         </x-shop::form.control-group.label>
 
@@ -639,7 +636,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                         <x-shop::form.control-group.error ::name="'rma_reason_id[' + getProductId(product) + ']'" class="flex"/>
                                     </x-shop::form.control-group>
                                 </div>
-                            </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -650,7 +647,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                 >
                     <!-- Delivery Status -->
                     <x-shop::form.control-group>
-                        <x-shop::form.control-group.label class="required text-sm mt-4 flex">
+                        <x-shop::form.control-group.label class="flex mt-4 text-sm required">
                             @lang('rma::app.admin.configuration.index.sales.rma.product-delivery-status')
                         </x-shop::form.control-group.label>
 
@@ -683,7 +680,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                     <div v-if="orderStatus == '1'">
                         <!-- Delivery Status -->
                         <x-shop::form.control-group>
-                            <x-shop::form.control-group.label class="required text-sm mt-4 flex">
+                            <x-shop::form.control-group.label class="flex mt-4 text-sm required">
                                 @lang('rma::app.admin.configuration.index.sales.rma.package-condition')
                             </x-shop::form.control-group.label>
 
@@ -712,7 +709,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
 
                         <!-- Return Pickup Address -->
                         <x-shop::form.control-group>
-                            <x-shop::form.control-group.label class="required text-sm mt-4 flex">
+                            <x-shop::form.control-group.label class="flex mt-4 text-sm required">
                                 @lang('rma::app.admin.configuration.index.sales.rma.return-pickup-address')
                             </x-shop::form.control-group.label>
 
@@ -731,7 +728,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
 
                         <!-- Return Pickup Time -->
                         <x-shop::form.control-group>
-                            <x-shop::form.control-group.label class="required text-sm mt-4 flex">
+                            <x-shop::form.control-group.label class="flex mt-4 text-sm required">
                                 @lang('rma::app.admin.configuration.index.sales.rma.return-pickup-time')
                             </x-shop::form.control-group.label>
 
@@ -765,7 +762,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                         <!-- Additionally -->
                         @foreach ($customAttributes as $attribute)
                             <x-shop::form.control-group>
-                                <x-shop::form.control-group.label class="flex text-sm mt-4">
+                                <x-shop::form.control-group.label class="flex mt-4 text-sm">
                                     {!! $attribute->label . ($attribute->is_required == '1' ? '<span class="required"></span>' : '') !!}
                                 </x-shop::form.control-group.label>
 
@@ -872,7 +869,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
 
                                     @case('checkbox')
                                         @foreach($attribute->options ?? [] as $index => $option)
-                                            <label class="relative mb-2 flex cursor-pointer items-start">
+                                            <label class="relative flex items-start mb-2 cursor-pointer">
                                                 <v-field
                                                     type="checkbox"
                                                     class="flex"
@@ -883,7 +880,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                                 >
                                                     <input
                                                         type="checkbox"
-                                                        class="peer sr-only"
+                                                        class="sr-only peer"
                                                         id="{{ $attribute->code }}-{{ $index }}"
                                                         rules="required"
                                                         name="{{ $attribute->code }}[{{ $index }}]"
@@ -893,7 +890,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                                 </v-field>
 
                                                 <label
-                                                    class="icon-uncheck peer-checked:icon-check-box cursor-pointer text-base peer-checked:text-navyBlue"
+                                                    class="text-base cursor-pointer icon-uncheck peer-checked:icon-check-box peer-checked:text-navyBlue"
                                                     for="{{ $attribute->code }}-{{ $index }}"
                                                 >
                                                     {{ $option->option_name }}
@@ -907,7 +904,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
 
                                     @case('radio')
                                         @foreach($attribute->options ?? [] as $option)
-                                            <label class="relative mb-2 flex cursor-pointer items-start">
+                                            <label class="relative flex items-start mb-2 cursor-pointer">
                                                 <v-field
                                                     type="radio"
                                                     class="flex"
@@ -928,7 +925,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                                 </v-field>
                                         
                                                 <label
-                                                    class="icon-radio-unselect text-base peer-checked:icon-radio-select peer-checked:text-navyBlue cursor-pointer"
+                                                    class="text-base cursor-pointer icon-radio-unselect peer-checked:icon-radio-select peer-checked:text-navyBlue"
                                                     for="option_{{ $loop->index }}"
                                                 >
                                                     {{ $option->option_name }}
@@ -947,7 +944,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
 
                     <!-- Additional information -->
                     <x-shop::form.control-group>
-                        <x-shop::form.control-group.label class="text-sm flex">
+                        <x-shop::form.control-group.label class="flex text-sm">
                             @lang('rma::app.shop.customer.create.information')
                         </x-shop::form.control-group.label>
 
@@ -966,7 +963,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
 
                     <!-- Images -->
                     <x-shop::form.control-group class="mt-4">
-                        <x-shop::form.control-group.label class="text-sm flex">
+                        <x-shop::form.control-group.label class="flex text-sm">
                             @lang('admin::app.catalog.products.edit.images.title')
                         </x-shop::form.control-group.label>
                         
