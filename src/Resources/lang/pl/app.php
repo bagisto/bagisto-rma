@@ -585,6 +585,7 @@ return [
             'declined-buyer'  => 'RMA zostało odrzucone przez Kupującego.',
             'solved-by-admin' => 'RMA zostało rozwiązane przez Administratora.',
             'solved'          => 'RMA zostało rozwiązane.',
+            
         ],
     ],
 
@@ -598,6 +599,5 @@ return [
         'send-message'      => ':name zostało pomyślnie wysłane.',
         'update-success'    => ':name zostało pomyślnie zaktualizowane.',
         'please-select-the-item' => 'Proszę wybrać przedmiot',
-
     ],
 ];
