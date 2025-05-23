@@ -508,7 +508,8 @@
                                     $rmaData['rma_status'] == 'Received Package'
                                     && $productDetails[0]->resolution == 'exchange'
                                 )
-                                
+                                  @php($flag = 1)
+                                  
                                 @elseif ($rmaData['rma_status'] == 'Received Package')
                                     @php($flag = 0)
     
