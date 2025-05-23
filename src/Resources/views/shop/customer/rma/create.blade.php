@@ -1044,6 +1044,19 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                 setTimeout(() => {
                                     window.location.reload();
                                 }, 3000);
+                            }) 
+                            .catch((error) => {
+                                if ([400, 422].includes(error.response.request.status)) {
+                                    this.$emitter.emit('add-flash', { type: 'error', message: error.response.data.message });
+
+                                    resetForm();
+
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 3000);
+                                    
+                                    return;
+                                }
                             });
                     },
                 }

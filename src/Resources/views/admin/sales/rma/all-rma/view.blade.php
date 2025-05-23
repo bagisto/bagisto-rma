@@ -867,8 +867,7 @@
                                             </div>
 
                                             <div
-                                                class="text-base font-medium value dark:text-black-300"
-                                                style="margin-top:10px; word-break: break-all;"
+                                                class="mt-4 text-base font-medium value dark:text-black-300"
                                                 v-html="message.message"
                                             >
                                             </div>
@@ -1368,8 +1367,7 @@
                                     </div>
 
                                     <div
-                                        class="text-base font-medium value dark:text-black-300"
-                                        style="margin-top:10px; word-break: break-all;"
+                                        class="mt-4 text-base font-medium value dark:text-black-300"
                                         v-html="message.message"
                                     >
                                     </div>

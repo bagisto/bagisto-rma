@@ -702,8 +702,7 @@
                                 </div>
 
                                 <div
-                                    class="value"
-                                    style="margin-top:10px; word-break: break-all;"
+                                    class="mt-4 value"
                                     v-html="message.message"
                                 >
                                 </div>
