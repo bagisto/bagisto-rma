@@ -274,64 +274,7 @@ class RmaController extends Controller
                 Event::dispatch('sales.order.cancel.after', $order);
             }
 
-            if ($status['rma_status'] == self::RECEIVEDPACKAGE) {
-                $items = collect($orderRma->orderItem)->pluck('order_item_id', 'quantity')->mapWithKeys(function ($item, $quantity) {
-                    return [$item => $quantity];
-                });
-
-                $refundArray = [
-                    'refund' => [
-                        'shipping'          => 0,
-                        'adjustment_refund' => 0,
-                        'adjustment_fee'    => 0,
-                    ],
-                ];
-
-                foreach ($items as $key => $value) {
-                    $refundArray['refund']['items'][$key] = $value;
-                }
-
-                $order = $this->orderRepository->findOrFail($orderId);
-
-                if (! $order->canRefund()) {
-                    session()->flash('error', trans('rma::app.response.creation-error'));
-
-                    return redirect()->back();
-                }
-
-                $totals = $this->refundRepository->getOrderItemsRefundSummary($refundArray['refund'], $orderId);
-
-                if (! $totals) {
-                    session()->flash('error', trans('admin::app.sales.refunds.create.invalid-qty'));
-
-                    return redirect()->back();
-                }
-
-                $maxRefundAmount = $totals['grand_total']['price'] - $order->refunds()->sum('base_adjustment_refund');
-
-                $refundAmount = $totals['grand_total']['price'] - $totals['shipping']['price'] + $refundArray['refund']['shipping'] + $refundArray['refund']['adjustment_refund'] - $refundArray['refund']['adjustment_fee'];
-
-                if (! $refundAmount) {
-                    session()->flash('error', trans('admin::app.sales.refunds.create.invalid-refund-amount-error'));
-
-                    return redirect()->back();
-                }
-
-                if ($refundAmount > $maxRefundAmount) {
-                    session()->flash('error', trans('admin::app.sales.refunds.create.refund-limit-error', ['amount' => core()->formatBasePrice($maxRefundAmount)]));
-
-                    return redirect()->back();
-                }
-
-                $this->refundRepository->create(array_merge($refundArray, ['order_id' => $orderId]));
-
-                $updateStatus = $rma->update($status);
-
-                session()->flash('success', trans('admin::app.sales.refunds.create.create-success'));
-
-                return redirect()->route('admin.sales.refunds.index');
-            }
-
+           
             if ($order->total_qty_ordered == $totalCount) {
                 if ($status['rma_status'] == self::ITEMCANCELED) {
                     $status['order_status'] = self::ORDERCANCELED;

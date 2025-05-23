@@ -22,29 +22,13 @@
             $checkDateExpires = true;
         }
         
-        $statusArr = [];
-
         $rmaActiveStatus = $rmaActiveStatus->toarray();
         
-        if ($rmaData['rma_status'] == 'Pending') {
+        $currentStatus = $rmaData['rma_status'] ?? 'Pending';
 
-            $rmaActiveStatus = array_filter($rmaActiveStatus, function ($status) {
-                return in_array($status, ["Accept", "Declined"]);
-            });
-        } else {
-            if ($productDetails['0']?->resolution != 'cancel-items') {
-                $rmaActiveStatus = array_filter($rmaActiveStatus, function ($status) {
-                    return $status !== "Item Canceled" && $status !== "Canceled" && $status !== "Accept" && $status !== "Declined" && $status !== "Pending";
-                });
-    
-            } else {
-                $rmaActiveStatus = array_filter($rmaActiveStatus, function ($status) {
-                    return $status!== "Received Package" && $status !== "Canceled" && $status !== "Accept" && $status !== "Declined" && $status !== "Pending";
-                });
-            }
-        }
+        $resolution = $productDetails[0]->resolution ?? null;
 
-        $statusArr = array_values($rmaActiveStatus);
+        $statusArr = app('Webkul\RMA\Helpers\Helper')->getAllowedRmaStatuses($currentStatus, $resolution, $rmaActiveStatus);
 
         $rmaStatusColor = '';
 
@@ -520,9 +504,15 @@
                                 @if ($rmaData['rma_status'] == 'Item Canceled')
                                     @php($flag = 0)
 
+                                @elseif (
+                                    $rmaData['rma_status'] == 'Received Package'
+                                    && $productDetails[0]->resolution == 'exchange'
+                                )
+                                
                                 @elseif ($rmaData['rma_status'] == 'Received Package')
                                     @php($flag = 0)
-
+    
+    
                                 @elseif ($rmaData['rma_status'] == 'Declined')
                                     @php($flag = 0)
                                     

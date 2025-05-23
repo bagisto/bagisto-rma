@@ -9,11 +9,11 @@
         <x-shop::breadcrumbs name="rma"></x-shop::breadcrumbs>
     @endSection
 
-    <div class="mx-4">
+    <div class="max-md:hidden">
         <x-shop::layouts.account.navigation />
     </div>
 
-    <div class="mx-4 flex-auto max-md:mx-6 max-sm:mx-4">
+    <div class="flex-auto mx-4 max-md:mx-6 max-sm:mx-4">
         <div class="flex items-center justify-between">
             <h2 class="text-2xl font-medium">
                 @lang('rma::app.shop.customer-rma-index.heading')
@@ -64,7 +64,7 @@
                                     class="flex gap-2.5 items-center select-none"
                                     v-for="(columnGroup, index) in [['id'], ['order_id'], ['rma_status'], ['total_quantity'], ['created_at']]"
                                 >
-                                    <p class="text-gray-600 text-base">
+                                    <p class="text-base text-gray-600">
                                         <span class="[&>*]:after:content-['_/_']">
                                             <template v-for="column in columnGroup">
                                                 <span
@@ -90,7 +90,7 @@
                                     </p>
                                 </div>
                                 
-                                <p class="flex justify-start text-gray-600 hover:text-gray-800 cursor-pointer">
+                                <p class="flex justify-start text-gray-600 cursor-pointer hover:text-gray-800">
                                     @lang('admin::app.settings.data-transfer.imports.edit.action')
                                 </p>
                             </div>
@@ -115,7 +115,7 @@
                                 style="grid-template-columns: repeat(6, minmax(0, 1fr));"
                                 v-for="record in available.records"
                             >
-                                <div class="flex gap-x-4 justify-between items-center">
+                                <div class="flex items-center justify-between gap-x-4">
                                     <div class="flex flex-col gap-1.5">
                                         <p
                                             class="text-gray-600"
@@ -125,7 +125,7 @@
                                     </div>
                                 </div>
                                 
-                                <div class="flex gap-x-4 justify-between items-center">
+                                <div class="flex items-center justify-between gap-x-4">
                                     <div class="flex flex-col gap-1.5">
                                         <p
                                             class="text-gray-600"
@@ -135,7 +135,7 @@
                                     </div>
                                 </div>
 
-                                <div class="flex gap-x-4 justify-between items-center">
+                                <div class="flex items-center justify-between gap-x-4">
                                     <div class="flex flex-col gap-1.5">
                                         <p
                                             class="text-gray-600"
@@ -145,7 +145,7 @@
                                     </div>
                                 </div>
                                 
-                                <div class="flex gap-x-4 justify-between items-center">
+                                <div class="flex items-center justify-between gap-x-4">
                                     <div class="flex flex-col gap-1.5">
                                         <p 
                                             class="text-gray-600 "
@@ -155,13 +155,13 @@
                                     </div>
                                 </div>
                                 
-                                <div class="flex gap-x-4 justify-between items-center">
+                                <div class="flex items-center justify-between gap-x-4">
                                     <div class="flex flex-col gap-1.5"> 
-                                        <p class="text-gray-600 text-sm" v-html="record.created_at"></p>
+                                        <p class="text-sm text-gray-600" v-html="record.created_at"></p>
                                     </div>
                                 </div>
 
-                                <div class="flex ml-3 gap-x-4 justify-between items-center">
+                                <div class="flex items-center justify-between ml-3 gap-x-4">
                                     <div class="flex flex-col gap-1.5"> 
                                         @php
                                             $routeName = request()->route()->getName();
@@ -183,7 +183,7 @@
                                         <p class="flex justify-end">
                                             <!-- Arrow -->
                                             <a :href="`{{{ route($route, '') }}}/${record.id}`">
-                                                <span class="icon-eye text-2xl ltr:ml-1 rtl:mr-1 rounded-md cursor-pointer transition-all hover:bg-gray-200"></span>
+                                                <span class="text-2xl transition-all rounded-md cursor-pointer icon-eye ltr:ml-1 rtl:mr-1 hover:bg-gray-200"></span>
                                             </a>
                                         
                                             <span v-if="record.rmaStatus != 'Canceled'">
@@ -192,7 +192,7 @@
                                                         <span v-if="record.rmaStatus != 'Solved'">
                                                             <span v-if="record.rmaStatus != 'Received Package'">
                                                                 <a @click="cancelStatus(record.id)">
-                                                                    <span class="icon-cancel text-2xl ltr:ml-1 rtl:mr-1 rounded-md cursor-pointer transition-all hover:bg-gray-200"></span>
+                                                                    <span class="text-2xl transition-all rounded-md cursor-pointer icon-cancel ltr:ml-1 rtl:mr-1 hover:bg-gray-200"></span>
                                                                 </a>
                                                             </span>
                                                         </span>
@@ -233,7 +233,7 @@
                                     class="flex gap-2.5 items-center select-none"
                                     v-for="(columnGroup, index) in [['id', 'order_id', 'rma_status'], ['total_quantity', 'created_at']]"
                                 >
-                                    <p class="text-gray-600 text-base">
+                                    <p class="text-base text-gray-600">
                                         <span class="[&>*]:after:content-['_/_']">
                                             <template v-for="column in columnGroup">
                                                 <span
@@ -280,7 +280,7 @@
                                 style="grid-template-columns: repeat(2, minmax(0, 1fr));"
                                 v-for="record in available.records"
                             >
-                                <div class="flex gap-x-4 justify-between items-center">
+                                <div class="flex items-center justify-between gap-x-4">
                                     <div class="flex flex-col gap-1.5">
                                         <p
                                             class="text-gray-600"
@@ -302,7 +302,7 @@
                                     </div>
                                 </div>
                                 
-                                <div class="flex gap-x-4 justify-between items-center">
+                                <div class="flex items-center justify-between gap-x-4">
                                     <div class="flex flex-col gap-1.5">
 
                                     <p 
@@ -311,7 +311,7 @@
                                     >
                                     </p>
 
-                                    <p class="text-gray-600 text-sm" v-html="record.created_at"></p>
+                                    <p class="text-sm text-gray-600" v-html="record.created_at"></p>
                                     
                                     @php
                                         $routeName = request()->route()->getName();
@@ -333,7 +333,7 @@
                                     <p class="flex justify-end">
                                         <!-- Arrow -->
                                         <a :href="`{{{ route($route, '') }}}/${record.id}`">
-                                            <span class="icon-eye text-2xl ltr:ml-1 rtl:mr-1 rounded-md cursor-pointer transition-all hover:bg-gray-200"></span>
+                                            <span class="text-2xl transition-all rounded-md cursor-pointer icon-eye ltr:ml-1 rtl:mr-1 hover:bg-gray-200"></span>
                                         </a>
                                     
                                         <span v-if="record.rmaStatus != 'Canceled'">
@@ -342,7 +342,7 @@
                                                     <span v-if="record.rmaStatus != 'Solved'">
                                                         <span v-if="record.rmaStatus != 'Received Package'">
                                                             <a @click="cancelStatus(record.id)">
-                                                                <span class="icon-cancel text-2xl ltr:ml-1 rtl:mr-1 rounded-md cursor-pointer transition-all hover:bg-gray-200"></span>
+                                                                <span class="text-2xl transition-all rounded-md cursor-pointer icon-cancel ltr:ml-1 rtl:mr-1 hover:bg-gray-200"></span>
                                                             </a>
                                                         </span>
                                                     </span>
