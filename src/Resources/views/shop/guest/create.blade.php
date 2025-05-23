@@ -327,7 +327,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                     <div class="flex-row gap-2.5 border-b mt-2 mb-2">
                         <div class="flex gap-2.5 mb-3">
                             <!-- Checkbox -->
-                            <div>
+                            <p>
                                 <div v-if="product.currentQuantity > '0'">
                                     <input 
                                         type="checkbox" 
@@ -361,10 +361,10 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                         />
                                     </x-shop::form.control-group>
                                 </div>
-                            </div>
+                            </p>
 
                             <!-- Image -->
-                            <div>
+                            <p>
                                 <template v-if="product.base_image">
                                     <img
                                         class="min-h-[80px] max-h-[80px] min-w-[80px] max-w-[80px] rounded"
@@ -380,9 +380,9 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                         alt="medium-product-placeholder.webp"
                                     >
                                 </template>
-                            </div>
+                            </p>
 
-                            <div>
+                            <p style="width: 100px; max-width: 100px;">
                                 <div v-if="product.url_key && product.visible_individually">
                                     <a 
                                         :href="`{{ route('shop.product_or_category.index', '') }}/${product.url_key}`" 
@@ -406,7 +406,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                         <b>@{{ attribute.attribute_name }} : </b>@{{ attribute.option_label }}<br>
                                     </span>
                                 </div>
-                            </div>
+                            </p>
 
                             <!-- Sku, Price, Return Window -->
                             <p class="w-full">
@@ -415,7 +415,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                         @lang('admin::app.catalog.products.index.create.sku'):
                                     </span>
                                     
-                                    <span>@{{ product.sku }}</span>
+                                    <span style="width: 300px; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">@{{ product.sku }}</span>
                                 </p>
 
                                 <p class="flex justify-between text-sm whitespace-nowrap">
@@ -436,7 +436,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                     </span>
                                 </p>
 
-                                <div v-if="product.rma_rules && products['0'].order_status != 'pending'">
+                                <span v-if="product.rma_rules && products['0'].order_status != 'pending'">
                                     <p 
                                         v-if="resolutionType[getProductId(product)] == 'return'" 
                                         class="flex justify-between gap-3 text-sm whitespace-nowrap"
@@ -462,10 +462,13 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                             @{{ calculateDeliveredReturnWindow(product.created_at, product.rma_exchange_period) }}
                                         </span>
                                     </p>
-                                </div>
+                                </span>
 
-                                <div  v-else>
-                                    <p v-if="! product.rma_exchange_period && ! product.rma_return_period"  class="flex justify-between text-sm whitespace-nowrap">
+                                <p 
+                                    v-else 
+                                    class="flex justify-between gap-3 text-sm whitespace-nowrap"
+                                >
+                                    <span v-if="! product.rma_exchange_period && ! product.rma_return_period">
                                         <span>
                                             @lang('rma::app.shop.customer.create.return-window'): 
                                         </span>
@@ -473,13 +476,13 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                         <span>
                                             @{{ calculateReturnWindow(product.created_at) }}
                                         </span>
-                                    </p>
-                                </div>
-                            </div>
+                                    </span>
+                                </p>
+                            </p>
                         </div>
                         
                         <!-- RMA QTY -->
-                        <div class="w-full" v-if="! notAllowed">
+                        <p class="w-full" v-if="! notAllowed">
                             <div v-if="isChecked[getProductId(product)] && product.currentQuantity > '0'">
                                 <!-- RMA Quantity -->
                                 <x-shop::form.control-group>
@@ -506,11 +509,11 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                             >
                                 @lang('rma::app.admin.configuration.index.sales.rma.product-already-raw')
                             </div>
-                        </div>
+                        </p>
 
                         <div class="flex gap-3" v-if="! notAllowed">
                             <!-- Resolution Type for rules product -->
-                            <div class="w-full" v-if="product.rma_exchange_period || product.rma_return_period">
+                            <p class="w-full" v-if="product.rma_exchange_period || product.rma_return_period">
                                 <div v-if="isChecked[getProductId(product)] && product.currentQuantity > '0'">
                                     <x-shop::form.control-group>
                                         <x-shop::form.control-group.label class="flex text-sm required">
@@ -522,7 +525,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                             ::name="'resolution_type[' + getProductId(product) + ']'" 
                                             rules="required"
                                             v-model="resolutionType[getProductId(product)]"
-                                            @change="getResolutionReason(getProductId(product))"
+                                            @change="$nextTick(() => getResolutionReason(getProductId(product)))"
                                             :label="trans('rma::app.admin.configuration.index.sales.rma.resolution-type')"
                                         >
                                             <option value="">
@@ -554,10 +557,10 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                         <x-shop::form.control-group.error ::name="'resolution_type[' + getProductId(product) + ']'" class="flex"/>
                                     </x-shop::form.control-group>
                                 </div>
-                            </div>
+                            </p>
 
                             <!-- Resolution Type -->
-                            <div class="w-full" v-else>
+                            <p class="w-full" v-else>
                                 <div v-if="isChecked[getProductId(product)] && product.currentQuantity > '0'">
                                     <x-shop::form.control-group>
                                         <x-shop::form.control-group.label class="flex text-sm required">
@@ -569,7 +572,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                             ::name="'resolution_type[' + getProductId(product) + ']'" 
                                             rules="required"
                                             v-model="resolutionType[getProductId(product)]"
-                                            @change="getResolutionReason(getProductId(product))"
+                                            @change="$nextTick(() => getResolutionReason(getProductId(product)))"
                                             :label="trans('rma::app.admin.configuration.index.sales.rma.resolution-type')"
                                         >
                                             <option value="">
@@ -601,10 +604,10 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                         <x-shop::form.control-group.error ::name="'resolution_type[' + getProductId(product) + ']'" class="flex"/>
                                     </x-shop::form.control-group>
                                 </div>
-                            </div>
+                            </p>
 
                             <!-- Reasons -->
-                            <div class="w-full">
+                            <p class="w-full">
                                 <div 
                                     v-if="isChecked[getProductId(product)] 
                                         && product.currentQuantity > '0'
@@ -636,7 +639,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                         <x-shop::form.control-group.error ::name="'rma_reason_id[' + getProductId(product) + ']'" class="flex"/>
                                     </x-shop::form.control-group>
                                 </div>
-                            </div>
+                            </p>
                         </div>
                     </div>
                 </div>

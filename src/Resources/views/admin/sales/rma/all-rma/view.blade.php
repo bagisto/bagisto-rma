@@ -848,8 +848,9 @@
                                         <div
                                             v-if="messages.length"
                                             v-for="message in messages"
-                                            :style="message.is_admin != 1 ? 'text-align:left; background-color: #a7a7a7' : 'text-align:right; background-color: #F0F0F0'"
-                                            style="word-break: break-all;"
+                                            :class="message.is_admin != 1 
+                                                ? 'text-left bg-gray-400 text-black dark:bg-gray-900 dark:text-gray-300' 
+                                                : 'text-right bg-gray-100 text-black dark:bg-gray-800 dark:text-gray-300'"
                                             class="p-4 mb-3 rounded-md"
                                         >
                                             <div class="title">
@@ -1346,7 +1347,10 @@
                                 <div
                                     v-if="messages.length"
                                     v-for="message in messages"
-                                    :style="message.is_admin != 1 ? 'text-align:left; background-color: #a7a7a7' : 'text-align:right; background-color: #F0F0F0'"
+                                    :class="message.is_admin != 1 
+                                        ? 'text-left bg-gray-400 text-black dark:bg-gray-900 dark:text-gray-300' 
+                                        : 'text-right bg-gray-100 text-black dark:bg-gray-800 dark:text-gray-300'"
+
                                     class="mb-3 rounded-md"
                                 >
                                     <div class="title">
