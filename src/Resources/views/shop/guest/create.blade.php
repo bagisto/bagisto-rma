@@ -467,7 +467,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                         </div>
                         
                         <!-- RMA QTY -->
-                        <p class="w-full" v-if="product.product.return_allowed || product.exchange_allowed">
+                        <p class="w-full" v-if="product.return_allowed || product.exchange_allowed">
                             <div v-if="isChecked[getProductId(product)] && product.currentQuantity > '0'">
                                 <!-- RMA Quantity -->
                                 <x-shop::form.control-group>
