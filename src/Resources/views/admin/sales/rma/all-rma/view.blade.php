@@ -495,41 +495,22 @@
 
                         <!-- RMA change status-->
                         @if (
-                            $rmaData['rma_status'] != 'Solved' 
-                            && $rmaData['status'] != 1
-                            && $rmaData['order']['status'] != 'canceled' 
-                            && $rmaData['order']['status'] != 'closed'
+                            $rmaData['rma_status'] != 'Solved' &&
+                            $rmaData['status'] != 1 &&
+                            !in_array($rmaData['order']['status'], ['canceled', 'closed'])
                         )
-                            <x-admin::accordion>
-                                @if ($rmaData['rma_status'] == 'Item Canceled')
-                                    @php($flag = 0)
 
-                                @elseif (
-                                    $rmaData['rma_status'] == 'Received Package'
+                            <x-admin::accordion>
+                                @if (in_array($rmaData['rma_status'], ['Item Canceled', 'Declined', 'Canceled']))
+                                    @php($flag = 0)
+                                @elseif ($rmaData['rma_status'] == 'Received Package' 
+                                    && isset($productDetails[0]) 
                                     && $productDetails[0]->resolution == 'exchange'
                                 )
-                                  @php($flag = 1)
-                                  
+                                    @php($flag = 1)
                                 @elseif ($rmaData['rma_status'] == 'Received Package')
                                     @php($flag = 0)
-    
-    
-                                @elseif ($rmaData['rma_status'] == 'Declined')
-                                    @php($flag = 0)
-                                    
-
-                                @elseif ($rmaData['rma_status'] == 'Canceled')
-                                    @php($flag = 0)
-                                    
-                                @elseif (
-                                    $rmaData['status'] == 1
-                                    && $rmaData['resolution'] == 'Replace'
-                                )
-                                    @php($flag = 0)
-                                @elseif (
-                                    $rmaData['resolution'] == 'Return'
-                                    && $rmaData['status'] == 1
-                                )
+                                @elseif (($rmaData['status'] == 1 && $rmaData['resolution'] == 'Replace') || ($rmaData['resolution'] == 'Return' && $rmaData['status'] == 1))
                                     @php($flag = 0)
                                 @else
                                     @php($flag = 1)
