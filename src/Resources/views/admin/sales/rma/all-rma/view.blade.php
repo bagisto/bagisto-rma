@@ -497,7 +497,7 @@
                         @if (
                             $rmaData['rma_status'] != 'Solved' &&
                             $rmaData['status'] != 1 &&
-                            !in_array($rmaData['order']['status'], ['canceled', 'closed'])
+                            ! in_array($rmaData['order']['status'], ['canceled', 'closed'])
                         )
 
                             <x-admin::accordion>
