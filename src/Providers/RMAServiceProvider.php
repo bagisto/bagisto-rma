@@ -165,14 +165,6 @@ class RMAServiceProvider extends ServiceProvider
         ]);
 
         /**
-         * header mobile view
-         */
-        $this->publishes([
-            __DIR__ . '/../Resources/views/components/layouts/header/mobile/index.blade.php'
-            => resource_path('themes/default/views/components/layouts/header/mobile/index.blade.php'),
-        ]);
-        
-        /**
          * user order view
          */
         $this->publishes([
