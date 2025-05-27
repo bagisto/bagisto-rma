@@ -510,24 +510,22 @@ class CreateRmaRepository extends Repository
 
             $orderItem->return_allowed = false;
             $orderItem->exchange_allowed = false;
-            if($orderItem->order_status != Order::STATUS_PENDING) {
-                if($orderItem->rma_rules) {
-                    if($orderItem->rma_return_period) {
-                        $returnWindowDate = Carbon::parse($orderItem->created_at)->addDays($orderItem->rma_return_period);
-                        $orderItem->return_window_date = core()->formatDate($returnWindowDate, 'd M Y');
-                        $orderItem->return_allowed = $returnWindowDate->toDateString() >= Carbon::now()->toDateString();
-                    }
-                    if($orderItem->rma_exchange_period) {
-                        $exchangeWindowDate = Carbon::parse($orderItem->created_at)->addDays($orderItem->rma_exchange_period);
-                        $orderItem->exchange_window_date = core()->formatDate($exchangeWindowDate, 'd M Y');
-                        $orderItem->exchange_allowed = $exchangeWindowDate->toDateString() >= Carbon::now()->toDateString();
-                    }
-                } else {
-                    if ($defaultReturnWindowDays) {
-                        $returnWindowDate = Carbon::parse($orderItem->created_at)->addDays($defaultReturnWindowDays);
-                        $orderItem->exchange_window_date = $orderItem->return_window_date = core()->formatDate($returnWindowDate, 'd M Y');
-                        $orderItem->exchange_allowed = $orderItem->return_allowed = $returnWindowDate->toDateString() >= Carbon::now()->toDateString();
-                    }
+            if($orderItem->rma_rules) {
+                if($orderItem->rma_return_period) {
+                    $returnWindowDate = Carbon::parse($orderItem->created_at)->addDays($orderItem->rma_return_period);
+                    $orderItem->return_window_date = core()->formatDate($returnWindowDate, 'd M Y');
+                    $orderItem->return_allowed = $returnWindowDate->toDateString() >= Carbon::now()->toDateString();
+                }
+                if($orderItem->rma_exchange_period) {
+                    $exchangeWindowDate = Carbon::parse($orderItem->created_at)->addDays($orderItem->rma_exchange_period);
+                    $orderItem->exchange_window_date = core()->formatDate($exchangeWindowDate, 'd M Y');
+                    $orderItem->exchange_allowed = $exchangeWindowDate->toDateString() >= Carbon::now()->toDateString();
+                }
+            } else {
+                if ($defaultReturnWindowDays) {
+                    $returnWindowDate = Carbon::parse($orderItem->created_at)->addDays($defaultReturnWindowDays);
+                    $orderItem->exchange_window_date = $orderItem->return_window_date = core()->formatDate($returnWindowDate, 'd M Y');
+                    $orderItem->exchange_allowed = $orderItem->return_allowed = $returnWindowDate->toDateString() >= Carbon::now()->toDateString();
                 }
             }
         }
