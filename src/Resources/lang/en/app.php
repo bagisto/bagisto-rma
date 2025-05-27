@@ -600,5 +600,6 @@ return [
         'rma-disabled'      => 'RMA is disabled for this product',
         'send-message'      => ':name sent successfully.',
         'update-success'    => ':name updated successfully.',
+        'please-select-the-item' => 'Please select the item',
     ],
 ];

@@ -597,5 +597,7 @@ return [
         'rma-disabled'      => 'এই পণ্যের জন্য RMA অক্ষম করা হয়েছে',
         'send-message'      => ':name সফলভাবে প্রেরণ করা হয়েছে।',
         'update-success'    => ':name সফলভাবে আপডেট হয়েছে।',
+        'please-select-the-item' => 'অনুগ্রহ করে আইটেমটি নির্বাচন করুন',
+
     ],
 ];

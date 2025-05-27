@@ -597,5 +597,7 @@ return [
         'rma-disabled'      => 'इस उत्पाद के लिए आरएमए निष्क्रिय किया गया है',
         'send-message'      => ':name सफलतापूर्वक भेजा गया।',
         'update-success'    => ':name सफलतापूर्वक अपडेट किया गया।',
+        'please-select-the-item' => 'कृपया आइटम चुनें',
+
     ],
 ];

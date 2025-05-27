@@ -56,7 +56,7 @@ class CustomFieldController extends Controller
     {
         $this->validate(request(), [
             'label' => 'required',
-            'code'  => 'required',
+            'code'  => ['required', 'unique:custom_rma_field,code'],
             'type'  => 'required',
         ]);
 
