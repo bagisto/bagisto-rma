@@ -9,7 +9,7 @@
         <x-shop::breadcrumbs name="rma.view"></x-shop::breadcrumbs>
     @endSection
 
-    <div class="mx-4">
+    <div class="max-md:hidden">
         <x-shop::layouts.account.navigation />
     </div>
     
@@ -64,6 +64,13 @@
 
     <div class="flex-auto mx-4 max-md:mx-6 max-sm:mx-4">
         <div class="flex items-center mb-8 max-md:mb-5">
+            <a
+                class="grid md:hidden"
+                href="{{ route('shop.customers.account.index') }}"
+            >
+                <span class="text-2xl icon-arrow-left rtl:icon-arrow-right"></span>
+            </a>
+            
             <h2 class="text-2xl font-medium max-md:text-xl max-sm:text-base ltr:ml-2.5 md:ltr:ml-0 rtl:mr-2.5 md:rtl:mr-0">
                 @lang('rma::app.admin.sales.rma.all-rma.index.datagrid.id') {{ '#'.$rmaData['id'] }}
             </h2>

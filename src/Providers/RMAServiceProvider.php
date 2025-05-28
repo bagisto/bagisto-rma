@@ -152,7 +152,7 @@ class RMAServiceProvider extends ServiceProvider
          * create refund order
          */
         $this->publishes([
-            __DIR__ . '/../Resources/views/components/admin/sales/refunds/create.blade.php'
+            __DIR__ . '/../Resources/views/admin/sales/refunds/create.blade.php'
             => resource_path('/views/vendor/admin/sales/refunds/create.blade.php'),
         ]);
 

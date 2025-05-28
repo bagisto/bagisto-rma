@@ -10,7 +10,7 @@
         id="v-customer-rma-return-policy-template"
     >
         <div class="mb-4">
-            <label class="relative mb-2 inline-flex cursor-pointer items-center">
+            <label class="relative inline-flex items-center mb-2 cursor-pointer">
                 <v-field
                     type="checkbox" 
                     name="agreement" 
@@ -20,7 +20,7 @@
                 >
                     <input 
                         type="checkbox" 
-                        class="peer sr-only" 
+                        class="sr-only peer" 
                         id="agreement" 
                         rules="required"
                         name="agreement" 
@@ -30,7 +30,7 @@
                 </v-field>
 
                 <label 
-                    class="icon-uncheck peer-checked:icon-check-box cursor-pointer text-2xl peer-checked:text-navyBlue"
+                    class="text-2xl cursor-pointer icon-uncheck peer-checked:icon-check-box peer-checked:text-navyBlue"
                     for="agreement"
                 >
                 </label>
@@ -53,14 +53,16 @@
             </label>
 
             <x-admin::form.control-group.error control-name="agreement" />
-
+            <span class="hidden mx-2 text-blue-500 text-zinc-500 max-md:block">
+                @lang('rma::app.admin.configuration.index.sales.rma.setting.terms')
+            </span>
             <a
                 href="#" 
-                class="hidden max-md:block mx-2 text-blue-500 max-md:mt-2"
+                class="hidden mx-2 text-blue-500 max-md:block max-md:mt-2"
                 @click="$refs.agreementModel.open()"
             >
                 <span>
-                    @lang('gdpr::app.admin.create-gdpr.read-content')
+                    @lang('rma::app.admin.configuration.index.sales.rma.setting.read')
                 </span>
             </a>
         </div>
