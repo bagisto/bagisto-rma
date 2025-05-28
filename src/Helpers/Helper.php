@@ -17,7 +17,7 @@ class Helper
     /** 
      * rma refund-related statuses
      */
-    public const REFUND_EXCLUDED_STATUSES = ['Received Package', 'Declined', 'Canceled', 'Solved', 'Item Canceled'];
+    public const REFUND_EXCLUDED_STATUSES = ['Declined', 'Canceled', 'Solved', 'Item Canceled'];
 
     /**
      * Rma in canceled status.
@@ -109,4 +109,40 @@ class Helper
         return $refundStatus;
     }
 
+    /**
+     * Get RMA status
+     *
+     * @param  
+     * @return bool
+     */
+    function getAllowedRmaStatuses($currentStatus, $resolution, $rmaActiveStatus)
+    {
+        $statusTransitionMap = [
+            'Pending' => ['Accept', 'Declined'],
+            'Accept' => [
+                'return' => ['Awaiting', 'Received Package', 'Resolved'],
+                'replace' => ['Awaiting', 'Dispatched Package', 'Received Package', 'Resolved'],
+                'cancel-items' => ['Item Canceled', 'Resolved'],
+                'exchange'    => ['Awaiting', 'Dispatched Package', 'Received Package', 'Resolved'],
+            ],
+            'Received Package' => ['Dispatched Package', 'Resolved'],
+            'Declined' => ['Canceled'],
+            'Item Canceled' => ['Resolved'],
+            'Awaiting' => ['Dispatched Package', 'Received Package'],
+            'Dispatched Package' => ['Received Package', 'Resolved'],
+            'Resolved' => [],
+            'Canceled' => [],
+        ];
+
+        $allowed = $statusTransitionMap[$currentStatus] ?? [];
+        
+        if (
+            $currentStatus === 'Accept' 
+            && isset($statusTransitionMap['Accept'][$resolution])
+        ) {
+            $allowed = $statusTransitionMap['Accept'][$resolution];
+        }
+
+        return array_values(array_filter($rmaActiveStatus, fn($status) => in_array($status, $allowed)));
+    }
 }

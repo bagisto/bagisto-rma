@@ -5,7 +5,7 @@
     </x-slot:title>
 
     <div class="flex items-center justify-between gap-16 max-sm:flex-wrap">
-        <h1 class="text-20 font-bold text-gray-800 dark:text-white">
+        <h1 class="font-bold text-gray-800 text-20 dark:text-white">
             @lang('rma::app.admin.sales.rma.index.rma-title')
         </h1>  
 

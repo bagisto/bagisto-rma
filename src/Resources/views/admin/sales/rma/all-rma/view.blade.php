@@ -22,29 +22,13 @@
             $checkDateExpires = true;
         }
         
-        $statusArr = [];
-
         $rmaActiveStatus = $rmaActiveStatus->toarray();
         
-        if ($rmaData['rma_status'] == 'Pending') {
+        $currentStatus = $rmaData['rma_status'] ?? 'Pending';
 
-            $rmaActiveStatus = array_filter($rmaActiveStatus, function ($status) {
-                return in_array($status, ["Accept", "Declined"]);
-            });
-        } else {
-            if ($productDetails['0']?->resolution != 'cancel-items') {
-                $rmaActiveStatus = array_filter($rmaActiveStatus, function ($status) {
-                    return $status !== "Item Canceled" && $status !== "Canceled" && $status !== "Accept" && $status !== "Declined" && $status !== "Pending";
-                });
-    
-            } else {
-                $rmaActiveStatus = array_filter($rmaActiveStatus, function ($status) {
-                    return $status!== "Received Package" && $status !== "Canceled" && $status !== "Accept" && $status !== "Declined" && $status !== "Pending";
-                });
-            }
-        }
+        $resolution = $productDetails[0]->resolution ?? null;
 
-        $statusArr = array_values($rmaActiveStatus);
+        $statusArr = app('Webkul\RMA\Helpers\Helper')->getAllowedRmaStatuses($currentStatus, $resolution, $rmaActiveStatus);
 
         $rmaStatusColor = '';
 
@@ -511,34 +495,22 @@
 
                         <!-- RMA change status-->
                         @if (
-                            $rmaData['rma_status'] != 'Solved' 
-                            && $rmaData['status'] != 1
-                            && $rmaData['order']['status'] != 'canceled' 
-                            && $rmaData['order']['status'] != 'closed'
+                            $rmaData['rma_status'] != 'Solved' &&
+                            $rmaData['status'] != 1 &&
+                            ! in_array($rmaData['order']['status'], ['canceled', 'closed'])
                         )
-                            <x-admin::accordion>
-                                @if ($rmaData['rma_status'] == 'Item Canceled')
-                                    @php($flag = 0)
 
+                            <x-admin::accordion>
+                                @if (in_array($rmaData['rma_status'], ['Item Canceled', 'Declined', 'Canceled']))
+                                    @php($flag = 0)
+                                @elseif ($rmaData['rma_status'] == 'Received Package' 
+                                    && isset($productDetails[0]) 
+                                    && $productDetails[0]->resolution == 'exchange'
+                                )
+                                    @php($flag = 1)
                                 @elseif ($rmaData['rma_status'] == 'Received Package')
                                     @php($flag = 0)
-
-                                @elseif ($rmaData['rma_status'] == 'Declined')
-                                    @php($flag = 0)
-                                    
-
-                                @elseif ($rmaData['rma_status'] == 'Canceled')
-                                    @php($flag = 0)
-                                    
-                                @elseif (
-                                    $rmaData['status'] == 1
-                                    && $rmaData['resolution'] == 'Replace'
-                                )
-                                    @php($flag = 0)
-                                @elseif (
-                                    $rmaData['resolution'] == 'Return'
-                                    && $rmaData['status'] == 1
-                                )
+                                @elseif (($rmaData['status'] == 1 && $rmaData['resolution'] == 'Replace') || ($rmaData['resolution'] == 'Return' && $rmaData['status'] == 1))
                                     @php($flag = 0)
                                 @else
                                     @php($flag = 1)

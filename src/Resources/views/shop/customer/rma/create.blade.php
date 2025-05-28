@@ -13,9 +13,10 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
         <x-shop::breadcrumbs name="rma.create"></x-shop::breadcrumbs>
     @endSection
 
-    <div class="mx-4">
+    <div class="max-md:hidden">
         <x-shop::layouts.account.navigation />
     </div>
+    
     <!--Customers logout-->
     <div class="flex-auto mx-4 max-md:mx-6 max-sm:mx-4">
         <!-- Heading of the page -->
