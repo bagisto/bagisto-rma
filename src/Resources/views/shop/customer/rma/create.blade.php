@@ -433,7 +433,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                         @lang('admin::app.catalog.attributes.create.price'):  
                                     </span>
                                     
-                                    <span>@{{ formatPrice(product.price) }}</span>
+                                    <span>@{{ product.formatted_price }}</span>
                                 </p>
 
                                 <p class="flex justify-between text-sm whitespace-nowrap">
@@ -446,7 +446,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                     </span>
                                 </p>
 
-                                <div v-if="product.rma_rules && products['0'].order_status != 'pending'">
+                                <div v-if="product.return_allowed || product.exchange_allowed">
                                     <p 
                                         v-if="resolutionType[getProductId(product)] == 'return'" 
                                         class="flex justify-between text-sm whitespace-nowrap"
@@ -456,7 +456,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                         </span>
 
                                         <span>
-                                            @{{ calculateDeliveredReturnWindow(product.created_at, product.rma_return_period) }}
+                                            @{{ product.return_window_date }}
                                         </span>
                                     </p>
 
@@ -469,19 +469,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                         </span>
 
                                         <span>
-                                            @{{ calculateDeliveredReturnWindow(product.created_at, product.rma_exchange_period) }}
-                                        </span>
-                                    </p>
-                                </div>
-
-                                <div v-else>
-                                    <p v-if="! product.rma_exchange_period && ! product.rma_return_period"  class="flex justify-between text-sm whitespace-nowrap">
-                                        <span>
-                                            @lang('rma::app.shop.customer.create.return-window'): 
-                                        </span>
-
-                                        <span>
-                                            @{{ calculateReturnWindow(product.created_at) }}
+                                            @{{ product.exchange_window_date }}
                                         </span>
                                     </p>
                                 </div>
@@ -489,7 +477,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                         </div>
 
                         <!-- RMA QTY -->
-                        <div class="w-full" v-if="! notAllowed">
+                        <div class="w-full" v-if="product.return_allowed || product.exchange_allowed">
                             <div v-if="isChecked[getProductId(product)] && product.currentQuantity > '0'">
                                 <!-- RMA Quantity -->
                                 <x-shop::form.control-group>
@@ -518,9 +506,9 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                             </div>
                         </div>
 
-                        <div class="flex gap-3" v-if="! notAllowed">
+                        <div class="flex gap-3" v-if="product.return_allowed || product.exchange_allowed">
                             <!-- Resolution Type for rules product -->
-                            <div class="w-full" v-if="product.rma_exchange_period || product.rma_return_period">
+                            <div class="w-full">
                                 <div v-if="isChecked[getProductId(product)] && product.currentQuantity > '0'">
                                     <x-shop::form.control-group>
                                         <x-shop::form.control-group.label class="flex text-sm required">
@@ -540,14 +528,14 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                             </option>
 
                                             <option 
-                                                v-if="products['0'].order_status != 'pending' && (products['0'].order_status == 'processing' || products['0'].order_status == 'completed')  && product.rma_return_period" 
+                                                v-if="products['0'].order_status != 'pending' && (products['0'].order_status == 'processing' || products['0'].order_status == 'completed')  && product.return_allowed" 
                                                 value="return"
                                             >
                                                 @lang('rma::app.admin.configuration.index.sales.rma.return')
                                             </option>
 
                                             <option
-                                                v-if="products['0'].order_status != 'pending' && products['0'].order_status != 'processing' && products['0'].order_status == 'completed' && product.rma_exchange_period" 
+                                                v-if="products['0'].order_status != 'pending' && products['0'].order_status != 'processing' && products['0'].order_status == 'completed' && product.exchange_allowed" 
                                                 value="exchange"
                                             >
                                                 @lang('rma::app.admin.configuration.index.sales.rma.exchange')
@@ -565,54 +553,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                                     </x-shop::form.control-group>
                                 </div>
                             </div>
-
-                            <!-- Resolution Type -->
-                            <div class="w-full" v-else>
-                                <div v-if="isChecked[getProductId(product)] && product.currentQuantity > '0'">
-                                    <x-shop::form.control-group>
-                                        <x-shop::form.control-group.label class="flex text-sm required">
-                                            @lang('rma::app.admin.configuration.index.sales.rma.resolution-type')
-                                        </x-shop::form.control-group.label>
-
-                                        <x-shop::form.control-group.control
-                                            type="select"
-                                            ::name="'resolution_type[' + getProductId(product) + ']'" 
-                                            rules="required"
-                                            v-model="resolutionType[getProductId(product)]"
-                                            @change="getResolutionReason(getProductId(product))"
-                                            :label="trans('rma::app.admin.configuration.index.sales.rma.resolution-type')"
-                                        >
-                                            <option value="">
-                                                @lang('admin::app.catalog.products.edit.types.bundle.update-create.select')
-                                            </option>
-
-                                            <option 
-                                                v-if="products['0'].order_status != 'pending' && (products['0'].order_status == 'processing' || products['0'].order_status == 'completed')" 
-                                                value="return"
-                                            >
-                                                @lang('rma::app.admin.configuration.index.sales.rma.return')
-                                            </option>
-
-                                            <option 
-                                                v-if="products['0'].order_status != 'pending' && products['0'].order_status != 'processing' && products['0'].order_status == 'completed'" 
-                                                value="exchange"
-                                            >
-                                                @lang('rma::app.admin.configuration.index.sales.rma.exchange')
-                                            </option>
-
-                                            <option 
-                                                v-if="products['0'].order_status == 'pending' && products['0'].order_status != 'processing' && products['0'].order_status != 'completed'"  
-                                                value="cancel-items"
-                                            >
-                                                @lang('rma::app.admin.configuration.index.sales.rma.cancel-items')
-                                            </option>
-                                        </x-shop::form.control-group.control>
-
-                                        <x-shop::form.control-group.error ::name="'resolution_type[' + getProductId(product) + ']'" class="flex"/>
-                                    </x-shop::form.control-group>
-                                </div>
-                            </div>
-
+                            
                             <!-- Reasons -->
                             <div class="w-full">
                                 <div 
@@ -1088,11 +1029,7 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
 
                         resolutionType: [],
 
-                        notAllowed: false,
-
                         baseImageUrl: '{{ Storage::url('') }}',
-
-                        returnWindowDays: parseInt('{{ core()->getConfigData('sales.rma.setting.default_allow_days') }}'),
                     }
                 },
 
@@ -1109,10 +1046,6 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                 },
 
                 methods: {
-                    formatPrice(price) {
-                        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(price);
-                    },
-
                     getProductId(product) {
                         return product.type === 'configurable' 
                             ? product.additional.selected_configurable_option 
@@ -1144,49 +1077,6 @@ $customAttributes = app('Webkul\RMA\Repositories\RmaCustomFieldRepository')->wit
                             .replace(/&/g, '&amp;')
                             .replace(/"/g, '&quot;')
                             .replace(/'/g, '&#39;');
-                    },
-
-                    calculateReturnWindow(createdAt) {
-                        const createdDate = new Date(createdAt);
-                        const returnDate = new Date(createdDate);
-                        returnDate.setDate(createdDate.getDate() + this.returnWindowDays);
-
-                        const currentDate = new Date();
-
-                        if (returnDate < currentDate) {
-                            this.notAllowed = true;
-
-                            return 'Not Allowed';
-                        }
-
-                        return new Intl.DateTimeFormat('en-GB', {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric'
-                        }).format(returnDate);
-                    },
-
-                    calculateDeliveredReturnWindow(created_At, rulesDays) {
-                        const createdAt = new Date(created_At);
-                        const returnDate = new Date(
-                            createdAt.getTime() + rulesDays * 24 * 60 * 60 * 1000
-                        );
-
-                        returnDate.setUTCDate(returnDate.getDate());
-
-                        const currentDate = new Date();
-
-                        if (returnDate < currentDate) {
-                            this.notAllowed = true;
-
-                            return 'Not Allowed';
-                        }
-
-                        return new Intl.DateTimeFormat('en-GB', {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric',
-                        }).format(returnDate);
                     },
 
                     getResolutionReason(product_id) {
