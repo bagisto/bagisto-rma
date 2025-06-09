@@ -71,7 +71,7 @@
         </div>
 
         <!-- Item(s) Requested for RMA -->
-        <div class="mt-8 flex items-center justify-between">
+        <div class="flex items-center justify-between mt-8">
             <h2 class="text-xl font-medium">
                 @lang('rma::app.shop.view-customer-rma.heading')
             </h2>
@@ -97,7 +97,7 @@
             <p class="text-sm font-medium text-[#6E6E6E]">
                 @if (!session()->get('guestEmail'))
                     <a
-                        href="{{ route('rma.customers.all-rma', $rmaData['order_id']) }}"
+                        href="{{ route('shop.customers.account.orders.view', $rmaData['order_id']) }}"
                         target="_blank"
                     >
                         {{ '#'.$rmaData['order_id'] }}
@@ -155,7 +155,7 @@
                             target="_blank"
                         >
                             <img
-                                class="box-shadow m-1 h-24 w-64 rounded"
+                                class="w-64 h-24 m-1 rounded box-shadow"
                                 src="{{ Storage::url($images['path']) }}"
                             >
                         </a>
@@ -168,14 +168,14 @@
         <div class="overflow-x-auto">
             <x-table>
                 <!-- Item(s) Requested for RMA -->
-                <div class="mt-8 flex items-center justify-between">
+                <div class="flex items-center justify-between mt-8">
                     <h2 class="text-xl font-medium">
                         @lang('rma::app.shop.view-customer-rma.items-request')
                     </h2>
                 </div>
 
                 <!-- Order information -->
-                <div class="relative mt-4 overflow-x-auto rounded-xl border">
+                <div class="relative mt-4 overflow-x-auto border rounded-xl">
                     <x-table>
                         <x-table.thead>
                             @php($lang = Lang::get('rma::app.shop.table-heading'))
@@ -313,24 +313,24 @@
                 </div>
 
                 <!-- Status detail of rma -->
-                <div class="mt-8 flex items-center justify-between">
+                <div class="flex items-center justify-between mt-8">
                     <h2 class="text-xl font-medium">
                         @lang('rma::app.shop.view-customer-rma.status-details')
                     </h2>
                 </div>
 
-                <div class="relative mt-4 overflow-x-auto rounded-xl border">
-                    <div class="mt-4 grid grid-cols-1">
+                <div class="relative mt-4 overflow-x-auto border rounded-xl">
+                    <div class="grid grid-cols-1 mt-4">
                         <!-- RMA status -->
                         <div class="grid grid-cols-1 text-white">
                             <div class="grid grid-cols-[2fr_3fr] px-8  py-3">
-                                <p class="text-base text-black font-medium">
+                                <p class="text-base font-medium text-black">
                                     @lang('rma::app.shop.view-customer-rma-content.rma-status')
                                 </p>
 
                                 <span @if ($rmaData['status'] == 1) class="hidden" @endif>
                                     @if ($rmaData['rma_status'] == 'solved')
-                                        <span class="label-active py-1">
+                                        <span class="py-1 label-active">
                                             @lang('rma::app.status.status-name.solved')
                                         </span>
                                     @elseif(
@@ -338,13 +338,13 @@
                                             || $rmaData['order']['status'] == 'closed'
                                         )
                                             <span 
-                                                class="label-canceled py-1 text-xs" 
+                                                class="py-1 text-xs label-canceled" 
                                             >
                                                 @lang('rma::app.status.status-name.item-canceled')
                                             </span>
                                     @else
                                         <span 
-                                            class="label-active py-1 text-xs" 
+                                            class="py-1 text-xs label-active" 
                                             style="background: {{ $rmaStatusColor }}"
                                         >
                                             {{ $rmaData['rma_status'] }}
@@ -354,7 +354,7 @@
         
                                 <!-- Status solved -->
                                 <span @if ($rmaData['status'] == 0) class="hidden" @endif>
-                                    <span class="label-active py-1">
+                                    <span class="py-1 label-active">
                                         @lang('rma::app.status.status-name.solved')
                                     </span>
                                 </span>
@@ -362,20 +362,20 @@
 
                             <!-- order status -->
                             <div class="grid grid-cols-[2fr_3fr] px-8 py-3">
-                                <p class="text-base text-black font-medium">
+                                <p class="text-base font-medium text-black">
                                     @lang('rma::app.shop.view-customer-rma-content.order-status')
                                 </p>
 
                                 <p
                                     @if ($rmaData['order_status'] == '1') 
-                                        class="label-active pt-1"
+                                        class="pt-1 label-active"
                                     @elseif (
                                             $rmaData['order']['status'] == 'canceled' 
                                             || $rmaData['order']['status'] == 'closed'
                                         )
                                         class="label-{{$rmaData['order']['status']}} pt-1"
                                     @else 
-                                        class="label-info pt-1"
+                                        class="pt-1 label-info"
                                     @endif
                                 >
                                     @if ($rmaData['order_status'] == '1')
@@ -398,7 +398,7 @@
                                 )
                                     <div class="grid grid-cols-[2fr_3fr] px-8 py-3">
                                         <!-- Close RMA -->
-                                        <p class="text-base text-black font-medium">
+                                        <p class="text-base font-medium text-black">
                                             @lang('rma::app.shop.view-customer-rma.close-rma')
                                         </p>
 
@@ -412,7 +412,7 @@
                                 <!-- RMA solved -->
                                 @if ($rmaData['rma_status'] == 'Item Canceled')
                                     <div class="grid grid-cols-[2fr_3fr] px-8 py-3">
-                                        <p  class="text-base text-black font-medium">
+                                        <p  class="text-base font-medium text-black">
                                             @lang('rma::app.shop.view-customer-rma.close-rma')
                                         </p>
 
@@ -424,7 +424,7 @@
 
                                 @if ($rmaData['rma_status'] == 'Declined')
                                     <div class="grid grid-cols-[2fr_3fr] px-8 py-3">
-                                        <p class="text-base text-black font-medium">
+                                        <p class="text-base font-medium text-black">
                                             @lang('rma::app.shop.view-customer-rma.close-rma')
                                         </p>
 
@@ -448,7 +448,7 @@
             <div class="container mt-8 px-14 max-lg:px-8">
                 @if (! $checkDateExpires)
                     @if ($show)
-                        <div class="relative mt-3 overflow-x-auto rounded-xl border px-8 py-4">
+                        <div class="relative px-8 py-4 mt-3 overflow-x-auto border rounded-xl">
                             <!-- Close rma if solved -->
                             <div class="mt-2">
                                 <p class="text-xl font-medium">
@@ -484,7 +484,7 @@
 
                                             <label
                                                 for="close_rma"
-                                                class="required text-xs font-medium"
+                                                class="text-xs font-medium required"
                                             >
                                                 @lang('rma::app.shop.view-customer-rma.status-quotes')
                                             </label>
@@ -499,7 +499,7 @@
 
                                         <button
                                             type="submit"
-                                            class="primary-button m-0 block w-max rounded-2xl px-11 py-3 text-center text-base"
+                                            class="block py-3 m-0 text-base text-center primary-button w-max rounded-2xl px-11"
                                             v-if="closeRmaChecked"
                                         >
                                             @lang('rma::app.shop.view-customer-rma.save-btn')
@@ -513,7 +513,7 @@
                             core()->getConfigData('sales.rma.setting.allowed-new-rma-request-for-cancelled-request') == 'yes' 
                             && $rmaData['rma_status'] == 'Canceled'
                         )
-                            <div class="relative mt-3 overflow-x-auto rounded-xl border px-8 py-4">
+                            <div class="relative px-8 py-4 mt-3 overflow-x-auto border rounded-xl">
                                 <!-- Close rma if solved -->
                                 <div class="mt-2">
                                     <p class="text-xl font-medium">
@@ -549,7 +549,7 @@
     
                                                 <label
                                                     for="close_rma"
-                                                    class="required text-xs font-medium"
+                                                    class="text-xs font-medium required"
                                                 >
                                                     @lang('rma::app.shop.view-customer-rma.status-reopen')
                                                 </label>
@@ -566,7 +566,7 @@
     
                                             <button
                                                 type="submit"
-                                                class="primary-button m-0 block w-max rounded-2xl px-11 py-3 text-center text-base"
+                                                class="block py-3 m-0 text-base text-center primary-button w-max rounded-2xl px-11"
                                                 v-if="closeRmaChecked"
                                             >
                                                 @lang('rma::app.shop.view-customer-rma.save-btn')
@@ -580,14 +580,14 @@
                 @endif
 
                 <!-- Enter message -->
-                <div class="mt-8 flex items-center justify-between">
-                    <p class="required text-xl font-medium">
+                <div class="flex items-center justify-between mt-8">
+                    <p class="text-xl font-medium required">
                         @lang('rma::app.admin.sales.rma.all-rma.view.enter-message')
                     </p>
                 </div>
 
-                <div class="relative mt-3 overflow-x-auto rounded-xl border p-2">
-                    <div class="border rounded-lg p-3">
+                <div class="relative p-2 mt-3 overflow-x-auto border rounded-xl">
+                    <div class="p-3 border rounded-lg">
                         <x-shop::form
                             v-slot="{ meta, errors, handleSubmit }"
                             as="div"
@@ -633,14 +633,14 @@
                                     <button 
                                         type="button" 
                                         id="newFileInput"
-                                        class="transparent-button text-sm hover:bg-gray-200 relative"
+                                        class="relative text-sm transparent-button hover:bg-gray-200"
                                     >
                                         + @lang('rma::app.admin.sales.rma.all-rma.view.add-attachments')
                                     
                                         <input 
                                             type="file" 
                                             id="file"
-                                            class="opacity-0 absolute top-0 left-0 w-full h-full cursor-pointer" 
+                                            class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer" 
                                             name="file" 
                                             @change="handleFileSelect($event)" 
                                         />
@@ -669,15 +669,15 @@
                     </div>
 
                     <!-- View conversations -->
-                    <div class="border rounded-lg mt-2 p-3">
-                        <div class="mb-3 ml-3 mt-2">
+                    <div class="p-3 mt-2 border rounded-lg">
+                        <div class="mt-2 mb-3 ml-3">
                             <p class="text-xl font-medium">
                                 @lang('rma::app.shop.view-customer-rma.conversations')
                             </p>
                         </div>
 
                         <div
-                            class="h-80 overflow-x-auto p-5"
+                            class="p-5 overflow-x-auto h-80"
                             @wheel="getNewMessage()"
                             :class="! messages.length ? 'flex justify-center items-center' : ''"
                         >
@@ -702,8 +702,7 @@
                                 </div>
 
                                 <div
-                                    class="value"
-                                    style="margin-top:10px; word-break: break-all;"
+                                    class="mt-4 value"
                                     v-html="message.message"
                                 >
                                 </div>
@@ -713,9 +712,9 @@
                                 <a 
                                     @click="viewAttachmentModal(message.attachment_path)"
                                     v-if="message.attachment"
-                                    class="icon-hamburger text-sm font-normal cursor-pointer"
+                                    class="text-sm font-normal cursor-pointer icon-hamburger"
                                 >
-                                    <span class="text-sm hover:underline cursor-pointer ml-2">
+                                    <span class="ml-2 text-sm cursor-pointer hover:underline">
                                         @{{ message.attachment }}
                                     </span>
                                 </a>
